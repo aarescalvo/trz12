@@ -1,0 +1,9 @@
+# Printer Bridge - Solemar Alimentaria
+# Bridge TCP 9100 -> Impresora USB Windows
+# NO necesita dependencias npm
+{
+  "name": "printer-bridge",
+  "version": "2.0.0",
+  "description": "Bridge TCP 9100 -> Impresora USB Windows - Sin dependencias",
+  "main": "index.js"
+}

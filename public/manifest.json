@@ -1,0 +1,40 @@
+{
+  "name": "Sistema Frigorífico - Solemar Alimentaria",
+  "short_name": "Solemar",
+  "description": "Sistema de gestión frigorífica para control de tropas, pesaje y faena",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1c1917",
+  "theme_color": "#f59e0b",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Pesaje Camiones",
+      "url": "/?page=pesajeCamiones",
+      "description": "Módulo de pesaje de camiones"
+    },
+    {
+      "name": "Romaneo",
+      "url": "/?page=romaneo",
+      "description": "Módulo de romaneo"
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}

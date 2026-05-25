@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sin conexión - Solemar Alimentaria</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: linear-gradient(135deg, #1c1917 0%, #292524 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .container {
+      text-align: center;
+      max-width: 400px;
+    }
+    
+    .logo {
+      width: 150px;
+      height: 150px;
+      margin: 0 auto 24px;
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      color: white;
+      font-weight: bold;
+    }
+    
+    h1 {
+      color: #f59e0b;
+      font-size: 28px;
+      margin-bottom: 16px;
+    }
+    
+    p {
+      color: #a8a29e;
+      font-size: 16px;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+    
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #ef4444;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+    
+    .status::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: white;
+      border-radius: 50%;
+      animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    .button {
+      display: inline-block;
+      background: #f59e0b;
+      color: white;
+      padding: 12px 32px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+    
+    .button:hover {
+      background: #d97706;
+    }
+    
+    .tips {
+      margin-top: 32px;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      text-align: left;
+    }
+    
+    .tips h3 {
+      color: #f59e0b;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+    
+    .tips ul {
+      list-style: none;
+    }
+    
+    .tips li {
+      color: #a8a29e;
+      font-size: 13px;
+      padding: 6px 0;
+      padding-left: 20px;
+      position: relative;
+    }
+    
+    .tips li::before {
+      content: '•';
+      color: #f59e0b;
+      position: absolute;
+      left: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">SA</div>
+    <h1>Sin Conexión</h1>
+    <div class="status">Modo Offline</div>
+    <p>
+      No tienes conexión a internet. Los datos que ingreses se guardarán 
+      localmente y se sincronizarán automáticamente cuando recuperes la conexión.
+    </p>
+    <a href="/" class="button">Reintentar</a>
+    
+    <div class="tips">
+      <h3>Mientras estás offline puedes:</h3>
+      <ul>
+        <li>Registrar pesajes de medias reses</li>
+        <li>Crear nuevos romaneos</li>
+        <li>Imprimir rótulos pendientes</li>
+        <li>Consultar datos previamente cargados</li>
+      </ul>
+    </div>
+  </div>
+  
+  <script>
+    // Intentar reconectar automáticamente
+    window.addEventListener('online', () => {
+      window.location.reload();
+    });
+  </script>
+</body>
+</html>

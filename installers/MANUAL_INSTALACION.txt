@@ -1,0 +1,411 @@
+# ==============================================================================
+#                    FRIGORIFICO SOLEMAR - MANUAL DE INSTALACION
+#                         Version 1.0.0 - Windows 10/11
+# ==============================================================================
+
+Este manual le guiará paso a paso para instalar y configurar el Sistema de
+Gestión Frigorífica en su computadora con Windows 10 u 11.
+
+## TABLA DE CONTENIDOS
+
+1. [REQUISITOS DEL SISTEMA](#1-requisitos-del-sistema)
+2. [PREPARACION ANTES DE INSTALAR](#2-preparacion-antes-de-instalar)
+3. [INSTALACION PASO A PASO](#3-instalacion-paso-a-paso)
+4. [PRIMER INICIO DEL SISTEMA](#4-primer-inicio-del-sistema)
+5. [USO DIARIO DEL SISTEMA](#5-uso-diario-del-sistema)
+6. [RESPALDOS DE DATOS](#6-respaldos-de-datos)
+7. [SOLUCION DE PROBLEMAS](#7-solucion-de-problemas)
+8. [ERRORES COMUNES Y SOLUCIONES](#8-errores-comunes-y-soluciones)
+
+---
+
+## 1. REQUISITOS DEL SISTEMA
+
+### HARDWARE MINIMO RECOMENDADO:
+- Procesador: Intel Core i3 o equivalente (o superior)
+- Memoria RAM: 4 GB (se recomienda 8 GB o más)
+- Espacio en disco: 2 GB disponibles
+- Conexión a Internet (solo para instalación inicial)
+
+### SOFTWARE NECESARIO:
+- Windows 10 (versión 1809 o superior) o Windows 11
+- Navegador web actualizado (Chrome, Firefox, Edge)
+- Permisos de administrador en la computadora
+
+---
+
+## 2. PREPARACION ANTES DE INSTALAR
+
+### PASO 2.1: Verificar que tiene permisos de administrador
+
+1. Haga clic en el botón de INICIO de Windows
+2. Escriba "Panel de Control" y ábralo
+3. Vaya a "Cuentas de usuario"
+4. Verifique que su cuenta dice "Administrador"
+   
+   Si NO es administrador:
+   - Contacte al soporte técnico de su empresa
+   - O inicie sesión con una cuenta que tenga permisos de administrador
+
+### PASO 2.2: Verificar espacio en disco
+
+1. Abra "Este equipo" o "Mi PC"
+2. Haga clic derecho sobre el disco C:
+3. Seleccione "Propiedades"
+4. Verifique que tenga al menos 2 GB de espacio libre
+
+### PASO 2.3: Desactivar antivirus temporalmente (IMPORTANTE)
+
+Algunos antivirus pueden bloquear la instalación:
+
+1. Haga clic derecho sobre el ícono de su antivirus (junto al reloj)
+2. Busque una opción como "Pausar protección" o "Desactivar temporalmente"
+3. Seleccione desactivar por 30 minutos o 1 hora
+4. Recuerde reactivarlo después de completar la instalación
+
+### PASO 2.4: Cerrar programas innecesarios
+
+- Cierre todos los programas que estén abiertos
+- Guarde cualquier trabajo que tenga pendiente
+- Esto evita conflictos durante la instalación
+
+---
+
+## 3. INSTALACION PASO A PASO
+
+### METODO A: INSTALACION AUTOMATICA (RECOMENDADO)
+
+#### PASO 3.1: Abrir PowerShell como administrador
+
+1. Haga clic en el botón de INICIO de Windows
+2. Escriba "PowerShell"
+3. Cuando aparezca "Windows PowerShell", haga CLIC DERECHO sobre él
+4. Seleccione "Ejecutar como administrador"
+5. Si aparece una ventana preguntando "¿Desea permitir que esta aplicación
+   haga cambios en su dispositivo?", haga clic en "SÍ"
+
+   [IMAGEN: Captura de pantalla mostrando el menú contextual de PowerShell]
+
+#### PASO 3.2: Navegar a la carpeta del instalador
+
+En la ventana azul de PowerShell, escriba lo siguiente y presione ENTER:
+
+    cd "C:\ruta\donde\descargo\instaladores"
+
+(Reemplace la ruta por la ubicación real donde guardó el instalador)
+
+Ejemplo: Si el instalador está en Descargas:
+    cd "C:\Users\SuUsuario\Downloads\FrigorificoSolemar"
+
+#### PASO 3.3: Ejecutar el instalador
+
+Escriba el siguiente comando y presione ENTER:
+
+    .\install-windows.ps1
+
+Si aparece un error sobre "scripts deshabilitados", escriba primero:
+    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+Y luego intente ejecutar el instalador nuevamente.
+
+#### PASO 3.4: Esperar la instalación
+
+El instalador mostrará varios mensajes:
+- "[1/8] Creando directorio de instalación..." ✓
+- "[2/8] Verificando Bun runtime..." ✓
+- "[3/8] Copiando archivos..." ✓
+- "[4/8] Creando configuración..." ✓
+- "[5/8] Instalando dependencias..." (esto puede tardar 2-5 minutos) ✓
+- "[6/8] Inicializando base de datos..." ✓
+- "[7/8] Creando scripts de utilidad..." ✓
+- "[8/8] Configurando firewall..." ✓
+
+#### PASO 3.5: Finalización
+
+Cuando vea el mensaje:
+"INSTALACIÓN COMPLETADA EXITOSAMENTE"
+
+Presione cualquier tecla para iniciar el sistema.
+
+---
+
+### METODO B: INSTALACION CON ARCHIVO .BAT
+
+Si prefiere un método más simple:
+
+1. Localice el archivo "install-windows.bat" en la carpeta del instalador
+2. Haga CLIC DERECHO sobre el archivo
+3. Seleccione "Ejecutar como administrador"
+4. Siga las instrucciones en pantalla
+
+---
+
+## 4. PRIMER INICIO DEL SISTEMA
+
+### PASO 4.1: Abrir el sistema
+
+Después de la instalación, puede iniciar el sistema de dos formas:
+
+**OPCION 1: Acceso directo en el escritorio**
+- Haga doble clic en el ícono "Frigorifico Solemar" que aparece en su escritorio
+
+**OPCION 2: Menú de inicio**
+- Haga clic en INICIO
+- Busque "Frigorifico Solemar"
+- Haga clic para abrir
+
+### PASO 4.2: Esperar la carga
+
+Cuando inicie el sistema:
+
+1. Aparecerá una ventana negra (consola) - NO LA CIERRE
+2. Espere 10-30 segundos mientras carga
+3. El navegador se abrirá automáticamente mostrando el sistema
+
+[IMAGEN: Captura de la ventana de consola mostrando que el sistema está iniciando]
+
+### PASO 4.3: Iniciar sesión
+
+Use las siguientes credenciales por defecto:
+
+    USUARIO: admin
+    PASSWORD: admin123
+    
+    También puede usar el PIN: 1234
+
+[IMAGEN: Captura de la pantalla de login con las credenciales marcadas]
+
+### PASO 4.4: Cambiar contraseña (IMPORTANTE)
+
+Por seguridad, cambie la contraseña inmediatamente:
+
+1. Haga clic en su nombre de usuario (esquina superior derecha)
+2. Seleccione "Configuración"
+3. Vaya a "Operadores"
+4. Haga clic en el usuario "admin"
+5. Ingrese una nueva contraseña segura
+6. Haga clic en "Guardar"
+
+---
+
+## 5. USO DIARIO DEL SISTEMA
+
+### PARA INICIAR EL SISTEMA CADA DÍA:
+
+1. Haga doble clic en el acceso directo "Frigorifico Solemar" en el escritorio
+2. Espere a que el navegador se abra automáticamente
+3. El sistema estará listo cuando vea la pantalla principal
+
+### PARA DETENER EL SISTEMA:
+
+**OPCION 1:** Cerrar la ventana negra de consola
+
+**OPCION 2:** 
+1. Vaya a la carpeta C:\FrigorificoSolemar
+2. Haga doble clic en "detener.bat"
+
+### IMPORTANTE:
+- NO cierre la ventana negra mientras esté usando el sistema
+- Si necesita reiniciar el sistema, primero deténgalo y luego inícielo nuevamente
+
+---
+
+## 6. RESPaldos DE DATOS
+
+### CREAR UN RESPALDO MANUAL:
+
+1. Vaya a la carpeta C:\FrigorificoSolemar
+2. Haga doble clic en "respaldar.bat"
+3. Se creará un archivo de respaldo en la carpeta "backups"
+4. El archivo tendrá el nombre: backup_YYYYMMDD_HHMM.db
+
+### RESPaldos AUTOMÁTICOS (RECOMENDADO):
+
+Configure respaldos automáticos usando el Programador de tareas de Windows:
+
+1. Abra el "Programador de tareas" de Windows
+2. Haga clic en "Crear tarea básica"
+3. Nombre: "Respaldo Frigorifico"
+4. Frecuencia: Diariamente
+5. Hora: Elija una hora fuera del horario laboral (ej: 2:00 AM)
+6. Acción: "Iniciar un programa"
+7. Programa: C:\FrigorificoSolemar\respaldar.bat
+8. Finalizar
+
+[IMAGEN: Captura del Programador de tareas mostrando la configuración]
+
+### RESTAURAR UN RESPALDO:
+
+1. Detenga el sistema
+2. Vaya a C:\FrigorificoSolemar\data
+3. Renombre el archivo "frigorifico.db" a "frigorifico_viejo.db"
+4. Copie el archivo de respaldo que desea restaurar
+5. Pegue y renombre como "frigorifico.db"
+6. Inicie el sistema nuevamente
+
+---
+
+## 7. SOLUCION DE PROBLEMAS
+
+### EL SISTEMA NO INICIA
+
+**Verificar que el servicio esté corriendo:**
+1. Abra el "Administrador de tareas" (Ctrl + Shift + Esc)
+2. Vaya a la pestaña "Detalles"
+3. Busque "bun.exe" o "node.exe"
+4. Si no aparece, intente reiniciar el sistema
+
+**Error de puerto en uso:**
+Si aparece un error que dice "Port 3000 is already in use":
+1. Abra PowerShell como administrador
+2. Ejecute: netstat -ano | findstr :3000
+3. Anote el número PID que aparece
+4. Ejecute: taskkill /F /PID [número_PID]
+
+### NO SE ABRE EL NAVEGADOR
+
+1. Abra manualmente su navegador
+2. Escriba en la barra de direcciones: http://localhost:3000
+3. Presione Enter
+
+### EL SISTEMA ESTA MUY LENTO
+
+**Causas posibles y soluciones:**
+
+1. **Poca memoria RAM:** Cierre otros programas
+2. **Base de datos grande:** Haga respaldos y limpie datos antiguos
+3. **Computadora antigua:** Considere actualizar el hardware
+
+### NO PUEDO INICIAR SESION
+
+**Olvidé la contraseña:**
+1. Contacte al administrador del sistema
+2. Si usted es el administrador, puede resetear la base de datos
+   (perderá todos los datos) ejecutando:
+   
+   cd C:\FrigorificoSolemar\app
+   bun run db:push
+   bun run db:seed
+
+---
+
+## 8. ERRORES COMUNES Y SOLUCIONES
+
+### ERROR: "No se encuentra el comando bun"
+
+**Causa:** Bun no se instaló correctamente
+
+**Solución:**
+1. Abra PowerShell como administrador
+2. Ejecute: 
+   ```
+   Set-ExecutionPolicy Bypass -Scope Process -Force
+   [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+   iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+   ```
+3. Luego: choco install bun -y
+4. Reinicie la computadora
+
+### ERROR: "Error al crear la base de datos"
+
+**Causa:** Permisos insuficientes o antivirus bloqueando
+
+**Solución:**
+1. Desactive el antivirus temporalmente
+2. Ejecute el instalador como administrador
+3. Si persiste, cree la carpeta C:\FrigorificoSolemar\data manualmente
+
+### ERROR: "Cannot find module"
+
+**Causa:** Dependencias no instaladas correctamente
+
+**Solución:**
+1. Abra PowerShell
+2. Ejecute:
+   ```
+   cd C:\FrigorificoSolemar\app
+   bun install
+   ```
+
+### ERROR: "Access denied" o "Permiso denegado"
+
+**Causa:** Sin permisos de administrador
+
+**Solución:**
+1. Haga clic derecho en el archivo o carpeta
+2. Seleccione "Propiedades"
+3. Vaya a la pestaña "Seguridad"
+4. Haga clic en "Editar"
+5. Seleccione su usuario
+6. Marque "Control total"
+7. Haga clic en "Aceptar"
+
+### ERROR: "Puerto 3000 bloqueado por firewall"
+
+**Causa:** Firewall de Windows bloqueando la conexión
+
+**Solución:**
+1. Abra "Firewall de Windows Defender"
+2. Haga clic en "Permitir una aplicación a través del firewall"
+3. Haga clic en "Cambiar configuración"
+4. Haga clic en "Permitir otra aplicación"
+5. Busque y agregue: C:\FrigorificoSolemar\app\.next\server\app\page.js
+6. Marque las casillas "Privado" y "Público"
+7. Haga clic en "Aceptar"
+
+### ERROR: Pantalla blanca o en blanco en el navegador
+
+**Causa:** El sistema aún está cargando o error de JavaScript
+
+**Solución:**
+1. Espere 30 segundos
+2. Si persiste, presione F5 para recargar la página
+3. Si aún no funciona, detenga y reinicie el sistema
+
+---
+
+## CONTACTO Y SOPORTE
+
+Si los problemas persisten después de seguir esta guía:
+
+### ANTES DE CONTACTAR SOPORTE:
+1. Anote el mensaje de error exacto que aparece
+2. Tome capturas de pantalla del error
+3. Verifique su versión de Windows (Configuración > Sistema > Acerca de)
+4. Liste los pasos que intentó para resolver el problema
+
+### INFORMACION TECNICA DEL SISTEMA:
+- Puerto de la aplicación: 3000
+- Ubicación de datos: C:\FrigorificoSolemar\data\
+- Ubicación de respaldos: C:\FrigorificoSolemar\backups\
+- Ubicación de logs: C:\FrigorificoSolemar\logs\
+
+---
+
+## APENDICE: ARCHIVOS IMPORTANTES
+
+Después de la instalación, encontrará los siguientes archivos:
+
+| Archivo | Ubicacion | Funcion |
+|---------|-----------|---------|
+| iniciar.bat | C:\FrigorificoSolemar\ | Inicia el sistema |
+| detener.bat | C:\FrigorificoSolemar\ | Detiene el sistema |
+| respaldar.bat | C:\FrigorificoSolemar\ | Crea respaldo de datos |
+| desinstalar.bat | C:\FrigorificoSolemar\ | Desinstala el sistema |
+| frigorifico.db | C:\FrigorificoSolemar\data\ | Base de datos principal |
+| dev.log | C:\FrigorificoSolemar\app\ | Registro de errores |
+
+---
+
+## NOTAS FINALES
+
+- Mantenga esta guía accesible para referencia futura
+- Realice respaldos regularmente (se recomienda diariamente)
+- Anote sus credenciales en un lugar seguro
+- No comparta sus credenciales con personas no autorizadas
+
+**Version del documento:** 1.0.0
+**Fecha de actualización:** Marzo 2026
+**Compatible con:** Windows 10 (1809+), Windows 11
+
+---
+© 2026 Frigorifico Solemar - Sistema de Gestión Frigorífica

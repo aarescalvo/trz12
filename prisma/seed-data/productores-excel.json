@@ -1,0 +1,696 @@
+[
+  {
+    "nombre": "AGRO SERVICE S.A",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      94
+    ]
+  },
+  {
+    "nombre": "AGROPECUARIA DON MANUEL",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      48,
+      49
+    ]
+  },
+  {
+    "nombre": "AGROPECUARIA DON MANUEL S.A",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      152
+    ]
+  },
+  {
+    "nombre": "AGROPECUARIA DON MANUEL S.A.",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      22,
+      23,
+      36
+    ]
+  },
+  {
+    "nombre": "AGUIRREZABALA SILVINA VANESA",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      109
+    ]
+  },
+  {
+    "nombre": "ANSOLA CARLOS NORBERTO",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      85
+    ]
+  },
+  {
+    "nombre": "ARANEDA MARIO ALEJANDRO",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      40,
+      41,
+      79,
+      104,
+      129,
+      141
+    ]
+  },
+  {
+    "nombre": "ARMINDA SRL",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      56,
+      145
+    ]
+  },
+  {
+    "nombre": "BELLOCCHIO JUAN IGNACIO",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      133
+    ]
+  },
+  {
+    "nombre": "BENENTECHRISTIAN ALBERTO",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      86
+    ]
+  },
+  {
+    "nombre": "BERTIL GRAHN SOCIEDAD ANINIMA AGROP",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      47
+    ]
+  },
+  {
+    "nombre": "BERTIL GRAHN SOCIEDAD ANONIMA AGROP",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      35
+    ]
+  },
+  {
+    "nombre": "BONADE MARCELO JAVIER",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      64
+    ]
+  },
+  {
+    "nombre": "BONADE MARIO ANTONIO",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      58,
+      134,
+      158
+    ]
+  },
+  {
+    "nombre": "BONADE Marcelo Javier",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      111
+    ]
+  },
+  {
+    "nombre": "BOSQUE AMADO S.R.L",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      30,
+      39
+    ]
+  },
+  {
+    "nombre": "BOSQUE AMADO SRL",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      68,
+      76,
+      87,
+      100,
+      114,
+      128,
+      135,
+      142,
+      147,
+      155,
+      163,
+      169
+    ]
+  },
+  {
+    "nombre": "BOSQUE ANDINO S.A",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      95,
+      123
+    ]
+  },
+  {
+    "nombre": "BOSQUES AMADOS SRL",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      53
+    ]
+  },
+  {
+    "nombre": "BURTRE CRISTIAN BASILIO",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      93
+    ]
+  },
+  {
+    "nombre": "Bellocchio Juan Ignacio",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      59
+    ]
+  },
+  {
+    "nombre": "CABEZAS FACUNDO",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      137
+    ]
+  },
+  {
+    "nombre": "COLLICO GABRIEL DARIO",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      72
+    ]
+  },
+  {
+    "nombre": "DIETZELFACUNDO ROBERTO",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      103
+    ]
+  },
+  {
+    "nombre": "DOLORES PARRA S.A.",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      21
+    ]
+  },
+  {
+    "nombre": "Dietzel facundo Roberto",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      52
+    ]
+  },
+  {
+    "nombre": "EL REFUGIO SOCIEDAD EN COMANDITA",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      119
+    ]
+  },
+  {
+    "nombre": "ESTANCIA CHELFORO S.A",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      80
+    ]
+  },
+  {
+    "nombre": "FV AGROPECUARIA SRL",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      96,
+      132
+    ]
+  },
+  {
+    "nombre": "GALLARDO CARLOS DARIO",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      149,
+      165
+    ]
+  },
+  {
+    "nombre": "GRANJAS INTEGRADAS SANTA INES",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      113
+    ]
+  },
+  {
+    "nombre": "HERMANOS UNGESCHUCK",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      162
+    ]
+  },
+  {
+    "nombre": "JONAS ALAN MORGAN AARON",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      118
+    ]
+  },
+  {
+    "nombre": "KEDINGE ELSA OTILIA",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      60,
+      62
+    ]
+  },
+  {
+    "nombre": "KREITZ JUAN",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      148
+    ]
+  },
+  {
+    "nombre": "KREITZ JUAN EDUARDO",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      31,
+      54,
+      69,
+      156,
+      164
+    ]
+  },
+  {
+    "nombre": "KREITZJUAN EDUARDO",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      115
+    ]
+  },
+  {
+    "nombre": "LA MANADA S.A",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      136
+    ]
+  },
+  {
+    "nombre": "LA MASCOTA SRL",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      105
+    ]
+  },
+  {
+    "nombre": "LA TAPERITAS S.A.",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      27
+    ]
+  },
+  {
+    "nombre": "LAMAS MIGUEL",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      43
+    ]
+  },
+  {
+    "nombre": "LASTRA PATRICIO",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      168
+    ]
+  },
+  {
+    "nombre": "LASTRA PATRICIO RODENDO",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      20
+    ]
+  },
+  {
+    "nombre": "LASTRA PATRICIO ROSENDO",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      29,
+      37,
+      63,
+      65,
+      74,
+      75,
+      124,
+      125
+    ]
+  },
+  {
+    "nombre": "LEALI JULIAN ALBERTO",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      120
+    ]
+  },
+  {
+    "nombre": "LEDESMA ARIEL ALEJANDRO",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      42,
+      151
+    ]
+  },
+  {
+    "nombre": "LOGINPET SRL",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      19,
+      28,
+      38,
+      46,
+      61,
+      66,
+      84,
+      99,
+      110,
+      127,
+      146,
+      154,
+      161
+    ]
+  },
+  {
+    "nombre": "La Manada S.A",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      51
+    ]
+  },
+  {
+    "nombre": "MAIZALES DE LA PATAGONIA SRL",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      83
+    ]
+  },
+  {
+    "nombre": "MONEDERO ARMANDO DANIEL",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      32
+    ]
+  },
+  {
+    "nombre": "MONEDERO LEANDRO",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      153
+    ]
+  },
+  {
+    "nombre": "MONTE CRIDTALINA S.A",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      140
+    ]
+  },
+  {
+    "nombre": "Monedero Leandro",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      55
+    ]
+  },
+  {
+    "nombre": "OSORIO ANDREA CECILIA",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      73,
+      107
+    ]
+  },
+  {
+    "nombre": "OVIEDO GABRIEL ALEJANDRO",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      112
+    ]
+  },
+  {
+    "nombre": "QUIROGA JULIO HUGO",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      82
+    ]
+  },
+  {
+    "nombre": "RODRIGUEZ MARIO ISAIAS",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      34,
+      81,
+      91
+    ]
+  },
+  {
+    "nombre": "RUFFINI GABRIEL",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      70,
+      88,
+      157,
+      171,
+      172
+    ]
+  },
+  {
+    "nombre": "RUFFINI GABRIEL HORACIO",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      25,
+      78,
+      101,
+      130,
+      138,
+      143,
+      150,
+      166
+    ]
+  },
+  {
+    "nombre": "RUFFINI GABRIELHORACIO",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      117
+    ]
+  },
+  {
+    "nombre": "Ruffini Gabriel H",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      57
+    ]
+  },
+  {
+    "nombre": "SAN LEON SRL",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      126
+    ]
+  },
+  {
+    "nombre": "SARASOLA ESMIR",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      131
+    ]
+  },
+  {
+    "nombre": "SARASOLA ESMIR ANTONIO",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      24,
+      33,
+      90,
+      102,
+      116,
+      139,
+      159,
+      167
+    ]
+  },
+  {
+    "nombre": "SCHINDLER MARTIN",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      18,
+      98
+    ]
+  },
+  {
+    "nombre": "SEGATORI RAMIRO FRANCISCO",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      121
+    ]
+  },
+  {
+    "nombre": "SEIRA HECTOR",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      45,
+      71,
+      77,
+      92,
+      122
+    ]
+  },
+  {
+    "nombre": "STIER NICOLAS MARIA",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      106
+    ]
+  },
+  {
+    "nombre": "SUCESION DE LENZI ALDO ROBERTO",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      144
+    ]
+  },
+  {
+    "nombre": "TERNEROS DE LA PATAGONIA SRL",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      160
+    ]
+  },
+  {
+    "nombre": "TRANSPORTE DOLORES PARRA SA",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      50
+    ]
+  },
+  {
+    "nombre": "VICWNTY JORGE ALBERTO",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      44
+    ]
+  },
+  {
+    "nombre": "VILLA NORBERTO FABIAN",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      97,
+      170
+    ]
+  },
+  {
+    "nombre": "VINCENTY PEDRO JORGE",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      89
+    ]
+  },
+  {
+    "nombre": "YAMINUHE SRL",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      26
+    ]
+  },
+  {
+    "nombre": "ZUAIN ARIEL HERNAN",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      108
+    ]
+  },
+  {
+    "nombre": "ZUAIN FRANCISCO RODOLFO Y ZUAIN",
+    "tipo": "PRODUCTOR",
+    "activo": true,
+    "tropas": [
+      67
+    ]
+  }
+]

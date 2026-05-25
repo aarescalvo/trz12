@@ -1,0 +1,233 @@
+================================================================================
+        MANUAL DE CONFIGURACIÓN PARA PCs CLIENTE
+                Sistema Frigorífico Solemar
+================================================================================
+
+ÍNDICE
+------
+1. Requisitos de las PCs Cliente
+2. Acceso al Sistema
+3. Crear Acceso Directo en Escritorio
+4. Configuración del Navegador
+5. Impresoras
+6. Solución de Problemas
+
+================================================================================
+1. REQUISITOS DE LAS PCs CLIENTE
+================================================================================
+
+Hardware mínimo:
+- Procesador: Intel Core i3 o equivalente
+- Memoria RAM: 4 GB mínimo
+- Almacenamiento: 50 GB disponibles
+- Red: Conexión a la red local (Ethernet recomendado)
+- Pantalla: Resolución mínima 1366x768
+
+Sistema Operativo:
+- Windows 10 o Windows 11 (64 bits)
+- Navegador web actualizado (Chrome, Firefox, Edge)
+
+Conectividad:
+- Conexión a la red local donde está el servidor
+- Acceso al puerto 3000 del servidor
+
+================================================================================
+2. ACCESO AL SISTEMA
+================================================================================
+
+A) Obtener dirección del servidor:
+   - Pregunte al administrador del sistema la dirección IP del servidor
+   - Ejemplo: 192.168.1.100
+   - O si hay DNS configurado: solemar.local
+
+B) Acceder al sistema:
+   1. Abrir el navegador web (Chrome recomendado)
+   2. Escribir en la barra de direcciones:
+      http://192.168.1.100:3000
+      O si hay DNS:
+      http://solemar.local:3000
+   
+   3. Presionar Enter
+
+C) Iniciar sesión:
+   - Usuario: [proporcionado por el administrador]
+   - Contraseña: [proporcionado por el administrador]
+   - IMPORTANTE: Cambiar la contraseña en el primer acceso
+
+================================================================================
+3. CREAR ACCESO DIRECTO EN ESCRITORIO
+================================================================================
+
+MÉTODO 1 - Acceso directo clásico:
+   1. Hacer clic derecho en el escritorio
+   2. Seleccionar "Nuevo" > "Acceso directo"
+   3. En ubicación, escribir: http://192.168.1.100:3000
+   4. Hacer clic en "Siguiente"
+   5. Escribir nombre: "Sistema Frigorífico"
+   6. Hacer clic en "Finalizar"
+
+MÉTODO 2 - Con Chrome:
+   1. Abrir el sistema en Chrome
+   2. Hacer clic en el menú (tres puntos) esquina superior derecha
+   3. Seleccionar "Más herramientas" > "Crear acceso directo"
+   4. Marcar "Abrir como ventana"
+   5. Hacer clic en "Crear"
+
+MÉTODO 3 - Con Edge:
+   1. Abrir el sistema en Edge
+   2. Hacer clic en el menú (tres puntos) esquina superior derecha
+   3. Seleccionar "Aplicaciones" > "Instalar este sitio como aplicación"
+   4. Confirmar instalación
+
+================================================================================
+4. CONFIGURACIÓN DEL NAVEGADOR
+================================================================================
+
+A) Google Chrome (recomendado):
+   
+   Configuración de impresión:
+   1. Chrome > Configuración (chrome://settings)
+   2. Privacidad y seguridad > Configuración de sitios
+   3. PDF Documents > Descargar archivos PDF en lugar de abrirlos
+      (Desactivar para que los PDFs se abran en el navegador)
+   
+   Permitir ventanas emergentes:
+   1. Chrome > Configuración
+   2. Privacidad y seguridad > Configuración de sitios
+   3. Ventanas emergentes y redireccionamientos
+   4. Agregar: http://192.168.1.100:3000
+
+B) Mozilla Firefox:
+   
+   Configuración de impresión:
+   1. Firefox > Opciones
+   2. General > Aplicaciones
+   3. Tipo de contenido: PDF
+   4. Acción: Usar Vista de PDF de Firefox
+   
+   Permitir ventanas emergentes:
+   1. Firefox > Opciones
+   2. Privacidad y seguridad > Permisos
+   3. Ventanas emergentes > Excepciones
+   4. Agregar: http://192.168.1.100:3000
+
+C) Microsoft Edge:
+   
+   Configuración de impresión:
+   1. Edge > Configuración
+   2. Cookies y permisos del sitio
+   3. Documentos PDF > Cambiar la vista predeterminada
+   4. Seleccionar: Abrir archivos PDF en Edge
+
+================================================================================
+5. IMPRESORAS
+================================================================================
+
+A) Configurar impresora predeterminada:
+   1. Panel de Control > Dispositivos e Impresoras
+   2. Hacer clic derecho en la impresora deseada
+   3. Seleccionar "Establecer como impresora predeterminada"
+
+B) Impresoras de etiquetas (rótulos):
+   1. Instalar drivers de la impresora (Zebra, Brother, etc.)
+   2. Configurar tamaño de etiqueta:
+      - Tamaño común: 100mm x 50mm (rotulos grandes)
+      - Tamaño común: 60mm x 40mm (rótulos chicos)
+   3. En el sistema, ir a Configuración > Impresoras
+   4. Asignar la impresora correcta para cada tipo de rótulo
+
+C) Impresoras de tickets/hojas:
+   1. Configurar como impresora normal
+   2. Verificar tamaño de papel (A4 o Letter)
+
+D) Probar impresión:
+   1. En el sistema, ir a Configuración > Impresoras
+   2. Seleccionar "Imprimir página de prueba"
+
+================================================================================
+6. SOLUCIÓN DE PROBLEMAS
+================================================================================
+
+A) No puedo acceder al sistema:
+   
+   Verificar conexión de red:
+   1. Abrir Símbolo del sistema (cmd)
+   2. Escribir: ping 192.168.1.100
+   3. Si no responde, verificar cable de red o conexión WiFi
+   
+   Verificar que el servidor esté activo:
+   - Consultar con el administrador si el servidor está encendido
+   - Verificar que otros usuarios puedan acceder
+
+   Verificar firewall local:
+   - Windows Defender Firewall > Permitir una aplicación
+   - Agregar Chrome/Firefox/Edge si no está
+
+B) El sistema se ve mal o no funciona correctamente:
+   
+   Limpiar caché del navegador:
+   Chrome:
+   1. Ctrl + Shift + Delete
+   2. Seleccionar "Imágenes y archivos en caché"
+   3. Hacer clic en "Borrar datos"
+   
+   Firefox:
+   1. Ctrl + Shift + Delete
+   2. Seleccionar "Caché"
+   3. Hacer clic en "Borrar ahora"
+
+C) No puedo imprimir:
+   
+   Verificar impresora:
+   1. Panel de Control > Dispositivos e Impresoras
+   2. Verificar que la impresora no tenga errores
+   3. Verificar que tenga papel y tinta/térmica
+
+   Verificar configuración en el sistema:
+   1. Configuración > Impresoras
+   2. Verificar que la impresora esté configurada
+   
+   Probar impresión directa:
+   - Imprimir desde otra aplicación (Word, Bloc de notas)
+   - Si no imprime, el problema es de la impresora
+
+D) El sistema está lento:
+   
+   Cerrar pestañas innecesarias:
+   - Cada pestaña consume memoria
+   
+   Verificar conexión de red:
+   - Usar cable Ethernet en lugar de WiFi si es posible
+   
+   Limpiar navegador:
+   1. Cerrar pestañas innecesarias
+   2. Limpiar caché y cookies
+   3. Reiniciar navegador
+
+E) Olvidé mi contraseña:
+   - Contactar al administrador del sistema
+   - El administrador puede restablecer su contraseña
+
+F) Error de "Sesión expirada":
+   - Esto es normal por seguridad
+   - Vuelva a iniciar sesión
+   - Si ocurre frecuentemente, contactar al administrador
+
+================================================================================
+CONTACTOS
+================================================================================
+
+Soporte técnico: [Completar con datos del soporte]
+Administrador del sistema: [Completar con datos del administrador]
+
+================================================================================
+NOTAS IMPORTANTES
+================================================================================
+
+- Use siempre el botón "Cerrar Sesión" al terminar su trabajo
+- No comparta su usuario y contraseña con otras personas
+- Reporte cualquier problema o comportamiento extraño del sistema
+- Realice sus tareas en el módulo asignado según su rol
+- Si tiene dudas sobre una función, consulte al supervisor
+
+================================================================================

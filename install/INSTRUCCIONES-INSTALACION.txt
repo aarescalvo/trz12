@@ -1,0 +1,228 @@
+================================================================================
+         SISTEMA FRIGORÍFICO - SOLEMAR ALIMENTARIA v2.0
+              INSTRUCCIONES DE INSTALACIÓN
+================================================================================
+
+REQUISITOS DEL SISTEMA
+======================
+- Windows 11 (64 bits)
+- 4 GB RAM mínimo (8 GB recomendado)
+- 500 MB espacio en disco
+- Conexión a internet para primera instalación
+- Puerto 3000 disponible
+
+================================================================================
+INSTALACIÓN AUTOMÁTICA (Recomendado)
+================================================================================
+
+1. Extraiga el archivo ZIP en una carpeta temporal
+
+2. Abra PowerShell como Administrador:
+   - Presione tecla Windows + X
+   - Seleccione "Windows PowerShell (Administrador)" o "Terminal (Administrador)"
+
+3. Navegue a la carpeta extraída:
+   cd "C:\ruta\a\carpeta\extraida"
+
+4. Ejecute el instalador:
+   .\install-windows.ps1
+
+5. Siga las instrucciones en pantalla
+
+================================================================================
+INSTALACIÓN MANUAL
+================================================================================
+
+PASO 1: Instalar Bun Runtime
+-----------------------------
+Bun es el runtime de JavaScript (similar a Node.js pero más rápido)
+
+a) Abra PowerShell como Administrador
+
+b) Ejecute el siguiente comando:
+   Invoke-RestMethod https://bun.sh/install.ps1 | Invoke-Expression
+
+c) Cierre y vuelva a abrir PowerShell para que los cambios surtan efecto
+
+d) Verifique la instalación:
+   bun --version
+   (Debería mostrar v1.x.x)
+
+
+PASO 2: Preparar Directorio de Instalación
+-------------------------------------------
+a) Cree el directorio:
+   mkdir C:\Solemar\Frigorifico
+
+b) Copie todos los archivos del paquete a ese directorio
+
+
+PASO 3: Instalar Dependencias
+------------------------------
+a) Navegue al directorio:
+   cd C:\Solemar\Frigorifico
+
+b) Instale las dependencias:
+   bun install
+
+
+PASO 4: Configurar Base de Datos
+---------------------------------
+a) Cree el archivo .env en el directorio con el siguiente contenido:
+
+   DATABASE_URL="file:./frigorifico.db"
+   NEXT_PUBLIC_APP_NAME="Solemar Alimentaria"
+   NEXT_PUBLIC_APP_VERSION="2.0"
+
+b) Genere el cliente de base de datos:
+   bunx prisma generate
+
+c) Cree la estructura de la base de datos:
+   bunx prisma db push
+
+d) Poble la base de datos con datos iniciales:
+   bun run db:seed
+
+
+PASO 5: Iniciar el Sistema
+---------------------------
+a) Ejecute:
+   bun run dev
+
+b) El sistema estará disponible en: http://localhost:3000
+
+
+================================================================================
+CREDENCIALES DE ACCESO
+================================================================================
+
+ADMINISTRADOR
+-------------
+Usuario: admin
+Password: admin123
+PIN: 1234
+Permisos: Acceso completo a todos los módulos
+
+OPERADOR DE BALANZA
+-------------------
+Usuario: balanza
+Password: balanza123
+PIN: 1111
+Permisos: Pesaje de camiones, pesaje individual, movimiento de hacienda
+
+SUPERVISOR
+----------
+Usuario: supervisor
+Password: super123
+PIN: 2222
+Permisos: Pesaje, lista de faena, romaneo, menudencias, reportes
+
+================================================================================
+MÓDULOS DEL SISTEMA
+================================================================================
+
+CICLO I
+-------
+1. Pesaje Camiones     - Registro de ingresos y egresos de camiones
+2. Pesaje Individual   - Pesaje de cada animal
+3. Movimiento Hacienda - Gestión de corrales y movimientos
+4. Lista de Faena      - Animales programados para faena
+5. Ingreso a Cajón     - Asignación de garrones
+6. Romaneo             - Pesaje de medias reses e impresión de rótulos
+7. VB Romaneo          - Verificación y corrección de romaneos
+8. Expedición          - Gestión de despachos
+
+CICLO II
+--------
+9. Cuarteo             - División de medias en cuartos
+10. Ingreso Despostada - Control de ingresos a despostada
+11. Movimientos Desp.  - Movimientos internos de despostada
+12. Cortes Despostada  - Registro de cortes
+13. Empaque            - Gestión de empaques
+
+SUBPRODUCTOS
+------------
+14. Menudencias        - Procesamiento de menudencias
+15. Cueros             - Control de cueros
+16. Grasa              - Registro de grasa
+17. Desperdicios       - Control de desperdicios
+18. Fondo Digestor     - Registro de fondos de digestor
+
+REPORTES
+--------
+19. Stocks Corrales    - Existencias en corrales
+20. Stocks Cámaras     - Existencias en cámaras frigoríficas
+21. Planilla 01        - Generación de planilla oficial SENASA
+22. Rindes por Tropa   - Análisis de rendimiento
+23. Búsqueda Filtro    - Búsqueda global
+24. Reportes SENASA    - Informes para SENASA
+
+ADMINISTRACIÓN
+--------------
+25. Facturación        - Gestión de facturas
+26. Insumos            - Control de insumos
+27. Stocks Insumos     - Existencias de insumos
+
+CONFIGURACIÓN
+-------------
+28. Rótulos            - Configuración de rótulos
+29. Insumos            - Maestro de insumos
+30. Usuarios           - Usuarios de faena (matarifes)
+31. Operadores         - Operadores del sistema
+32. Productos          - Maestro de productos
+33. Y más...
+
+================================================================================
+SOLUCIÓN DE PROBLEMAS
+================================================================================
+
+ERROR: "bun no se reconoce como comando"
+----------------------------------------
+Solución: Cierre y vuelva a abrir PowerShell después de instalar Bun
+          O agregue Bun al PATH manualmente:
+          $env:Path += ";$env:USERPROFILE\.bun\bin"
+
+
+ERROR: "El puerto 3000 ya está en uso"
+--------------------------------------
+Solución: Cierre cualquier aplicación que use el puerto 3000
+          O cambie el puerto en el archivo .env:
+          PORT=3001
+
+
+ERROR: "Error de conexión a la base de datos"
+---------------------------------------------
+Solución: 
+1. Verifique que el archivo .env existe
+2. Ejecute: bunx prisma db push
+3. Si persiste, elimine el archivo frigorifico.db y ejecute:
+   bunx prisma db push
+   bun run db:seed
+
+
+ERROR: "Module not found"
+-------------------------
+Solución: Ejecute nuevamente:
+   bun install
+
+
+El sistema no carga en el navegador
+-----------------------------------
+Solución:
+1. Verifique que el servidor está corriendo (debe ver "Ready" en la consola)
+2. Intente acceder a http://127.0.0.1:3000
+3. Verifique que no hay un firewall bloqueando el puerto
+
+
+================================================================================
+SOPORTE TÉCNICO
+================================================================================
+
+Si tiene problemas con la instalación:
+1. Consulte este archivo de instrucciones
+2. Revise el archivo AI-PROMPT.txt para entender el sistema
+3. Revise el archivo FLUJO_COMPLETO_SISTEMA.md para entender los procesos
+
+================================================================================
+                     © 2024 Solemar Alimentaria
+================================================================================

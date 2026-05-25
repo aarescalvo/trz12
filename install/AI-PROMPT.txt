@@ -1,0 +1,264 @@
+================================================================================
+     SISTEMA FRIGORÍFICO - SOLEMAR ALIMENTARIA v2.0
+              DOCUMENTACIÓN PARA IA
+================================================================================
+
+DESCRIPCIÓN GENERAL
+===================
+Sistema integral de gestión para frigorífico que controla todo el proceso
+de faena de ganado bovino, desde la recepción hasta la expedición de productos.
+
+TECNOLOGÍAS
+===========
+- Framework: Next.js 16 con App Router
+- Runtime: Bun (NO Node.js)
+- Base de datos: SQLite con Prisma ORM
+- UI: React 19 + TypeScript + Tailwind CSS 4
+- Componentes: shadcn/ui (New York style)
+- Estado: React hooks (useState, useEffect)
+- Iconos: Lucide React
+
+================================================================================
+FLUJO PRINCIPAL DEL SISTEMA
+================================================================================
+
+1. PESAJE CAMIONES (Recepción)
+   - Registra ingreso de tropas de hacienda
+   - Peso bruto (camión + animales)
+   - Asigna corral disponible
+   - Crea animales individuales automáticamente
+
+2. MOVIMIENTO HACIENDA
+   - Mueve tropas entre corrales
+   - Valida capacidad de corrales
+   - Actualiza stock automáticamente
+
+3. PESAJE INDIVIDUAL
+   - Pesa cada animal por separado
+   - Permite corregir tipo de animal
+   - Compara declarado vs pesado
+
+4. LISTA DE FAENA
+   - Selecciona animales a faenar del día
+   - Agrupa por tropa y tipo
+   - Estado: ABIERTA → CERRADA
+
+5. INGRESO CAJÓN
+   - Asigna número de garrón correlativo
+   - Busca animal por código o número
+   - Permite garrones "sin identificar"
+
+6. ROMANEO (Pesaje de medias)
+   - Pesaje de media derecha primero
+   - Luego media izquierda
+   - Imprime 3 rótulos por media (A, T, D)
+   - Calcula rinde automáticamente
+   - Ingresa a cámara automáticamente
+
+7. VB FAENA (Verificación)
+   - Corrige asignaciones de garrones
+   - Intercambia garrones
+   - Corrige correlatividad
+
+8. EXPEDICIÓN
+   - Despacho de productos terminados
+   - Control de stock por cámara
+
+================================================================================
+ESTRUCTURA DE DATOS PRINCIPAL
+================================================================================
+
+TROPA
+-----
+- codigo: "B 2026 0001" (especie, año, número)
+- productor: Cliente que envía los animales
+- usuarioFaena: Cliente que faena (matarife)
+- cantidadCabezas: Total de animales
+- estado: RECIBIDO | EN_CORRAL | PESADO | FAENADO
+- pesoBruto, pesoTara, pesoNeto: Del camión
+- pesoTotalIndividual: Suma de pesaje individual
+
+ANIMAL
+------
+- tropaId: FK a Tropa
+- numero: Número dentro de la tropa (1, 2, 3...)
+- codigo: "B20260001-001"
+- tipoAnimal: NO | VA | VQ | NT | MEJ | TOR
+- pesoVivo: Peso individual
+- estado: RECIBIDO | PESADO | FAENADO | BAJA
+
+ASIGNACION GARRON
+-----------------
+- garron: Número correlativo diario (1, 2, 3...)
+- animalId: FK a Animal (puede ser null)
+- tieneMediaDer, tieneMediaIzq: Estado de pesaje
+- completado: Ambas medias pesadas
+
+ROMANEO
+-------
+- garron: Número de garrón
+- animalId: FK a Animal
+- pesoMediaDer, pesoMediaIzq: Pesos de medias
+- pesoTotal: Suma de ambas
+- rinde: % sobre peso vivo
+- tipificadorId: Quién tipificó
+- camaraId: Cámara de destino
+
+MEDIA RES
+---------
+- romaneoId: FK a Romaneo
+- lado: IZQUIERDA | DERECHA
+- peso: Peso de la media
+- codigo: Código de barras generado
+- estado: EN_CAMARA | DESPACHADA | CUARTEADA
+
+================================================================================
+PERMISOS DEL SISTEMA
+================================================================================
+
+Operador tiene los siguientes permisos (todos boolean):
+
+- puedePesajeCamiones     → Pesaje de camiones
+- puedePesajeIndividual   → Pesaje individual de animales
+- puedeMovimientoHacienda → Movimientos entre corrales
+- puedeListaFaena         → Gestión de lista de faena
+- puedeIngresoCajon       → Asignación de garrones
+- puedeRomaneo            → Pesaje de medias reses
+- puedeMenudencias        → Procesamiento de menudencias
+- puedeStock              → Gestión de stocks
+- puedeReportes           → Acceso a reportes
+- puedeCCIR               → Certificados CCIR
+- puedeFacturacion        → Módulo de facturación
+- puedeConfiguracion      → Configuración del sistema
+
+================================================================================
+MÓDULOS Y COMPONENTES
+================================================================================
+
+Ubicación: /src/components/
+
+MÓDULOS PRINCIPALES:
+- pesaje-camiones/        → Módulo de pesaje de camiones
+- pesaje-individual-module.tsx
+- movimiento-hacienda-module.tsx
+- lista-faena/
+- ingreso-cajon/
+- romaneo/
+- vb-faena/               → VB Romaneo
+
+MÓDULOS SUBPRODUCTOS:
+- menudencias/
+- cueros/
+- rendering/              → Grasa, Desperdicios, Fondo Digestor
+
+MÓDULOS REPORTES:
+- reportes/
+- planilla-01/
+- rindes-tropa.tsx
+- stocks-corrales/
+- stock-camaras/
+- busqueda-filtro/
+- reportes-senasa/
+
+MÓDULOS CONFIGURACIÓN:
+- configuracion/          → Config general
+- config-rotulos/
+- config-insumos/
+- config-usuarios/
+- config-operadores/
+- config-productos/
+- config-subproductos/
+- config-balanzas/
+- config-impresoras/
+- config-terminales/
+- config-condiciones-embalaje/
+- config-tipos-producto/
+- calidad-registro-usuarios/
+
+================================================================================
+APIS DISPONIBLES
+================================================================================
+
+Autenticación:
+- POST /api/auth          → Login (usuario/password o PIN)
+- GET  /api/auth          → Validar sesión
+- DELETE /api/auth        → Logout
+
+Datos Maestros:
+- GET/POST /api/clientes
+- GET/POST /api/transportistas
+- GET/POST /api/corrales
+- GET/POST /api/camaras
+- GET/POST /api/tipificadores
+- GET/POST /api/operadores
+
+Operaciones:
+- GET/POST /api/pesaje-camion
+- GET/POST /api/tropas
+- GET/POST /api/animales
+- GET/POST /api/lista-faena
+- GET/POST /api/garrones-asignados
+- GET/POST /api/romaneo/pesar
+- GET/POST /api/romaneos-dia
+
+Reportes:
+- GET /api/dashboard
+- GET /api/reportes
+- GET /api/planilla01
+
+================================================================================
+CÓDIGOS DE ANIMALES
+================================================================================
+
+TIPOS DE ANIMAL:
+- NO  → Novillo
+- VA  → Vaca
+- VQ  → Vaquillona
+- NT  → Novillito
+- MEJ → Mejorador
+- TOR → Toro
+
+ESPECIES:
+- BOVINO
+- EQUINO
+
+================================================================================
+CÓDIGOS DE ESTADO
+================================================================================
+
+Tropa:
+- RECIBIDO    → Recién ingresado, pendiente de tara
+- EN_CORRAL   → Con peso neto, en corral
+- PESADO      → Pesaje individual completo
+- FAENADO     → Faena completada
+
+Animal:
+- RECIBIDO    → Sin pesaje individual
+- PESADO      → Pesado individualmente
+- EN_FAENA    → En lista de faena
+- FAENADO     → Faena completada
+- BAJA        → Dado de baja
+
+Media Res:
+- EN_CAMARA   → En cámara frigorífica
+- DESPACHADA  → Despachada
+- CUARTEADA   → Dividida en cuartos
+
+================================================================================
+NOTAS IMPORTANTES PARA IA
+================================================================================
+
+1. NUNCA usar Node.js, siempre Bun
+2. NUNCA usar server actions, siempre API routes
+3. NUNMA modificar package.json para agregar dependencias sin verificar
+4. Los permisos se verifican tanto en frontend como en backend
+5. Los códigos de tropa son: "B 2026 0001" (con espacios)
+6. Los códigos de animal son: "B20260001-001" (sin espacios)
+7. Los garrones son correlativos DIARIOS (reinician cada día en 1)
+8. El orden de pesaje en romaneo es: DERECHA primero, IZQUIERDA después
+9. Se imprimen 3 rótulos por media: A (Anca), T (Trapo), D (Delantero)
+10. La base de datos es SQLite, archivo en prisma/frigorifico.db
+
+================================================================================
+                     © 2024 Solemar Alimentaria
+================================================================================

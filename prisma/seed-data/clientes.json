@@ -1,0 +1,621 @@
+[
+  {
+    "cuit": "30-70777069-0",
+    "nombre": "BOSQUE AMADO SRL",
+    "esProductor": true,
+    "esUsuarioFaena": true,
+    "activo": true
+  },
+  {
+    "cuit": "30-70950784-9",
+    "nombre": "DISTRIBUIDORA DE LA PATAGONIA SRL",
+    "esProductor": false,
+    "esUsuarioFaena": true,
+    "activo": true
+  },
+  {
+    "cuit": "30-71547553-3",
+    "nombre": "DOS DE FIERRO S.A",
+    "esProductor": false,
+    "esUsuarioFaena": true,
+    "activo": true
+  },
+  {
+    "cuit": "20-13671821-6",
+    "nombre": "FERREYRA RUBEN",
+    "esProductor": false,
+    "esUsuarioFaena": true,
+    "activo": true
+  },
+  {
+    "id": "cli-004b",
+    "nombre": "FERREYRA RUBEN",
+    "cuit": null,
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": false,
+    "esUsuarioFaena": true
+  },
+  {
+    "cuit": "23-33532135-9",
+    "nombre": "FERREYRA MARTIN",
+    "esProductor": false,
+    "esUsuarioFaena": true,
+    "activo": true
+  },
+  {
+    "cuit": "30-71865346-7",
+    "nombre": "FRIGORIFICO DE LA PATAGONIA SRL",
+    "esProductor": false,
+    "esUsuarioFaena": true,
+    "activo": true
+  },
+  {
+    "cuit": "30-71642675-7",
+    "nombre": "GANADERA NORTE NEUQUINO SAS",
+    "esProductor": false,
+    "esUsuarioFaena": true,
+    "activo": true
+  },
+  {
+    "cuit": "20-25006786-1",
+    "nombre": "LASAGNO JORGE ALBERTO",
+    "esProductor": false,
+    "esUsuarioFaena": true,
+    "activo": true
+  },
+  {
+    "cuit": "30-71632527-6",
+    "nombre": "MAIZALES DE LA PATAGONIA SRL",
+    "esProductor": true,
+    "esUsuarioFaena": true,
+    "activo": true
+  },
+  {
+    "cuit": "20-39649862-7",
+    "nombre": "MORAGA MAXIMILIANO",
+    "esProductor": false,
+    "esUsuarioFaena": true,
+    "activo": true
+  },
+  {
+    "cuit": "30-71649032-3",
+    "nombre": "MUCA S.A.S",
+    "esProductor": false,
+    "esUsuarioFaena": true,
+    "activo": true
+  },
+  {
+    "cuit": "20-40324354-0",
+    "nombre": "PETERSEN AGUSTIN ALEJANDRO",
+    "esProductor": false,
+    "esUsuarioFaena": true,
+    "activo": true
+  },
+  {
+    "cuit": "20-40321341-2",
+    "nombre": "RUFFINI AGUSTIN",
+    "esProductor": false,
+    "esUsuarioFaena": true,
+    "activo": true
+  },
+  {
+    "cuit": "27-29287814-7",
+    "nombre": "FERREYRA PAOLA ANDREA",
+    "esProductor": false,
+    "esUsuarioFaena": true,
+    "activo": true
+  },
+  {
+    "cuit": "20-05519189-2",
+    "nombre": "KREITZ JUAN CARLOS",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "20-07303372-2",
+    "nombre": "SUCESION DE LENZI ALDO R.",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "20-07399359-9",
+    "nombre": "SZLESZYNSKI CARLOS ALBERTO",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "20-08210169-2",
+    "nombre": "LAMA MIGUEL ANGEL",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "20-10595415-9",
+    "nombre": "ANSOLA CARLOS NORBERTO",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "20-11375501-7",
+    "nombre": "VINCENTY PEDRO JORGE",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "20-11375550-7",
+    "nombre": "VINCENTY PEDRO JORGE",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "20-11777707-4",
+    "nombre": "SEIRA HECTOR",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "20-12141560-8",
+    "nombre": "ZUAIN ARIEL HERNAN",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "20-12684043-9",
+    "nombre": "VINCENTY JORGE A.",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "20-13251771-2",
+    "nombre": "BONADE MARIO ANTONIO",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "20-13671821-8",
+    "nombre": "FERREYRA RUBEN",
+    "esProductor": false,
+    "esUsuarioFaena": true,
+    "activo": true
+  },
+  {
+    "cuit": "20-17290566-9",
+    "nombre": "SARASOLA ESMIR ANTONIO",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "20-21388428-0",
+    "nombre": "SORBELLINI EDUARDO CESAR",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "20-21517858-8",
+    "nombre": "RUFFINI GABRIEL HORACIO",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "20-21811316-9",
+    "nombre": "SCHINDLER MARTIN",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "20-22943281-9",
+    "nombre": "LOPEZ ROBERTO ANIBAL",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "20-23329350-5",
+    "nombre": "CABEZAS FACUNDO",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "20-23571495-8",
+    "nombre": "BURTRE CRISTIAN BASILIO",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "20-23580885-8",
+    "nombre": "OVIEDO GABRIEL ALEJANDRO",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "20-23680826-3",
+    "nombre": "ARANEDA MARIO ALEJANDRO",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "20-23856795-6",
+    "nombre": "COLLINO GABRIEL DARIO",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "20-23880826-3",
+    "nombre": "ARANEDA MARIO ALEJANDRO",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "20-25269954-7",
+    "nombre": "BENENTE CHRISTIAN ALBERTO",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "20-26663896-6",
+    "nombre": "SEGATORI RAMIRO",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "20-27965919-9",
+    "nombre": "KREITZ JUAN EDUARDO",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "20-29191015-8",
+    "nombre": "MONEDERO ARMANDO DANIEL",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "20-29456178-2",
+    "nombre": "LEALI JUAN ALBERTO",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "20-29760961-1",
+    "nombre": "BONADE MARCELO JAVIER",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "20-30951192-2",
+    "nombre": "VILLA NORBERTO FABIAN",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "20-33174254-7",
+    "nombre": "STIER NICOLAS MARIA",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "20-33184755-1",
+    "nombre": "JONES ALAN MORGAN AARON",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "20-33379818-3",
+    "nombre": "DIETZEL FACUNDO ROBERTO",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "20-33621523-5",
+    "nombre": "QUIROGA JULIO HUGO",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "20-33920177-4",
+    "nombre": "LEDESMA ARIEL ALEJANDRO",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "20-43372396-2",
+    "nombre": "TASSILE JUAN BLAS",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "23-08212661-9",
+    "nombre": "RODRIGUEZ MARIO ISAIAS",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "23-20856751-9",
+    "nombre": "ROMARIZ GUSTAVO ANDRES",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "23-25405120-9",
+    "nombre": "LASTRA PATRICIO ROSENDO",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "23-25465981-9",
+    "nombre": "GALLARDO CARLOS DARIO",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "23-31977901-9",
+    "nombre": "MONEDERO LEANDRO",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "23-34726694-9",
+    "nombre": "BELLOCCHIO JUAN IGNACIO",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "27-10749548-2",
+    "nombre": "KEDING ELSA OTILIA",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "27-27432075-9",
+    "nombre": "OSORIO ANDREA CECILIA",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "27-28559990-9",
+    "nombre": "AGUIRREZABALA SILVANA",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "27-31149835-0",
+    "nombre": "KREITZ ALEJANDRA MARIEL",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "30-52732728-4",
+    "nombre": "BERTIL GRAHN S.A.A",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "30-56980444-9",
+    "nombre": "EL REFUGIO SOCIEDAD EN COMANDITA",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "30-61537464-0",
+    "nombre": "LAS TAPERITAS S.A",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "30-64097516-0",
+    "nombre": "LA MANADA S.A",
+    "esProductor": true,
+    "esUsuarioFaena": true,
+    "activo": true
+  },
+  {
+    "cuit": "30-69725524-5",
+    "nombre": "BOSQUE AMADO SRL",
+    "esProductor": true,
+    "esUsuarioFaena": true,
+    "activo": true
+  },
+  {
+    "cuit": "30-70746390-9",
+    "nombre": "AGROPECUARIA DON MANUEL S.A",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "30-70749828-1",
+    "nombre": "AGROSERVICE S.A",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "30-70816238-4",
+    "nombre": "MONTE CRISTALINA S.A",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "30-70825920-5",
+    "nombre": "TRANSPORTES DOLORES PARRA S.A",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "30-70898735-9",
+    "nombre": "YAMINUHE SRL",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "30-71031818-9",
+    "nombre": "TERNEROS DE LA PATAGONIA SRL",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "30-71045474-0",
+    "nombre": "GRANJAS INTEGRADAS SANTA INES",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "30-71052720-9",
+    "nombre": "LONGIPET SRL",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "30-71166656-3",
+    "nombre": "ARMINDA SRL",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "30-71166658-3",
+    "nombre": "ARMINDA SRL",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "30-71220201-3",
+    "nombre": "LA MASCOTA SRL",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "30-71357700-2",
+    "nombre": "SAN LEON SRL",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "30-71412285-2",
+    "nombre": "ESTANCIA CHELFORO S.A",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "30-71570285-8",
+    "nombre": "FV AGROPECUARIA SRL",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "30-71627303-9",
+    "nombre": "ZUAIN FRANCISCO RODOLFO",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "30-71632257-9",
+    "nombre": "FRIGVIRO SAS",
+    "esProductor": false,
+    "esUsuarioFaena": true,
+    "activo": true
+  },
+  {
+    "cuit": "30-71648032-3",
+    "nombre": "MUCA S.A.S",
+    "esProductor": false,
+    "esUsuarioFaena": true,
+    "activo": true
+  },
+  {
+    "cuit": "30-71668993-6",
+    "nombre": "LM CONSIGNATARIA S.A.S",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "30-71691745-9",
+    "nombre": "HERMANOS UNGESCHUCK",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "30-71815784-2",
+    "nombre": "CALDERON E HIJOS S.A.S",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "30-71853424-7",
+    "nombre": "SUR BEEF S.A.S (EN FORMACION)",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  },
+  {
+    "cuit": "33-63082153-9",
+    "nombre": "ESTANCIA NUEVA AURORA S.A",
+    "esProductor": true,
+    "esUsuarioFaena": false,
+    "activo": true
+  }
+]

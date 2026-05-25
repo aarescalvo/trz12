@@ -1,0 +1,94 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env
+.env.local
+.env.production
+.env.development
+!.env.example
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+local-*
+.claude
+.z-ai-config
+dev.log
+test
+prompt
+
+server.log
+# Skills directory
+/skills/
+
+# Scripts output
+.zscripts/*.log
+.zscripts/*.pid
+.zscripts/*.out.log
+
+# Database files (development)
+db/*.db
+db/*.backup
+prisma/*.db
+
+# Lockfiles (project uses bun)
+package-lock.json
+
+# Simulation scripts and logs
+simulacion_*.sh
+sim_*.sh
+sim_final.sh
+simulacion_*.log
+simulacion_*.txt
+simulacion_resultados.md
+
+# Seed/simulation API routes (security)
+src/app/api/seed-simulacion/
+src/app/api/seed-tropas/
+
+# Backups (large files, should not be in repo)
+backups/
+*.tar.gz
+*.zip
+
+# Upload files (user uploads, large files)
+/upload/
+# Pero permitir la carpeta upload del printer-bridge
+!mini-services/printer-bridge/python/upload/
+
+# Analysis/temp files from audits
+*-analysis.txt
+test_results.txt

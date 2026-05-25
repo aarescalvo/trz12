@@ -1,0 +1,341 @@
+================================================================================
+                    SISTEMA DE GESTION FRIGORIFICA - TRZ5 v3.17.0
+                         GUIA DE INSTALACION PASO A PASO
+================================================================================
+
+Este documento explica detalladamente como instalar el sistema desde cero,
+tanto en desarrollo como en produccion.
+
+================================================================================
+                              REQUISITOS PREVIOS
+================================================================================
+
+Antes de comenzar, asegurese de tener:
+
+1. UNA COMPUTADORA CON:
+   - Windows 10/11, macOS 10.15+, o Linux (Ubuntu 20.04+)
+   - Al menos 4 GB de RAM (8 GB recomendado)
+   - 10 GB de espacio libre en disco
+   - Conexiin a internet
+
+2. PARA PRODUCCION NECESITA ADEMAS:
+   - PostgreSQL 16+ instalado
+   - IP fija en la red local
+   - 8 GB RAM (16 GB recomendado)
+
+================================================================================
+                          PASO 1: INSTALAR BUN
+================================================================================
+
+Bun es el motor que ejecuta el sistema. Sin el, nada funcionara.
+
+EN WINDOWS:
+----------
+1. Abra PowerShell como Administrador
+   - Haga clic derecho en el boton Inicio
+   - Seleccione "Windows PowerShell (Admin)" o "Terminal (Admin)"
+
+2. Ejecute este comando:
+   powershell -c "irm bun.sh/install.ps1 | iex"
+
+3. Espere a que termine la instalacion (1-2 minutos)
+
+4. Cierre y vuelva a abrir PowerShell para que los cambios surtan efecto
+
+EN MACOS:
+---------
+1. Abra la aplicacion "Terminal" (esta en Aplicaciones > Utilidades)
+
+2. Ejecute este comando:
+   curl -fsSL https://bun.sh/install | bash
+
+3. Espere a que termine (1-2 minutos)
+
+4. Ejecute para actualizar:
+   source ~/.bashrc
+   (O cierre y vuelva a abrir Terminal)
+
+EN LINUX (UBUNTU):
+------------------
+1. Abra una terminal (Ctrl+Alt+T)
+
+2. Ejecute este comando:
+   curl -fsSL https://bun.sh/install | bash
+
+3. Actualice con:
+   source ~/.bashrc
+
+VERIFICACION:
+-------------
+Para verificar que Bun se instalo correctamente, ejecute:
+   bun --version
+
+================================================================================
+                       PASO 2: DESCARGAR EL PROYECTO
+================================================================================
+
+OPCION A: CLONAR DESDE GITHUB (RECOMENDADO)
+-------------------------------------------
+1. Abra una terminal/PowerShell
+
+2. Vaya a la carpeta donde quiere instalar:
+   cd C:\    (Windows)
+   cd ~      (Mac/Linux)
+
+3. Clone el proyecto:
+   git clone https://github.com/aarescalvo/trz5.git
+
+4. Entre a la carpeta:
+   cd trz5
+
+OPCION B: DESCARGAR ZIP
+-----------------------
+1. Vaya a: https://github.com/aarescalvo/trz5
+
+2. Haga clic en el boton verde "Code"
+
+3. Seleccione "Download ZIP"
+
+4. Descomprima el archivo
+
+5. Abra terminal/PowerShell y vaya a esa carpeta:
+   cd ruta/a/la/carpeta/trz5
+
+================================================================================
+                       PASO 3: INSTALAR DEPENDENCIAS
+================================================================================
+
+Este paso descarga todos los componentes necesarios.
+
+1. Asegurese de estar en la carpeta del proyecto (paso anterior)
+
+2. Ejecute:
+   bun install
+
+3. Espere a que termine (2-5 minutos dependiendo de su internet)
+
+NOTA: Si ve algun error, intente ejecutar nuevamente:
+   bun install --force
+
+================================================================================
+                       PASO 4: CONFIGURAR BASE DE DATOS
+================================================================================
+
+--- DESARROLLO (SQLite) ---
+
+1. Configure el archivo .env:
+   copy .env.example .env    (Windows)
+   cp .env.example .env      (Mac/Linux)
+
+2. Cree las tablas ejecutando:
+   bun run db:generate
+   bun run db:push
+
+3. Cargue los datos iniciales:
+   bun run db:seed
+
+--- PRODUCCION (PostgreSQL) ---
+
+1. Instale PostgreSQL 16 desde https://www.postgresql.org/download/
+
+2. Cree la base de datos:
+   - Abra pgAdmin o SQL Shell (psql)
+   - Ejecute: CREATE DATABASE trz5;
+
+3. Configure .env:
+   copy .env.example .env    (Windows)
+   cp .env.example .env      (Mac/Linux)
+
+4. Edite .env con sus datos de PostgreSQL:
+   DATABASE_URL="postgresql://postgres:TU_PASSWORD@localhost:5432/trz5"
+
+5. Genere cliente Prisma y cree tablas:
+   bun run db:generate
+   bun run db:push
+
+6. Cargue datos iniciales:
+   bun run db:seed
+
+================================================================================
+                       PASO 5: INICIAR EL SISTEMA
+================================================================================
+
+El sistema esta listo para usarse!
+
+MODO DESARROLLO:
+---------------
+1. Ejecute:
+   bun run dev
+
+2. Espere a ver el mensaje:
+   - Ready in XXXms on http://localhost:3000
+
+3. Abra su navegador web y vaya a:
+   http://localhost:3000
+
+MODO PRODUCCION:
+----------------
+1. Compile el sistema:
+   bun run build
+
+2. Inicie el servidor:
+   npx next start
+
+3. Abra navegador en: http://localhost:3000
+
+NOTA WINDOWS: Puede usar los scripts .bat incluidos:
+   - Doble click en "iniciar-servidor.bat" para desarrollo
+   - Para produccion: "detener-servidor.bat", luego ejecutar
+     "bun run build" y "npx next start"
+
+================================================================================
+                       CREDENCIALES DE ACCESO
+================================================================================
+
+Use estas credenciales para ingresar:
+
++-------------+------------+------+---------------+
+|  Usuario    | Contrasena | PIN  |     Rol       |
++-------------+------------+------+---------------+
+|  admin      | admin123   | 1234 | Administrador |
+|  supervisor | super123   | 2222 | Supervisor    |
+|  balanza    | balanza123 | 1111 | Operador      |
++-------------+------------+------+---------------+
+
+IMPORTANTE: Cambie estas contrasenas en Produccion:
+   1. Ingrese como admin
+   2. Vaya a Configuracion > Operadores
+   3. Cambie la contrasena de cada usuario
+
+================================================================================
+                       ACCESO DESDE OTRAS PCs
+================================================================================
+
+Para que otras computadoras de la red accedan al sistema:
+
+1. Conozca la IP del servidor:
+   ipconfig          (Windows - buscar "IPv4")
+   ifconfig          (Mac/Linux)
+
+2. Desde las PCs cliente, abrir navegador:
+   http://192.168.1.100:3000   (reemplazar por la IP real)
+
+3. Si no responde, abrir el puerto en el firewall:
+   netsh advfirewall firewall add rule name="TRZ5" dir=in action=allow protocol=TCP localport=3000
+   (Windows PowerShell como Administrador)
+
+================================================================================
+                       ACTUALIZACIONES
+================================================================================
+
+Para actualizar a la ultima version:
+
+1. Detenga el servidor (Ctrl+C en la terminal)
+
+2. Descargue los cambios:
+   git pull origin master
+
+3. Actualice dependencias:
+   bun install
+
+4. Actualice base de datos:
+   bun run db:generate
+   bun run db:push
+
+5. Recargue datos iniciales (solo si es necesario):
+   bun run db:seed
+
+6. Reinicie el sistema:
+   bun run dev          (desarrollo)
+   bun run build && npx next start   (produccion)
+
+EN WINDOWS CON SCRIPTS:
+   - Doble click en "actualizar-sistema.bat"
+   - O doble click en "reiniciar-actualizado.bat" (para + reinicio automatico)
+
+================================================================================
+                       RESPALDOS Y BACKUP
+================================================================================
+
+BACKUP MANUAL (PostgreSQL):
+---------------------------
+1. Desde terminal:
+   pg_dump -U postgres -d trz5 -F c -f backup_20260422.backup
+
+2. Para restaurar:
+   pg_restore -U postgres -d trz5 backup_20260422.backup
+
+CON SCRIPT .BAT (Windows):
+-------------------------
+- Doble click en "backup-sistema.bat"
+- Los backups se guardan en la carpeta backups/
+- Formato: backup_YYYY-MM-DD_HH-MM_vX.X.X.sql
+
+DESDE EL SISTEMA (navegador):
+-----------------------------
+1. Ingrese como admin
+2. Vaya a Configuracion > Sistema > Backup
+3. Puede crear y restaurar backups desde alli
+
+================================================================================
+                       SOLUCION DE PROBLEMAS
+================================================================================
+
+PROBLEMA: "bun no se reconoce como comando"
+SOLUCION: Cierre y vuelva a abrir la terminal/PowerShell
+
+PROBLEMA: "Cannot find module"
+SOLUCION: Ejecute:
+   rm -rf node_modules      (Mac/Linux)
+   rmdir /s /q node_modules (Windows)
+   bun install
+
+PROBLEMA: "Port 3000 already in use"
+SOLUCION: Otro programa usa el puerto 3000.
+   - Windows: netstat -ano | findstr :3000, luego taskkill /PID <numero>
+   - Mac/Linux: lsof -i :3000, luego kill -9 <PID>
+
+PROBLEMA: Pantalla en blanco
+SOLUCION:
+   rm -rf .next      (Mac/Linux)
+   rmdir /s /q .next (Windows)
+   bun run dev       (desarrollo) o bun run build (produccion)
+
+PROBLEMA: Error de conexion a base de datos
+SOLUCION:
+   1. Verificar que PostgreSQL este corriendo
+   2. Verificar que el archivo .env tenga DATABASE_URL correcto
+   3. Probar conexion: psql -U postgres -d trz5
+
+================================================================================
+                       INFORMACION DEL SISTEMA
+================================================================================
+
+VERSION: 3.17.0
+REPOSITORIO: https://github.com/aarescalvo/trz5
+RAMA: master
+
+ESTRUCTURA DE CARPETAS:
+-----------------------
+trz5/
++-- prisma/              # Esquema de base de datos (87+ modelos)
++-- src/
+|   +-- app/             # Paginas y APIs (~314 endpoints)
+|   +-- components/      # Componentes de interfaz
+|   +-- lib/             # Utilidades (db, auth, cache, logger, etc.)
+|   +-- stores/          # Estado global (Zustand)
+|   +-- modules/         # Modulos de dominio (facturacion, trazabilidad)
+|   +-- types/           # Tipos TypeScript
++-- public/              # Archivos estaticos (logo, etc.)
++-- docs/                # Documentacion adicional
++-- backups/             # Backups de base de datos
++-- scripts/             # Scripts de utilidad
+
+PUERTO DEL SERVIDOR:
+-------------------
+El sistema usa el puerto 3000 por defecto.
+Para cambiarlo, edite la seccion "dev" en package.json.
+
+================================================================================
+                           FIN DEL DOCUMENTO
+================================================================================

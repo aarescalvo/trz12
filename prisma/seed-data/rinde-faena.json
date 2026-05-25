@@ -1,0 +1,638 @@
+[
+  {
+    "tropaNumero": 1,
+    "fechaFaena": "2026-01-02",
+    "cantidadCabezas": 15,
+    "kgEntrada": 5052.0
+  },
+  {
+    "tropaNumero": 2,
+    "fechaFaena": "2026-01-02",
+    "cantidadCabezas": 43,
+    "kgEntrada": 16831.0
+  },
+  {
+    "tropaNumero": 3,
+    "fechaFaena": "2026-01-05",
+    "cantidadCabezas": 40,
+    "kgEntrada": 14972.0
+  },
+  {
+    "tropaNumero": 4,
+    "fechaFaena": "2026-01-05",
+    "cantidadCabezas": 25,
+    "kgEntrada": 8989.0
+  },
+  {
+    "tropaNumero": 5,
+    "fechaFaena": "2026-01-05",
+    "cantidadCabezas": 30,
+    "kgEntrada": 11530.0
+  },
+  {
+    "tropaNumero": 6,
+    "fechaFaena": "2026-01-06",
+    "cantidadCabezas": 15,
+    "kgEntrada": 5216.0
+  },
+  {
+    "tropaNumero": 7,
+    "fechaFaena": "2026-01-06",
+    "cantidadCabezas": 35,
+    "kgEntrada": 17870.0
+  },
+  {
+    "tropaNumero": 8,
+    "fechaFaena": "2026-01-06",
+    "cantidadCabezas": 5,
+    "kgEntrada": 2714.0
+  },
+  {
+    "tropaNumero": 9,
+    "fechaFaena": "2026-01-06",
+    "cantidadCabezas": 10,
+    "kgEntrada": 4777.0
+  },
+  {
+    "tropaNumero": 10,
+    "fechaFaena": "2026-01-06",
+    "cantidadCabezas": 15,
+    "kgEntrada": 6180.0
+  },
+  {
+    "tropaNumero": 11,
+    "fechaFaena": "2026-01-07",
+    "cantidadCabezas": 20,
+    "kgEntrada": 6150.0
+  },
+  {
+    "tropaNumero": 12,
+    "fechaFaena": "2026-01-07",
+    "cantidadCabezas": 3,
+    "kgEntrada": 825.0
+  },
+  {
+    "tropaNumero": 13,
+    "fechaFaena": "2026-01-07",
+    "cantidadCabezas": 40,
+    "kgEntrada": 16040.0
+  },
+  {
+    "tropaNumero": 14,
+    "fechaFaena": "2026-01-08",
+    "cantidadCabezas": 35,
+    "kgEntrada": 10198.0
+  },
+  {
+    "tropaNumero": 15,
+    "fechaFaena": "2026-01-09",
+    "cantidadCabezas": 46,
+    "kgEntrada": 16054.0
+  },
+  {
+    "tropaNumero": 16,
+    "fechaFaena": "2026-01-09",
+    "cantidadCabezas": 15,
+    "kgEntrada": 6402.0
+  },
+  {
+    "tropaNumero": 17,
+    "fechaFaena": "2026-01-09",
+    "cantidadCabezas": 17,
+    "kgEntrada": 6546.0
+  },
+  {
+    "tropaNumero": 18,
+    "fechaFaena": "2026-01-12",
+    "cantidadCabezas": 43,
+    "kgEntrada": 15144.0
+  },
+  {
+    "tropaNumero": 19,
+    "fechaFaena": "2026-01-12",
+    "cantidadCabezas": 25,
+    "kgEntrada": 9054.0
+  },
+  {
+    "tropaNumero": 20,
+    "fechaFaena": "2026-01-12",
+    "cantidadCabezas": 15,
+    "kgEntrada": 4722.0
+  },
+  {
+    "tropaNumero": 21,
+    "fechaFaena": "2026-01-13",
+    "cantidadCabezas": 8,
+    "kgEntrada": 3551.0
+  },
+  {
+    "tropaNumero": 22,
+    "fechaFaena": "2026-01-13",
+    "cantidadCabezas": 7,
+    "kgEntrada": 3139.0
+  },
+  {
+    "tropaNumero": 23,
+    "fechaFaena": "2026-01-13",
+    "cantidadCabezas": 5,
+    "kgEntrada": 3736.0
+  },
+  {
+    "tropaNumero": 24,
+    "fechaFaena": "2026-01-14",
+    "cantidadCabezas": 30,
+    "kgEntrada": 10227.0
+  },
+  {
+    "tropaNumero": 25,
+    "fechaFaena": "2026-01-14",
+    "cantidadCabezas": 6,
+    "kgEntrada": 1839.0
+  },
+  {
+    "tropaNumero": 26,
+    "fechaFaena": "2026-01-16",
+    "cantidadCabezas": 50,
+    "kgEntrada": 20868.0
+  },
+  {
+    "tropaNumero": 27,
+    "fechaFaena": "2026-01-19",
+    "cantidadCabezas": 40,
+    "kgEntrada": 16159.0
+  },
+  {
+    "tropaNumero": 28,
+    "fechaFaena": "2026-01-19",
+    "cantidadCabezas": 26,
+    "kgEntrada": 9452.0
+  },
+  {
+    "tropaNumero": 29,
+    "fechaFaena": "2026-01-19",
+    "cantidadCabezas": 15,
+    "kgEntrada": 5044.0
+  },
+  {
+    "tropaNumero": 30,
+    "fechaFaena": "2026-01-20",
+    "cantidadCabezas": 1,
+    "kgEntrada": 356.0
+  },
+  {
+    "tropaNumero": 30,
+    "fechaFaena": "2026-01-21",
+    "cantidadCabezas": 17,
+    "kgEntrada": 6343.0
+  },
+  {
+    "tropaNumero": 31,
+    "fechaFaena": "2026-01-20",
+    "cantidadCabezas": 50,
+    "kgEntrada": 24991.0
+  },
+  {
+    "tropaNumero": 32,
+    "fechaFaena": "2026-01-22",
+    "cantidadCabezas": 8,
+    "kgEntrada": 2803.0
+  },
+  {
+    "tropaNumero": 33,
+    "fechaFaena": "2026-01-22",
+    "cantidadCabezas": 20,
+    "kgEntrada": 7197.0
+  },
+  {
+    "tropaNumero": 34,
+    "fechaFaena": "2026-01-23",
+    "cantidadCabezas": 15,
+    "kgEntrada": 5823.0
+  },
+  {
+    "tropaNumero": 35,
+    "fechaFaena": "2026-01-23",
+    "cantidadCabezas": 13,
+    "kgEntrada": 5332.0
+  },
+  {
+    "tropaNumero": 36,
+    "fechaFaena": "2026-01-23",
+    "cantidadCabezas": 15,
+    "kgEntrada": 7438.0
+  },
+  {
+    "tropaNumero": 37,
+    "fechaFaena": "2026-01-26",
+    "cantidadCabezas": 15,
+    "kgEntrada": 4501.0
+  },
+  {
+    "tropaNumero": 38,
+    "fechaFaena": "2026-01-26",
+    "cantidadCabezas": 26,
+    "kgEntrada": 9703.0
+  },
+  {
+    "tropaNumero": 39,
+    "fechaFaena": "2026-01-27",
+    "cantidadCabezas": 18,
+    "kgEntrada": 6853.0
+  },
+  {
+    "tropaNumero": 40,
+    "fechaFaena": "2026-01-27",
+    "cantidadCabezas": 31,
+    "kgEntrada": 11492.0
+  },
+  {
+    "tropaNumero": 41,
+    "fechaFaena": "2026-01-27",
+    "cantidadCabezas": 14,
+    "kgEntrada": 5514.0
+  },
+  {
+    "tropaNumero": 42,
+    "fechaFaena": "2026-01-28",
+    "cantidadCabezas": 14,
+    "kgEntrada": 4495.0
+  },
+  {
+    "tropaNumero": 43,
+    "fechaFaena": "2026-01-28",
+    "cantidadCabezas": 9,
+    "kgEntrada": 3254.0
+  },
+  {
+    "tropaNumero": 44,
+    "fechaFaena": "2026-01-28",
+    "cantidadCabezas": 6,
+    "kgEntrada": 2216.0
+  },
+  {
+    "tropaNumero": 45,
+    "fechaFaena": "2026-01-30",
+    "cantidadCabezas": 22,
+    "kgEntrada": 8229.0
+  },
+  {
+    "tropaNumero": 46,
+    "fechaFaena": "2026-01-30",
+    "cantidadCabezas": 20,
+    "kgEntrada": 7358.0
+  },
+  {
+    "tropaNumero": 47,
+    "fechaFaena": "2026-01-30",
+    "cantidadCabezas": 13,
+    "kgEntrada": 4933.0
+  },
+  {
+    "tropaNumero": 48,
+    "fechaFaena": "2026-01-30",
+    "cantidadCabezas": 8,
+    "kgEntrada": 4230.0
+  },
+  {
+    "tropaNumero": 49,
+    "fechaFaena": "2026-01-30",
+    "cantidadCabezas": 5,
+    "kgEntrada": 1890.0
+  },
+  {
+    "tropaNumero": 50,
+    "fechaFaena": "2026-01-30",
+    "cantidadCabezas": 2,
+    "kgEntrada": 739.0
+  },
+  {
+    "tropaNumero": 51,
+    "fechaFaena": "2026-02-02",
+    "cantidadCabezas": 42,
+    "kgEntrada": 16674.0
+  },
+  {
+    "tropaNumero": 52,
+    "fechaFaena": "2026-02-02",
+    "cantidadCabezas": 18,
+    "kgEntrada": 5318.0
+  },
+  {
+    "tropaNumero": 53,
+    "fechaFaena": "2026-02-04",
+    "cantidadCabezas": 17,
+    "kgEntrada": 6232.0
+  },
+  {
+    "tropaNumero": 54,
+    "fechaFaena": "2026-02-03",
+    "cantidadCabezas": 50,
+    "kgEntrada": 26689.0
+  },
+  {
+    "tropaNumero": 55,
+    "fechaFaena": "2026-02-04",
+    "cantidadCabezas": 10,
+    "kgEntrada": 3489.0
+  },
+  {
+    "tropaNumero": 56,
+    "fechaFaena": "2026-02-05",
+    "cantidadCabezas": 15,
+    "kgEntrada": 6032.0
+  },
+  {
+    "tropaNumero": 57,
+    "fechaFaena": "2026-02-04",
+    "cantidadCabezas": 5,
+    "kgEntrada": 1664.0
+  },
+  {
+    "tropaNumero": 58,
+    "fechaFaena": "2026-02-05",
+    "cantidadCabezas": 10,
+    "kgEntrada": 3214.0
+  },
+  {
+    "tropaNumero": 59,
+    "fechaFaena": "2026-02-06",
+    "cantidadCabezas": 20,
+    "kgEntrada": 5711.0
+  },
+  {
+    "tropaNumero": 60,
+    "fechaFaena": "2026-02-06",
+    "cantidadCabezas": 28,
+    "kgEntrada": 8846.0
+  },
+  {
+    "tropaNumero": 61,
+    "fechaFaena": "2026-02-06",
+    "cantidadCabezas": 20,
+    "kgEntrada": 7249.0
+  },
+  {
+    "tropaNumero": 62,
+    "fechaFaena": "2026-02-06",
+    "cantidadCabezas": 1,
+    "kgEntrada": 322.0
+  },
+  {
+    "tropaNumero": 63,
+    "fechaFaena": "2026-02-09",
+    "cantidadCabezas": 8,
+    "kgEntrada": 2549.0
+  },
+  {
+    "tropaNumero": 64,
+    "fechaFaena": "2026-02-09",
+    "cantidadCabezas": 3,
+    "kgEntrada": 1208.0
+  },
+  {
+    "tropaNumero": 65,
+    "fechaFaena": "2026-02-09",
+    "cantidadCabezas": 4,
+    "kgEntrada": 1273.0
+  },
+  {
+    "tropaNumero": 66,
+    "fechaFaena": "2026-02-09",
+    "cantidadCabezas": 21,
+    "kgEntrada": 7963.0
+  },
+  {
+    "tropaNumero": 67,
+    "fechaFaena": "2026-02-09",
+    "cantidadCabezas": 45,
+    "kgEntrada": 13763.0
+  },
+  {
+    "tropaNumero": 68,
+    "fechaFaena": "2026-02-10",
+    "cantidadCabezas": 18,
+    "kgEntrada": 6542.0
+  },
+  {
+    "tropaNumero": 69,
+    "fechaFaena": "2026-02-10",
+    "cantidadCabezas": 50,
+    "kgEntrada": 26006.0
+  },
+  {
+    "tropaNumero": 70,
+    "fechaFaena": "2026-02-12",
+    "cantidadCabezas": 5,
+    "kgEntrada": 1422.0
+  },
+  {
+    "tropaNumero": 71,
+    "fechaFaena": "2026-02-12",
+    "cantidadCabezas": 25,
+    "kgEntrada": 9309.0
+  },
+  {
+    "tropaNumero": 72,
+    "fechaFaena": "2026-02-12",
+    "cantidadCabezas": 20,
+    "kgEntrada": 6329.0
+  },
+  {
+    "tropaNumero": 73,
+    "fechaFaena": "2026-02-12",
+    "cantidadCabezas": 15,
+    "kgEntrada": 5861.0
+  },
+  {
+    "tropaNumero": 74,
+    "fechaFaena": "2026-02-18",
+    "cantidadCabezas": 10,
+    "kgEntrada": 2873.0
+  },
+  {
+    "tropaNumero": 75,
+    "fechaFaena": "2026-02-18",
+    "cantidadCabezas": 5,
+    "kgEntrada": 1499.0
+  },
+  {
+    "tropaNumero": 76,
+    "fechaFaena": "2026-02-18",
+    "cantidadCabezas": 18,
+    "kgEntrada": 6534.0
+  },
+  {
+    "tropaNumero": 77,
+    "fechaFaena": "2026-02-18",
+    "cantidadCabezas": 15,
+    "kgEntrada": 5197.0
+  },
+  {
+    "tropaNumero": 78,
+    "fechaFaena": "2026-02-20",
+    "cantidadCabezas": 8,
+    "kgEntrada": 2616.0
+  },
+  {
+    "tropaNumero": 79,
+    "fechaFaena": "2026-02-20",
+    "cantidadCabezas": 20,
+    "kgEntrada": 8461.0
+  },
+  {
+    "tropaNumero": 80,
+    "fechaFaena": "2026-02-20",
+    "cantidadCabezas": 21,
+    "kgEntrada": 7254.0
+  },
+  {
+    "tropaNumero": 81,
+    "fechaFaena": "2026-02-20",
+    "cantidadCabezas": 15,
+    "kgEntrada": 6056.0
+  },
+  {
+    "tropaNumero": 82,
+    "fechaFaena": "2026-02-20",
+    "cantidadCabezas": 15,
+    "kgEntrada": 5629.0
+  },
+  {
+    "tropaNumero": 83,
+    "fechaFaena": "2026-02-20",
+    "cantidadCabezas": 15,
+    "kgEntrada": 5306.0
+  },
+  {
+    "tropaNumero": 84,
+    "fechaFaena": "2026-02-23",
+    "cantidadCabezas": 21,
+    "kgEntrada": 8105.0
+  },
+  {
+    "tropaNumero": 85,
+    "fechaFaena": "2026-02-23",
+    "cantidadCabezas": 18,
+    "kgEntrada": 6551.0
+  },
+  {
+    "tropaNumero": 86,
+    "fechaFaena": "2026-02-24",
+    "cantidadCabezas": 50,
+    "kgEntrada": 26239.0
+  },
+  {
+    "tropaNumero": 87,
+    "fechaFaena": "2026-02-24",
+    "cantidadCabezas": 18,
+    "kgEntrada": 6703.0
+  },
+  {
+    "tropaNumero": 88,
+    "fechaFaena": "2026-02-26",
+    "cantidadCabezas": 8,
+    "kgEntrada": 2367.0
+  },
+  {
+    "tropaNumero": 89,
+    "fechaFaena": "2026-02-26",
+    "cantidadCabezas": 7,
+    "kgEntrada": 2687.0
+  },
+  {
+    "tropaNumero": 90,
+    "fechaFaena": "2026-02-26",
+    "cantidadCabezas": 11,
+    "kgEntrada": 4591.0
+  },
+  {
+    "tropaNumero": 91,
+    "fechaFaena": "2026-02-27",
+    "cantidadCabezas": 15,
+    "kgEntrada": 5784.0
+  },
+  {
+    "tropaNumero": 92,
+    "fechaFaena": "2026-02-27",
+    "cantidadCabezas": 10,
+    "kgEntrada": 3553.0
+  },
+  {
+    "tropaNumero": 93,
+    "fechaFaena": "2026-02-27",
+    "cantidadCabezas": 20,
+    "kgEntrada": 7512.0
+  },
+  {
+    "tropaNumero": 94,
+    "fechaFaena": "2026-02-27",
+    "cantidadCabezas": 8,
+    "kgEntrada": 3024.0
+  },
+  {
+    "tropaNumero": 95,
+    "fechaFaena": "2026-02-27",
+    "cantidadCabezas": 15,
+    "kgEntrada": 6021.0
+  },
+  {
+    "tropaNumero": 96,
+    "fechaFaena": "2026-02-27",
+    "cantidadCabezas": 22,
+    "kgEntrada": 8567.0
+  },
+  {
+    "tropaNumero": 97,
+    "fechaFaena": "2026-03-02",
+    "cantidadCabezas": 18,
+    "kgEntrada": 4930.0
+  },
+  {
+    "tropaNumero": 98,
+    "fechaFaena": "2026-03-02",
+    "cantidadCabezas": 44,
+    "kgEntrada": 16007.0
+  },
+  {
+    "tropaNumero": 99,
+    "fechaFaena": "2026-03-02",
+    "cantidadCabezas": 21,
+    "kgEntrada": 8416.0
+  },
+  {
+    "tropaNumero": 100,
+    "fechaFaena": "2026-02-03",
+    "cantidadCabezas": 18,
+    "kgEntrada": 6219.0
+  },
+  {
+    "tropaNumero": 101,
+    "fechaFaena": "2026-03-04",
+    "cantidadCabezas": 8,
+    "kgEntrada": 2542.0
+  },
+  {
+    "tropaNumero": 102,
+    "fechaFaena": "2026-03-04",
+    "cantidadCabezas": 12,
+    "kgEntrada": 5004.0
+  },
+  {
+    "tropaNumero": 103,
+    "fechaFaena": "2026-03-04",
+    "cantidadCabezas": 10,
+    "kgEntrada": 2921.0
+  },
+  {
+    "tropaNumero": 104,
+    "fechaFaena": "2026-03-04",
+    "cantidadCabezas": 20,
+    "kgEntrada": 8603.0
+  },
+  {
+    "tropaNumero": 105,
+    "fechaFaena": "2026-03-05",
+    "cantidadCabezas": 39,
+    "kgEntrada": 16975.0
+  }
+]

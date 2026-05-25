@@ -1,0 +1,267 @@
+# VARIABLES SOPORTADAS EN RÓTULOS
+
+## Variables para Rótulos de Faena y Pesaje
+
+### Información del Animal
+| Variable | Descripción | Ejemplo |
+|----------|-------------|---------|
+| `{{NUMERO}}` | Número de animal dentro de la tropa | 15 |
+| `{{NUMERO_ANIMAL}}` | N° animal dentro de la tropa (3 dígitos) | 015 |
+| `{{TROPA}}` | Código de tropa completo | B 2026 0001 |
+| `{{TROPA_CODIGO}}` | Código simplificado de tropa (sin espacios) | B20260001 |
+| `{{NUMERO_CARAVANA}}` | Número de caravana / arete del animal | 1234567890 |
+| `{{GARRON}}` | Número de garrón | 0001 |
+| `{{GARRON_NUM}}` | Número de garrón sin ceros | 1 |
+| `{{TIPO}}` | Tipo de animal | VA, TO, NO, VQ, MEJ, NT |
+| `{{TIPO_ANIMAL}}` | Tipo de animal (alias) | VA |
+| `{{RAZA}}` | Raza del animal | Angus |
+| `{{ESPECIE}}` | Especie del animal | BOVINO, EQUINO |
+| `{{EDAD}}` | Edad aproximada en meses | 24 |
+| `{{DENTICION}}` | Denticción del animal | 2 dientes |
+
+### Pesos
+| Variable | Descripción | Ejemplo |
+|----------|-------------|---------|
+| `{{PESO}}` | Peso en kg | 125.50 |
+| `{{PESO_KG}}` | Peso en kg (alias) | 125.50 |
+| `{{PESO_VIVO}}` | Peso vivo del animal | 452 |
+| `{{PESO_FAENA}}` | Peso de faena | 125.50 |
+| `{{PESO_MEDIA}}` | Peso de media res | 125.50 |
+| `{{PESO_BRUTO}}` | Peso bruto | 452.30 |
+| `{{PESO_TARA}}` | Tara del envase | 0.150 |
+| `{{PESO_NETO}}` | Peso neto | 125.35 |
+| `{{RINDE}}` | Porcentaje de rinde | 52.5 |
+| `{{RINDE_PCT}}` | Rinde con símbolo % | 52.5% |
+
+### Información de Faena
+| Variable | Descripción | Ejemplo |
+|----------|-------------|---------|
+| `{{FECHA}}` | Fecha actual | 17/03/2026 |
+| `{{FECHA_FAENA}}` | Fecha de faena | 17/03/2026 |
+| `{{FECHA_VENC}}` | Fecha de vencimiento | 16/04/2026 |
+| `{{FECHA_INGRESO}}` | Fecha de ingreso | 17/03/2026 |
+| `{{HORA}}` | Hora actual | 14:30 |
+| `{{HORA_FAENA}}` | Hora de faena | 10:15 |
+| `{{DIAS_CONSUMO}}` | Días de consumo recomendado | 30 |
+| `{{TEMP_MAX}}` | Temperatura máxima | 5°C |
+| `{{TEMP_MIN}}` | Temperatura mínima | -1°C |
+| `{{CONDICION}}` | Condición del producto | CONGELADO, REFRIGERADO |
+
+### Ubicación y Trazabilidad
+| Variable | Descripción | Ejemplo |
+|----------|-------------|---------|
+| `{{CAMARA}}` | Nombre de cámara | Cámara 1 |
+| `{{CAMARA_ID}}` | ID de cámara | CAM001 |
+| `{{SECTOR}}` | Sector dentro de la cámara | A |
+| `{{UBICACION}}` | Ubicación completa | CAMARA 1 - SECTOR A |
+| `{{LOTE}}` | Número de lote | L2026001 |
+| `{{LOTE_ID}}` | ID de lote | lot_123abc |
+| `{{CODIGO}}` | Código completo del producto | B2026001-015 |
+| `{{CODIGO_BARRAS}}` | Código de barras | 1234567890123 |
+| `{{CODIGO_INTERNO}}` | Código interno | MR-001 |
+
+### Información del Producto
+| Variable | Descripción | Ejemplo |
+|----------|-------------|---------|
+| `{{PRODUCTO}}` | Nombre del producto | MEDIA RES |
+| `{{PRODUCTO_NOMBRE}}` | Nombre completo | Media Res Bovina |
+| `{{CATEGORIA}}` | Categoría del producto | CORTE_VACUNO |
+| `{{CORTES}}` | Tipo de corte | DELANTERO, TRASERO |
+| `{{PRESENTACION}}` | Presentación | BULTO 25KG |
+| `{{UNIDAD}}` | Unidad de medida | KG |
+| `{{CALIDAD}}` | Grado de calidad | A, AA, AAA |
+| `{{CLASIFICACION}}` | Clasificación | PRIMERA, SEGUNDA |
+
+### Información del Establecimiento
+| Variable | Descripción | Ejemplo |
+|----------|-------------|---------|
+| `{{ESTABLECIMIENTO}}` | Nombre del establecimiento | Frigorífico Ejemplo |
+| `{{NRO_ESTABLECIMIENTO}}` | Número de establecimiento | 3986 |
+| `{{CUIT}}` | CUIT del establecimiento | 20-12345678-9 |
+| `{{DIRECCION}}` | Dirección del establecimiento | Ruta 9 km 45 |
+| `{{LOCALIDAD}}` | Localidad | Córdoba |
+| `{{PROVINCIA}}` | Provincia | Córdoba |
+| `{{PAIS}}` | País | Argentina |
+
+### Información del Cliente/Usuario
+| Variable | Descripción | Ejemplo |
+|----------|-------------|---------|
+| `{{USUARIO_FAENA}}` | Nombre del usuario de faena | Juan Pérez |
+| `{{PRODUCTOR}}` | Nombre del productor | Estancia Los Andes |
+| `{{CLIENTE}}` | Nombre del cliente | Carnicería Central |
+| `{{CLIENTE_CUIT}}` | CUIT del cliente | 27-12345678-5 |
+| `{{CLIENTE_MATRICULA}}` | Matrícula del cliente | MAT-001234 |
+| `{{DESTINO}}` | Destino del producto | Mercado Local |
+
+### Información del Operador
+| Variable | Descripción | Ejemplo |
+|----------|-------------|---------|
+| `{{OPERADOR}}` | Nombre del operador | María García |
+| `{{OPERADOR_ID}}` | ID del operador | op_123 |
+| `{{TIPIFICADOR}}` | Nombre del tipificador | Carlos López |
+| `{{TIPIFICADOR_MAT}}` | Matrícula del tipificador | MAT-00567 |
+| `{{SUPERVISOR}}` | Nombre del supervisor | Pedro Martínez |
+
+### Información de Despacho
+| Variable | Descripción | Ejemplo |
+|----------|-------------|---------|
+| `{{DESPACHO}}` | Número de despacho | DESP-2026-00123 |
+| `{{REMITO}}` | Número de remito | R-0001-00123456 |
+| `{{FACTURA}}` | Número de factura | 0001-00001234 |
+| `{{TRANSPORTE}}` | Empresa de transporte | Transportes SA |
+| `{{CHOFER}}` | Nombre del chofer | José Rodríguez |
+| `{{PATENTE}}` | Patente del camión | AB123CD |
+| `{{PATENTE_ACOPLADO}}` | Patente del acoplado | EF456GH |
+| `{{PRECINTOS}}` | Números de precinto | 12345, 12346 |
+
+### Medidas y Dimensiones
+| Variable | Descripción | Ejemplo |
+|----------|-------------|---------|
+| `{{CANTIDAD}}` | Cantidad de unidades | 10 |
+| `{{UNIDADES}}` | Unidades en el envase | 5 |
+| `{{VOLUMEN}}` | Volumen en m³ | 0.5 |
+| `{{ANCHO}}` | Ancho del rótulo en mm | 80 |
+| `{{ALTO}}` | Alto del rótulo en mm | 50 |
+| `{{DPI}}` | Resolución de impresión | 203 |
+
+### Control y Auditoría
+| Variable | Descripción | Ejemplo |
+|----------|-------------|---------|
+| `{{PARTIDA}}` | Número de partida | P-2026-001 |
+| `{{LOTE_PRODUCCION}}` | Lote de producción | LP-2026-00123 |
+| `{{SECUENCIA}}` | Número secuencial | 00001 |
+| `{{TURNO}}` | Turno de producción | MAÑANA, TARDE, NOCHE |
+| `{{LINEA}}` | Línea de producción | LINEA-1 |
+
+### Información de Menudencias
+| Variable | Descripción | Ejemplo |
+|----------|-------------|---------|
+| `{{MENUDENCIA}}` | Tipo de menudencia | Hígado |
+| `{{BOLSA}}` | Número de bolsa | B-001 |
+| `{{PESO_BOLSA}}` | Peso de la bolsa | 5.250 |
+| `{{TIPO_MENUDENCIA}}` | Tipo específico | Hígado Entero |
+
+### Información de Empaque
+| Variable | Descripción | Ejemplo |
+|----------|-------------|---------|
+| `{{CAJA}}` | Número de caja | C-00123 |
+| `{{CAJON}}` | Número de cajón | CJ-001 |
+| `{{ENVASE}}` | Tipo de envase | CAJA CARTON |
+| `{{ETIQUETAS}}` | Cantidad de etiquetas | 3 |
+| `{{BULTOS}}` | Cantidad de bultos | 5 |
+
+### Información de Cueros
+| Variable | Descripción | Ejemplo |
+|----------|-------------|---------|
+| `{{CUERO}}` | Número de cuero | CU-001 |
+| `{{CUERO_PESO}}` | Peso del cuero | 35.5 |
+| `{{CUERO_CALIDAD}}` | Calidad del cuero | PRIMERA |
+| `{{CUERO_CONSERVACION}}` | Tipo de conservación | SALADO |
+
+### Información de Rendering
+| Variable | Descripción | Ejemplo |
+|----------|-------------|---------|
+| `{{RENDERING}}` | Tipo de rendering | GRASA |
+| `{{RENDERING_PESO}}` | Peso de rendering | 150.5 |
+| `{{TIPO_RENDERING}}` | Tipo específico | GRASA, DESPERDICIOS, FONDO_DIGESTOR |
+
+---
+
+## Código ITF para Datamax
+
+### Cómo conformar el código de barras ITF
+Para rótulos ITF de Datamax, el código de barras se arma combinando:
+
+| Dato | Variable | Ejemplo |
+|------|----------|--------|
+| Tropa (sin espacios) | `{{TROPA_CODIGO}}` | B20260001 |
+| N° animal en tropa | `{{NUMERO_ANIMAL}}` | 015 |
+| N° caravana/arete | `{{NUMERO_CARAVANA}}` | 1234567890 |
+
+**Formato sugerido ITF-14:**
+```
+TROPA_CODIGO + NUMERO_ANIMAL + NUMERO_CARAVANA
+```
+**Ejemplo:** `B202600010151234567890`
+
+**Tipos de código de barras disponibles:**
+- `ITF-14` — Interleaved 2 of 5 con 14 dígitos (estándar para cajas/tropas)
+- `Interleaved 2 of 5` — I25 genérico (longitud variable, solo dígitos)
+- `Code 128` — Alfanumérico, soporta cualquier carácter
+
+### Para Datamax (DPL) con ITF
+```dpl
+<STX><ESC>A<ETX>
+<STX><ESC>H0080;0160;1;001;0001;0001<ETX>
+<STX><ESC>b001;0050;001;040;025;ITF;B;B;N;NN;Y<ETX>
+<STX>{TROPA_CODIGO}{NUMERO_ANIMAL}{NUMERO_CARAVANA}<ETX>
+<STX><ETB><ETX>
+```
+
+---
+
+## Notas de Uso
+
+### Para Zebra (ZPL)
+Usar formato: `{{VARIABLE}}`
+
+Ejemplo:
+```zpl
+^XA
+^FO50,50^ADN,36,20^FD{{TROPA}}^FS
+^FO50,100^ADN,36,20^FD{{GARRON}}^FS
+^FO50,150^ADN,36,20^FD{{PESO}} KG^FS
+^XZ
+```
+
+### Para Datamax (DPL)
+Usar formato: `{VARIABLE}` (sin dobles llaves)
+
+Ejemplo:
+```dpl
+<STX><ESC>C<ETX>
+<STX><ESC>F1<ETX>
+<STX><CAN><ETX>
+<STX>{TROPA}<ETX>
+<STX>{GARRON}<ETX>
+<STX>{PESO} KG<ETX>
+<STX><ETB><ETX>
+```
+
+### Variables por Tipo de Rótulo
+
+#### Media Res (PESAJE_INDIVIDUAL)
+- `{{NUMERO}}`, `{{TROPA}}`, `{{GARRON}}`, `{{TIPO}}`, `{{RAZA}}`
+- `{{PESO}}`, `{{PESO_VIVO}}`
+- `{{FECHA}}`, `{{FECHA_FAENA}}`, `{{FECHA_VENC}}`
+- `{{CODIGO_BARRAS}}`, `{{CODIGO}}`
+- `{{USUARIO_FAENA}}`, `{{ESTABLECIMIENTO}}`
+
+#### Romaneo (MEDIA_RES)
+- `{{GARRON}}`, `{{TROPA}}`, `{{PESO}}`
+- `{{LADO}}` (I/D), `{{SIGLA}}` (A/T/D)
+- `{{RINDE}}`, `{{RINDE_PCT}}`
+- `{{TIPIFICADOR}}`, `{{TIPIFICADOR_MAT}}`
+- `{{DENTICION}}`, `{{CALIDAD}}`
+
+#### Menudencias (MENUDENCIA)
+- `{{MENUDENCIA}}`, `{{TIPO_MENUDENCIA}}`
+- `{{BOLSA}}`, `{{PESO_BOLSA}}`
+- `{{FECHA}}`, `{{FECHA_VENC}}`
+
+#### Empaque (PRODUCTO_GENERAL)
+- `{{PRODUCTO}}`, `{{CANTIDAD}}`, `{{PESO}}`
+- `{{LOTE}}`, `{{CAJA}}`, `{{BULTOS}}`
+- `{{CAMARA}}`, `{{UBICACION}}`
+- `{{CODIGO_BARRAS}}`
+
+#### Cueros (CUERO)
+- `{{CUERO}}`, `{{CUERO_PESO}}`
+- `{{CUERO_CALIDAD}}`, `{{CUERO_CONSERVACION}}`
+- `{{TROPA}}`, `{{FECHA}}`
+
+#### Despacho (DESPACHO)
+- `{{DESPACHO}}`, `{{REMITO}}`, `{{FACTURA}}`
+- `{{CLIENTE}}`, `{{DESTINO}}`
+- `{{TRANSPORTE}}`, `{{CHOFER}}`, `{{PATENTE}}`
+- `{{PRECINTOS}}`

@@ -1,0 +1,1062 @@
+[
+  {
+    "tropaNumero": 1,
+    "tropaCodigo": "B 2026 0001",
+    "fechaFaena": "2026-01-02",
+    "kgNeto": 10522.2,
+    "kgMediaIzq": 2943.8,
+    "kgMediaDer": 2960.72,
+    "cantidadAnimales": 30,
+    "hoja": "T 01"
+  },
+  {
+    "tropaNumero": 2,
+    "tropaCodigo": "B 2026 0002",
+    "fechaFaena": "2026-01-02",
+    "kgNeto": 42457.76,
+    "kgMediaIzq": 9836.4,
+    "kgMediaDer": 9952.48,
+    "cantidadAnimales": 62,
+    "hoja": "T 02"
+  },
+  {
+    "tropaNumero": 3,
+    "tropaCodigo": "B 2026 0003",
+    "fechaFaena": "2026-01-05",
+    "kgNeto": 40908.28,
+    "kgMediaIzq": 8539.2,
+    "kgMediaDer": 8738.56,
+    "cantidadAnimales": 59,
+    "hoja": "T 03"
+  },
+  {
+    "tropaNumero": 4,
+    "tropaCodigo": "B 2026 0004",
+    "fechaFaena": "2026-01-05",
+    "kgNeto": 18785.96,
+    "kgMediaIzq": 5021.2,
+    "kgMediaDer": 5053.4,
+    "cantidadAnimales": 40,
+    "hoja": "T 04"
+  },
+  {
+    "tropaNumero": 5,
+    "tropaCodigo": "B 2026 0005",
+    "fechaFaena": "2026-01-05",
+    "kgNeto": 23961.24,
+    "kgMediaIzq": 6717.2,
+    "kgMediaDer": 6887.12,
+    "cantidadAnimales": 45,
+    "hoja": "T 05"
+  },
+  {
+    "tropaNumero": 6,
+    "tropaCodigo": "B 2026 0006",
+    "fechaFaena": "2026-01-06",
+    "kgNeto": 10861.98,
+    "kgMediaIzq": 3067.2,
+    "kgMediaDer": 3094.36,
+    "cantidadAnimales": 30,
+    "hoja": "T 06"
+  },
+  {
+    "tropaNumero": 7,
+    "tropaCodigo": "B 2026 0007",
+    "fechaFaena": "2026-01-06",
+    "kgNeto": 37737.68,
+    "kgMediaIzq": 10593.4,
+    "kgMediaDer": 10727.28,
+    "cantidadAnimales": 50,
+    "hoja": "T 07"
+  },
+  {
+    "tropaNumero": 8,
+    "tropaCodigo": "B 2026 0008",
+    "fechaFaena": "2026-01-06",
+    "kgNeto": 5428.0,
+    "kgMediaIzq": 1573.2,
+    "kgMediaDer": 1597.2,
+    "cantidadAnimales": 6,
+    "hoja": "T 08"
+  },
+  {
+    "tropaNumero": 9,
+    "tropaCodigo": "B 2026 0009",
+    "fechaFaena": "2026-01-06",
+    "kgNeto": 9554.0,
+    "kgMediaIzq": 2701.2,
+    "kgMediaDer": 2724.0,
+    "cantidadAnimales": 11,
+    "hoja": "T 09"
+  },
+  {
+    "tropaNumero": 10,
+    "tropaCodigo": "B 2026 0010",
+    "fechaFaena": "2026-01-06",
+    "kgNeto": 12847.48,
+    "kgMediaIzq": 3605.8,
+    "kgMediaDer": 3667.72,
+    "cantidadAnimales": 30,
+    "hoja": "T 10"
+  },
+  {
+    "tropaNumero": 11,
+    "tropaCodigo": "B 2026 0011",
+    "fechaFaena": "2026-01-07",
+    "kgNeto": 12871.0,
+    "kgMediaIzq": 3377.8,
+    "kgMediaDer": 3442.96,
+    "cantidadAnimales": 35,
+    "hoja": "T 11"
+  },
+  {
+    "tropaNumero": 12,
+    "tropaCodigo": "B 2026 0012",
+    "fechaFaena": "2026-01-07",
+    "kgNeto": 1650.0,
+    "kgMediaIzq": 466.6,
+    "kgMediaDer": 469.2,
+    "cantidadAnimales": 4,
+    "hoja": "T 12"
+  },
+  {
+    "tropaNumero": 13,
+    "tropaCodigo": "B 2026 0013",
+    "fechaFaena": "2026-01-07",
+    "kgNeto": 33441.28,
+    "kgMediaIzq": 8908.4,
+    "kgMediaDer": 9085.56,
+    "cantidadAnimales": 55,
+    "hoja": "T 13"
+  },
+  {
+    "tropaNumero": 14,
+    "tropaCodigo": "B 2026 0014",
+    "fechaFaena": "2026-01-08",
+    "kgNeto": 21347.52,
+    "kgMediaIzq": 5774.6,
+    "kgMediaDer": 5820.2,
+    "cantidadAnimales": 50,
+    "hoja": "T 14"
+  },
+  {
+    "tropaNumero": 15,
+    "tropaCodigo": "B 2026 0015",
+    "fechaFaena": "2026-01-09",
+    "kgNeto": 33468.64,
+    "kgMediaIzq": 9234.8,
+    "kgMediaDer": 9338.28,
+    "cantidadAnimales": 61,
+    "hoja": "T 15"
+  },
+  {
+    "tropaNumero": 16,
+    "tropaCodigo": "B 2026 0016",
+    "fechaFaena": "2026-01-09",
+    "kgNeto": 13329.04,
+    "kgMediaIzq": 3754.4,
+    "kgMediaDer": 3789.0,
+    "cantidadAnimales": 30,
+    "hoja": "T 16"
+  },
+  {
+    "tropaNumero": 17,
+    "tropaCodigo": "B 2026 0017",
+    "fechaFaena": "2026-01-09",
+    "kgNeto": 13649.56,
+    "kgMediaIzq": 3781.4,
+    "kgMediaDer": 3859.28,
+    "cantidadAnimales": 32,
+    "hoja": "T 17"
+  },
+  {
+    "tropaNumero": 18,
+    "tropaCodigo": "B 2026 0018",
+    "fechaFaena": "2026-01-12",
+    "kgNeto": 31569.68,
+    "kgMediaIzq": 8787.8,
+    "kgMediaDer": 8910.44,
+    "cantidadAnimales": 58,
+    "hoja": "T 18"
+  },
+  {
+    "tropaNumero": 19,
+    "tropaCodigo": "B 2026 0019",
+    "fechaFaena": "2026-01-12",
+    "kgNeto": 18569.04,
+    "kgMediaIzq": 5022.8,
+    "kgMediaDer": 5085.48,
+    "cantidadAnimales": 40,
+    "hoja": "T 19"
+  },
+  {
+    "tropaNumero": 20,
+    "tropaCodigo": "B 2026 0020",
+    "fechaFaena": "2026-01-12",
+    "kgNeto": 16953.2,
+    "kgMediaIzq": 2672.6,
+    "kgMediaDer": 2707.2,
+    "cantidadAnimales": 34,
+    "hoja": "T 20"
+  },
+  {
+    "tropaNumero": 21,
+    "tropaCodigo": "B 2026 0021",
+    "fechaFaena": "2026-01-13",
+    "kgNeto": 11226.44,
+    "kgMediaIzq": 2063.6,
+    "kgMediaDer": 2108.52,
+    "cantidadAnimales": 27,
+    "hoja": "T 21"
+  },
+  {
+    "tropaNumero": 22,
+    "tropaCodigo": "B 2026 0022",
+    "fechaFaena": "2026-01-13",
+    "kgNeto": 6278.0,
+    "kgMediaIzq": 1840.2,
+    "kgMediaDer": 1864.4,
+    "cantidadAnimales": 8,
+    "hoja": "T 22"
+  },
+  {
+    "tropaNumero": 23,
+    "tropaCodigo": "B 2026 0023",
+    "fechaFaena": "2026-01-13",
+    "kgNeto": 7472.0,
+    "kgMediaIzq": 2269.8,
+    "kgMediaDer": 2263.2,
+    "cantidadAnimales": 6,
+    "hoja": "T 23"
+  },
+  {
+    "tropaNumero": 24,
+    "tropaCodigo": "B 2026 0024",
+    "fechaFaena": "2026-01-14",
+    "kgNeto": 25459.68,
+    "kgMediaIzq": 5896.0,
+    "kgMediaDer": 5979.56,
+    "cantidadAnimales": 49,
+    "hoja": "T 24"
+  },
+  {
+    "tropaNumero": 25,
+    "tropaCodigo": "B 2026 0025",
+    "fechaFaena": "2026-01-14",
+    "kgNeto": 3851.16,
+    "kgMediaIzq": 1019.8,
+    "kgMediaDer": 1044.16,
+    "cantidadAnimales": 21,
+    "hoja": "T 25"
+  },
+  {
+    "tropaNumero": 26,
+    "tropaCodigo": "B 2026 0026",
+    "fechaFaena": "2026-01-16",
+    "kgNeto": 43398.64,
+    "kgMediaIzq": 11354.4,
+    "kgMediaDer": 11466.76,
+    "cantidadAnimales": 65,
+    "hoja": "T 26"
+  },
+  {
+    "tropaNumero": 27,
+    "tropaCodigo": "B 2026 0027",
+    "fechaFaena": "2026-01-19",
+    "kgNeto": 33657.64,
+    "kgMediaIzq": 9221.6,
+    "kgMediaDer": 9215.2,
+    "cantidadAnimales": 53,
+    "hoja": "T 27"
+  },
+  {
+    "tropaNumero": 28,
+    "tropaCodigo": "B 2026 0028",
+    "fechaFaena": "2026-01-19",
+    "kgNeto": 19739.2,
+    "kgMediaIzq": 5344.4,
+    "kgMediaDer": 5339.08,
+    "cantidadAnimales": 41,
+    "hoja": "T 28"
+  },
+  {
+    "tropaNumero": 29,
+    "tropaCodigo": "B 2026 0029",
+    "fechaFaena": "2026-01-19",
+    "kgNeto": 10508.56,
+    "kgMediaIzq": 2930.0,
+    "kgMediaDer": 2963.44,
+    "cantidadAnimales": 30,
+    "hoja": "T 29"
+  },
+  {
+    "tropaNumero": 30,
+    "tropaCodigo": "B 2026 0030",
+    "fechaFaena": "2026-01-20",
+    "kgNeto": 712.0,
+    "kgMediaIzq": 195.0,
+    "kgMediaDer": 194.2,
+    "cantidadAnimales": 2,
+    "hoja": "T 30"
+  },
+  {
+    "tropaNumero": 30,
+    "tropaCodigo": "B 2026 0030",
+    "fechaFaena": "2026-01-21",
+    "kgNeto": 13197.16,
+    "kgMediaIzq": 3660.2,
+    "kgMediaDer": 3638.44,
+    "cantidadAnimales": 32,
+    "hoja": "T 30 B"
+  },
+  {
+    "tropaNumero": 31,
+    "tropaCodigo": "B 2026 0031",
+    "fechaFaena": "2026-01-20",
+    "kgNeto": 51804.76,
+    "kgMediaIzq": 14788.4,
+    "kgMediaDer": 14768.72,
+    "cantidadAnimales": 65,
+    "hoja": "T 31"
+  },
+  {
+    "tropaNumero": 32,
+    "tropaCodigo": "B 2026 0032",
+    "fechaFaena": "2026-01-22",
+    "kgNeto": 5837.08,
+    "kgMediaIzq": 1675.6,
+    "kgMediaDer": 1663.6,
+    "cantidadAnimales": 23,
+    "hoja": "T 32"
+  },
+  {
+    "tropaNumero": 33,
+    "tropaCodigo": "B 2026 0033",
+    "fechaFaena": "2026-01-22",
+    "kgNeto": 14947.76,
+    "kgMediaIzq": 4250.4,
+    "kgMediaDer": 4285.68,
+    "cantidadAnimales": 35,
+    "hoja": "T 33"
+  },
+  {
+    "tropaNumero": 34,
+    "tropaCodigo": "B 2026 0034",
+    "fechaFaena": "2026-01-23",
+    "kgNeto": 12139.48,
+    "kgMediaIzq": 3421.4,
+    "kgMediaDer": 3403.8,
+    "cantidadAnimales": 30,
+    "hoja": "T 34"
+  },
+  {
+    "tropaNumero": 35,
+    "tropaCodigo": "B 2026 0035",
+    "fechaFaena": "2026-01-23",
+    "kgNeto": 11598.0,
+    "kgMediaIzq": 2939.8,
+    "kgMediaDer": 3003.16,
+    "cantidadAnimales": 28,
+    "hoja": "T 35"
+  },
+  {
+    "tropaNumero": 36,
+    "tropaCodigo": "B 2026 0036",
+    "fechaFaena": "2026-01-23",
+    "kgNeto": 14876.0,
+    "kgMediaIzq": 4316.6,
+    "kgMediaDer": 4297.8,
+    "cantidadAnimales": 16,
+    "hoja": "T 36"
+  },
+  {
+    "tropaNumero": 37,
+    "tropaCodigo": "B 2026 0037",
+    "fechaFaena": "2026-01-26",
+    "kgNeto": 9378.88,
+    "kgMediaIzq": 2619.6,
+    "kgMediaDer": 2639.8,
+    "cantidadAnimales": 30,
+    "hoja": "T 37"
+  },
+  {
+    "tropaNumero": 38,
+    "tropaCodigo": "B 2026 0038",
+    "fechaFaena": "2026-01-26",
+    "kgNeto": 20276.32,
+    "kgMediaIzq": 5446.4,
+    "kgMediaDer": 5523.6,
+    "cantidadAnimales": 41,
+    "hoja": "T 38"
+  },
+  {
+    "tropaNumero": 39,
+    "tropaCodigo": "B 2026 0039",
+    "fechaFaena": "2026-01-27",
+    "kgNeto": 14331.56,
+    "kgMediaIzq": 3936.4,
+    "kgMediaDer": 3958.56,
+    "cantidadAnimales": 33,
+    "hoja": "T 39"
+  },
+  {
+    "tropaNumero": 40,
+    "tropaCodigo": "B 2026 0040",
+    "fechaFaena": "2026-01-27",
+    "kgNeto": 24290.8,
+    "kgMediaIzq": 6661.0,
+    "kgMediaDer": 6835.72,
+    "cantidadAnimales": 46,
+    "hoja": "T 40"
+  },
+  {
+    "tropaNumero": 41,
+    "tropaCodigo": "B 2026 0041",
+    "fechaFaena": "2026-01-27",
+    "kgNeto": 11028.0,
+    "kgMediaIzq": 3147.8,
+    "kgMediaDer": 3182.4,
+    "cantidadAnimales": 15,
+    "hoja": "T 41"
+  },
+  {
+    "tropaNumero": 42,
+    "tropaCodigo": "B 2026 0042",
+    "fechaFaena": "2026-01-28",
+    "kgNeto": 8990.0,
+    "kgMediaIzq": 2455.8,
+    "kgMediaDer": 2473.2,
+    "cantidadAnimales": 15,
+    "hoja": "T 42"
+  },
+  {
+    "tropaNumero": 43,
+    "tropaCodigo": "B 2026 0043",
+    "fechaFaena": "2026-01-28",
+    "kgNeto": 6508.0,
+    "kgMediaIzq": 1825.2,
+    "kgMediaDer": 1830.0,
+    "cantidadAnimales": 10,
+    "hoja": "T 43"
+  },
+  {
+    "tropaNumero": 44,
+    "tropaCodigo": "B 2026 0044",
+    "fechaFaena": "2026-01-28",
+    "kgNeto": 4432.0,
+    "kgMediaIzq": 1203.0,
+    "kgMediaDer": 1191.2,
+    "cantidadAnimales": 7,
+    "hoja": "T 44"
+  },
+  {
+    "tropaNumero": 45,
+    "tropaCodigo": "B 2026 0045",
+    "fechaFaena": "2026-01-30",
+    "kgNeto": 17800.44,
+    "kgMediaIzq": 4638.4,
+    "kgMediaDer": 4651.76,
+    "cantidadAnimales": 37,
+    "hoja": "T 45"
+  },
+  {
+    "tropaNumero": 46,
+    "tropaCodigo": "B 2026 0046",
+    "fechaFaena": "2026-01-30",
+    "kgNeto": 14716.0,
+    "kgMediaIzq": 4106.6,
+    "kgMediaDer": 4085.6,
+    "cantidadAnimales": 21,
+    "hoja": "T 46"
+  },
+  {
+    "tropaNumero": 47,
+    "tropaCodigo": "B 2026 0047",
+    "fechaFaena": "2026-01-30",
+    "kgNeto": 10732.2,
+    "kgMediaIzq": 2675.2,
+    "kgMediaDer": 2730.24,
+    "cantidadAnimales": 28,
+    "hoja": "T 47"
+  },
+  {
+    "tropaNumero": 48,
+    "tropaCodigo": "B 2026 0048",
+    "fechaFaena": "2026-01-30",
+    "kgNeto": 8460.0,
+    "kgMediaIzq": 2548.2,
+    "kgMediaDer": 2521.6,
+    "cantidadAnimales": 9,
+    "hoja": "T 48"
+  },
+  {
+    "tropaNumero": 49,
+    "tropaCodigo": "B 2026 0049",
+    "fechaFaena": "2026-01-30",
+    "kgNeto": 3780.0,
+    "kgMediaIzq": 1132.4,
+    "kgMediaDer": 1123.8,
+    "cantidadAnimales": 6,
+    "hoja": "T 49"
+  },
+  {
+    "tropaNumero": 50,
+    "tropaCodigo": "B 2026 0050",
+    "fechaFaena": "2026-01-30",
+    "kgNeto": 1478.0,
+    "kgMediaIzq": 424.8,
+    "kgMediaDer": 422.6,
+    "cantidadAnimales": 3,
+    "hoja": "T 50"
+  },
+  {
+    "tropaNumero": 51,
+    "tropaCodigo": "B 2026 0051",
+    "fechaFaena": "2026-02-02",
+    "kgNeto": 34651.24,
+    "kgMediaIzq": 9658.2,
+    "kgMediaDer": 9647.36,
+    "cantidadAnimales": 55,
+    "hoja": "T 51"
+  },
+  {
+    "tropaNumero": 52,
+    "tropaCodigo": "B 2026 0052",
+    "fechaFaena": "2026-02-02",
+    "kgNeto": 11131.12,
+    "kgMediaIzq": 3001.4,
+    "kgMediaDer": 3033.84,
+    "cantidadAnimales": 33,
+    "hoja": "T 52"
+  },
+  {
+    "tropaNumero": 53,
+    "tropaCodigo": "B 2026 0053",
+    "fechaFaena": "2026-02-04",
+    "kgNeto": 12985.1,
+    "kgMediaIzq": 3545.0,
+    "kgMediaDer": 3556.2,
+    "cantidadAnimales": 32,
+    "hoja": "T 53"
+  },
+  {
+    "tropaNumero": 54,
+    "tropaCodigo": "B 2026 0054",
+    "fechaFaena": "2026-02-03",
+    "kgNeto": 55255.56,
+    "kgMediaIzq": 15806.8,
+    "kgMediaDer": 15942.96,
+    "cantidadAnimales": 65,
+    "hoja": "T 54"
+  },
+  {
+    "tropaNumero": 55,
+    "tropaCodigo": "B 2026 0055",
+    "fechaFaena": "2026-02-04",
+    "kgNeto": 7261.48,
+    "kgMediaIzq": 1943.6,
+    "kgMediaDer": 1954.12,
+    "cantidadAnimales": 25,
+    "hoja": "T 55"
+  },
+  {
+    "tropaNumero": 56,
+    "tropaCodigo": "B 2026 0056",
+    "fechaFaena": "2026-02-05",
+    "kgNeto": 12840.44,
+    "kgMediaIzq": 3494.8,
+    "kgMediaDer": 3485.78,
+    "cantidadAnimales": 30,
+    "hoja": "T 56"
+  },
+  {
+    "tropaNumero": 57,
+    "tropaCodigo": "B 2026 0057",
+    "fechaFaena": "2026-02-04",
+    "kgNeto": 3470.68,
+    "kgMediaIzq": 925.4,
+    "kgMediaDer": 926.4,
+    "cantidadAnimales": 20,
+    "hoja": "T 57"
+  },
+  {
+    "tropaNumero": 58,
+    "tropaCodigo": "B 2026 0058",
+    "fechaFaena": "2026-02-05",
+    "kgNeto": 6428.0,
+    "kgMediaIzq": 1767.4,
+    "kgMediaDer": 1769.8,
+    "cantidadAnimales": 11,
+    "hoja": "T 58"
+  },
+  {
+    "tropaNumero": 59,
+    "tropaCodigo": "B 2026 0059",
+    "fechaFaena": "2026-02-06",
+    "kgNeto": 12788.96,
+    "kgMediaIzq": 3159.2,
+    "kgMediaDer": 3162.72,
+    "cantidadAnimales": 35,
+    "hoja": "T 59"
+  },
+  {
+    "tropaNumero": 60,
+    "tropaCodigo": "B 2026 0060",
+    "fechaFaena": "2026-02-06",
+    "kgNeto": 17692.0,
+    "kgMediaIzq": 5071.4,
+    "kgMediaDer": 5076.4,
+    "cantidadAnimales": 29,
+    "hoja": "T 60"
+  },
+  {
+    "tropaNumero": 61,
+    "tropaCodigo": "B 2026 0061",
+    "fechaFaena": "2026-02-06",
+    "kgNeto": 15108.0,
+    "kgMediaIzq": 4070.8,
+    "kgMediaDer": 4089.44,
+    "cantidadAnimales": 35,
+    "hoja": "T 61"
+  },
+  {
+    "tropaNumero": 62,
+    "tropaCodigo": "B 2026 0062",
+    "fechaFaena": "2026-02-06",
+    "kgNeto": 644.0,
+    "kgMediaIzq": 189.0,
+    "kgMediaDer": 190.4,
+    "cantidadAnimales": 2,
+    "hoja": "T 62"
+  },
+  {
+    "tropaNumero": 63,
+    "tropaCodigo": "B 2026 0063",
+    "fechaFaena": "2026-02-09",
+    "kgNeto": 5545.36,
+    "kgMediaIzq": 1442.8,
+    "kgMediaDer": 1445.96,
+    "cantidadAnimales": 23,
+    "hoja": "T 63"
+  },
+  {
+    "tropaNumero": 64,
+    "tropaCodigo": "B 2026 0064",
+    "fechaFaena": "2026-02-09",
+    "kgNeto": 2416.0,
+    "kgMediaIzq": 695.4,
+    "kgMediaDer": 699.0,
+    "cantidadAnimales": 4,
+    "hoja": "T 64"
+  },
+  {
+    "tropaNumero": 65,
+    "tropaCodigo": "B 2026 0065",
+    "fechaFaena": "2026-02-09",
+    "kgNeto": 2546.0,
+    "kgMediaIzq": 695.8,
+    "kgMediaDer": 696.6,
+    "cantidadAnimales": 5,
+    "hoja": "T 65"
+  },
+  {
+    "tropaNumero": 66,
+    "tropaCodigo": "B 2026 0066",
+    "fechaFaena": "2026-02-09",
+    "kgNeto": 16595.8,
+    "kgMediaIzq": 4478.0,
+    "kgMediaDer": 4450.0,
+    "cantidadAnimales": 36,
+    "hoja": "T 66"
+  },
+  {
+    "tropaNumero": 67,
+    "tropaCodigo": "B 2026 0067",
+    "fechaFaena": "2026-02-09",
+    "kgNeto": 28634.32,
+    "kgMediaIzq": 7802.8,
+    "kgMediaDer": 7779.6,
+    "cantidadAnimales": 58,
+    "hoja": "T 67"
+  },
+  {
+    "tropaNumero": 68,
+    "tropaCodigo": "B 2026 0068",
+    "fechaFaena": "2026-02-10",
+    "kgNeto": 13659.88,
+    "kgMediaIzq": 3754.2,
+    "kgMediaDer": 3731.4,
+    "cantidadAnimales": 33,
+    "hoja": "T 68"
+  },
+  {
+    "tropaNumero": 69,
+    "tropaCodigo": "B 2026 0069",
+    "fechaFaena": "2026-02-10",
+    "kgNeto": 53977.72,
+    "kgMediaIzq": 15281.2,
+    "kgMediaDer": 15256.2,
+    "cantidadAnimales": 65,
+    "hoja": "T 69"
+  },
+  {
+    "tropaNumero": 70,
+    "tropaCodigo": "B 2026 0070",
+    "fechaFaena": "2026-02-12",
+    "kgNeto": 2979.56,
+    "kgMediaIzq": 790.4,
+    "kgMediaDer": 788.8,
+    "cantidadAnimales": 20,
+    "hoja": "T 70"
+  },
+  {
+    "tropaNumero": 71,
+    "tropaCodigo": "B 2026 0071",
+    "fechaFaena": "2026-02-12",
+    "kgNeto": 19889.4,
+    "kgMediaIzq": 5074.4,
+    "kgMediaDer": 5126.96,
+    "cantidadAnimales": 40,
+    "hoja": "T 71"
+  },
+  {
+    "tropaNumero": 72,
+    "tropaCodigo": "B 2026 0072",
+    "fechaFaena": "2026-02-12",
+    "kgNeto": 13233.48,
+    "kgMediaIzq": 3564.8,
+    "kgMediaDer": 3579.8,
+    "cantidadAnimales": 35,
+    "hoja": "T 72"
+  },
+  {
+    "tropaNumero": 73,
+    "tropaCodigo": "B 2026 0073",
+    "fechaFaena": "2026-02-12",
+    "kgNeto": 11722.0,
+    "kgMediaIzq": 3357.0,
+    "kgMediaDer": 3343.4,
+    "cantidadAnimales": 16,
+    "hoja": "T 73"
+  },
+  {
+    "tropaNumero": 74,
+    "tropaCodigo": "B 2026 0074",
+    "fechaFaena": "2026-02-18",
+    "kgNeto": 6593.92,
+    "kgMediaIzq": 1602.4,
+    "kgMediaDer": 1602.44,
+    "cantidadAnimales": 25,
+    "hoja": "T 74"
+  },
+  {
+    "tropaNumero": 75,
+    "tropaCodigo": "B 2026 0075",
+    "fechaFaena": "2026-02-18",
+    "kgNeto": 2998.0,
+    "kgMediaIzq": 863.8,
+    "kgMediaDer": 860.4,
+    "cantidadAnimales": 6,
+    "hoja": "T 75"
+  },
+  {
+    "tropaNumero": 76,
+    "tropaCodigo": "B 2026 0076",
+    "fechaFaena": "2026-02-18",
+    "kgNeto": 13652.12,
+    "kgMediaIzq": 3794.2,
+    "kgMediaDer": 3789.4,
+    "cantidadAnimales": 33,
+    "hoja": "T 76"
+  },
+  {
+    "tropaNumero": 77,
+    "tropaCodigo": "B 2026 0077",
+    "fechaFaena": "2026-02-18",
+    "kgNeto": 10394.0,
+    "kgMediaIzq": 2917.2,
+    "kgMediaDer": 2915.4,
+    "cantidadAnimales": 16,
+    "hoja": "T 77"
+  },
+  {
+    "tropaNumero": 78,
+    "tropaCodigo": "B 2026 0078",
+    "fechaFaena": "2026-02-20",
+    "kgNeto": 5471.72,
+    "kgMediaIzq": 1465.4,
+    "kgMediaDer": 1465.6,
+    "cantidadAnimales": 23,
+    "hoja": "T 78"
+  },
+  {
+    "tropaNumero": 79,
+    "tropaCodigo": "B 2026 0079",
+    "fechaFaena": "2026-02-20",
+    "kgNeto": 17575.68,
+    "kgMediaIzq": 4962.0,
+    "kgMediaDer": 5045.32,
+    "cantidadAnimales": 35,
+    "hoja": "T 79"
+  },
+  {
+    "tropaNumero": 80,
+    "tropaCodigo": "B 2026 0080",
+    "fechaFaena": "2026-02-20",
+    "kgNeto": 15682.52,
+    "kgMediaIzq": 4022.4,
+    "kgMediaDer": 4049.0,
+    "cantidadAnimales": 36,
+    "hoja": "T 80"
+  },
+  {
+    "tropaNumero": 81,
+    "tropaCodigo": "B 2026 0081",
+    "fechaFaena": "2026-02-20",
+    "kgNeto": 12112.0,
+    "kgMediaIzq": 3371.2,
+    "kgMediaDer": 3385.6,
+    "cantidadAnimales": 16,
+    "hoja": "T 81"
+  },
+  {
+    "tropaNumero": 82,
+    "tropaCodigo": "B 2026 0082",
+    "fechaFaena": "2026-02-20",
+    "kgNeto": 12147.0,
+    "kgMediaIzq": 3103.8,
+    "kgMediaDer": 3114.4,
+    "cantidadAnimales": 30,
+    "hoja": "T 82"
+  },
+  {
+    "tropaNumero": 83,
+    "tropaCodigo": "B 2026 0083",
+    "fechaFaena": "2026-02-20",
+    "kgNeto": 10612.0,
+    "kgMediaIzq": 2915.0,
+    "kgMediaDer": 2906.2,
+    "cantidadAnimales": 16,
+    "hoja": "T 83"
+  },
+  {
+    "tropaNumero": 84,
+    "tropaCodigo": "B 2026 0084",
+    "fechaFaena": "2026-02-23",
+    "kgNeto": 16901.24,
+    "kgMediaIzq": 4575.0,
+    "kgMediaDer": 4529.8,
+    "cantidadAnimales": 36,
+    "hoja": "T 84"
+  },
+  {
+    "tropaNumero": 85,
+    "tropaCodigo": "B 2026 0085",
+    "fechaFaena": "2026-02-23",
+    "kgNeto": 13661.6,
+    "kgMediaIzq": 3847.2,
+    "kgMediaDer": 3830.2,
+    "cantidadAnimales": 33,
+    "hoja": "T 85"
+  },
+  {
+    "tropaNumero": 86,
+    "tropaCodigo": "B 2026 0086",
+    "fechaFaena": "2026-02-24",
+    "kgNeto": 54495.78,
+    "kgMediaIzq": 15525.0,
+    "kgMediaDer": 15485.76,
+    "cantidadAnimales": 65,
+    "hoja": "T 86"
+  },
+  {
+    "tropaNumero": 87,
+    "tropaCodigo": "B 2026 0087",
+    "fechaFaena": "2026-02-24",
+    "kgNeto": 13976.76,
+    "kgMediaIzq": 3797.4,
+    "kgMediaDer": 3783.8,
+    "cantidadAnimales": 33,
+    "hoja": "T 87"
+  },
+  {
+    "tropaNumero": 88,
+    "tropaCodigo": "B 2026 0088",
+    "fechaFaena": "2026-02-26",
+    "kgNeto": 4954.92,
+    "kgMediaIzq": 1325.0,
+    "kgMediaDer": 1317.8,
+    "cantidadAnimales": 23,
+    "hoja": "T 88"
+  },
+  {
+    "tropaNumero": 89,
+    "tropaCodigo": "B 2026 0089",
+    "fechaFaena": "2026-02-26",
+    "kgNeto": 5945.44,
+    "kgMediaIzq": 1500.6,
+    "kgMediaDer": 1505.2,
+    "cantidadAnimales": 22,
+    "hoja": "T 89"
+  },
+  {
+    "tropaNumero": 90,
+    "tropaCodigo": "B 2026 0090",
+    "fechaFaena": "2026-02-26",
+    "kgNeto": 9182.0,
+    "kgMediaIzq": 2738.6,
+    "kgMediaDer": 2713.4,
+    "cantidadAnimales": 12,
+    "hoja": "T 90"
+  },
+  {
+    "tropaNumero": 91,
+    "tropaCodigo": "B 2026 0091",
+    "fechaFaena": "2026-02-27",
+    "kgNeto": 13112.24,
+    "kgMediaIzq": 3310.2,
+    "kgMediaDer": 3313.4,
+    "cantidadAnimales": 30,
+    "hoja": "T 91"
+  },
+  {
+    "tropaNumero": 92,
+    "tropaCodigo": "B 2026 0092",
+    "fechaFaena": "2026-02-27",
+    "kgNeto": 7106.0,
+    "kgMediaIzq": 2009.0,
+    "kgMediaDer": 2011.0,
+    "cantidadAnimales": 11,
+    "hoja": "T 92"
+  },
+  {
+    "tropaNumero": 93,
+    "tropaCodigo": "B 2026 0093",
+    "fechaFaena": "2026-02-27",
+    "kgNeto": 16004.6,
+    "kgMediaIzq": 4122.8,
+    "kgMediaDer": 4119.8,
+    "cantidadAnimales": 35,
+    "hoja": "T 93"
+  },
+  {
+    "tropaNumero": 94,
+    "tropaCodigo": "B 2026 0094",
+    "fechaFaena": "2026-02-27",
+    "kgNeto": 6048.0,
+    "kgMediaIzq": 1723.6,
+    "kgMediaDer": 1732.2,
+    "cantidadAnimales": 9,
+    "hoja": "T 94"
+  },
+  {
+    "tropaNumero": 95,
+    "tropaCodigo": "B 2026 0095",
+    "fechaFaena": "2026-02-27",
+    "kgNeto": 12577.72,
+    "kgMediaIzq": 3369.6,
+    "kgMediaDer": 3366.0,
+    "cantidadAnimales": 30,
+    "hoja": "T 95"
+  },
+  {
+    "tropaNumero": 96,
+    "tropaCodigo": "B 2026 0096",
+    "fechaFaena": "2026-02-27",
+    "kgNeto": 17134.0,
+    "kgMediaIzq": 4872.8,
+    "kgMediaDer": 4897.8,
+    "cantidadAnimales": 23,
+    "hoja": "T 96"
+  },
+  {
+    "tropaNumero": 97,
+    "tropaCodigo": "B 2026 0097",
+    "fechaFaena": "2026-03-02",
+    "kgNeto": 10351.24,
+    "kgMediaIzq": 2670.8,
+    "kgMediaDer": 2660.4,
+    "cantidadAnimales": 33,
+    "hoja": "T 97"
+  },
+  {
+    "tropaNumero": 98,
+    "tropaCodigo": "B 2026 0098",
+    "fechaFaena": "2026-03-02",
+    "kgNeto": 33159.52,
+    "kgMediaIzq": 9312.4,
+    "kgMediaDer": 9263.88,
+    "cantidadAnimales": 57,
+    "hoja": "T 98"
+  },
+  {
+    "tropaNumero": 99,
+    "tropaCodigo": "B 2026 0099",
+    "fechaFaena": "2026-03-02",
+    "kgNeto": 17542.88,
+    "kgMediaIzq": 4797.4,
+    "kgMediaDer": 4747.2,
+    "cantidadAnimales": 36,
+    "hoja": "T 99"
+  },
+  {
+    "tropaNumero": 100,
+    "tropaCodigo": "B 2026 0100",
+    "fechaFaena": "2026-02-03",
+    "kgNeto": 12962.08,
+    "kgMediaIzq": 3510.6,
+    "kgMediaDer": 3488.85,
+    "cantidadAnimales": 33,
+    "hoja": "T 100"
+  },
+  {
+    "tropaNumero": 101,
+    "tropaCodigo": "B 2026 0101",
+    "fechaFaena": "2026-03-04",
+    "kgNeto": 5318.6,
+    "kgMediaIzq": 1416.8,
+    "kgMediaDer": 1416.0,
+    "cantidadAnimales": 23,
+    "hoja": "T 101"
+  },
+  {
+    "tropaNumero": 102,
+    "tropaCodigo": "B 2026 0102",
+    "fechaFaena": "2026-03-04",
+    "kgNeto": 10617.52,
+    "kgMediaIzq": 2916.4,
+    "kgMediaDer": 2944.12,
+    "cantidadAnimales": 27,
+    "hoja": "T 102"
+  },
+  {
+    "tropaNumero": 103,
+    "tropaCodigo": "B 2026 0103",
+    "fechaFaena": "2026-03-04",
+    "kgNeto": 5842.0,
+    "kgMediaIzq": 1681.8,
+    "kgMediaDer": 1667.6,
+    "cantidadAnimales": 11,
+    "hoja": "T 103"
+  },
+  {
+    "tropaNumero": 104,
+    "tropaCodigo": "B 2026 0104",
+    "fechaFaena": "2026-03-04",
+    "kgNeto": 17843.72,
+    "kgMediaIzq": 5001.8,
+    "kgMediaDer": 5050.0,
+    "cantidadAnimales": 35,
+    "hoja": "T 104"
+  },
+  {
+    "tropaNumero": 105,
+    "tropaCodigo": "B 2026 0105",
+    "fechaFaena": "2026-03-05",
+    "kgNeto": 35420.12,
+    "kgMediaIzq": 9599.0,
+    "kgMediaDer": 9523.0,
+    "cantidadAnimales": 54,
+    "hoja": "T 105"
+  }
+]

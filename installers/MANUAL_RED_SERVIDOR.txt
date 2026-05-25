@@ -1,0 +1,247 @@
+================================================================================
+        MANUAL DE INSTALACIÓN DEL SERVIDOR - SISTEMA FRIGORÍFICO SOLEMAR
+                    Windows Server con PostgreSQL
+================================================================================
+
+ÍNDICE
+------
+1. Requisitos del Sistema
+2. Preparación del Servidor
+3. Instalación de PostgreSQL
+4. Instalación del Sistema
+5. Configuración de Red
+6. Configuración de Email SMTP
+7. Respaldos y Mantenimiento
+8. Solución de Problemas
+
+================================================================================
+1. REQUISITOS DEL SISTEMA
+================================================================================
+
+Hardware mínimo recomendado:
+- Procesador: Intel Xeon o AMD EPYC (4 núcleos mínimo)
+- Memoria RAM: 16 GB mínimo, 32 GB recomendado
+- Almacenamiento: 500 GB SSD para sistema y base de datos
+- Red: Tarjeta de red Gigabit
+
+Sistema Operativo:
+- Windows Server 2019 o superior
+- Actualizaciones al día
+
+Software requerido:
+- Node.js v20.x LTS
+- PostgreSQL 16
+- Git (opcional, para actualizaciones)
+
+================================================================================
+2. PREPARACIÓN DEL SERVIDOR
+================================================================================
+
+A) Configurar IP estática:
+   1. Panel de Control > Redes e Internet > Conexiones de red
+   2. Clic derecho en el adaptador > Propiedades
+   3. Protocolo de Internet versión 4 (TCP/IPv4)
+   4. Configurar IP estática según su red:
+      - IP: 192.168.1.100 (ejemplo)
+      - Máscara: 255.255.255.0
+      - Puerta de enlace: 192.168.1.1
+      - DNS preferido: 8.8.8.8
+      - DNS alternativo: 8.8.4.4
+
+B) Desactivar Windows Defender para la carpeta del sistema:
+   1. Windows Security > Protección contra virus y amenazas
+   2. Configuración de protección contra virus y amenazas
+   3. Exclusiones > Agregar exclusión > Carpeta
+   4. Agregar: C:\SolemarFrigorifico
+
+C) Configurar actualizaciones automáticas:
+   - Configurar para instalar actualizaciones fuera del horario laboral
+
+================================================================================
+3. INSTALACIÓN DE POSTGRESQL
+================================================================================
+
+A) Descargar PostgreSQL:
+   - Ir a: https://www.postgresql.org/download/windows/
+   - Descargar PostgreSQL 16 para Windows x86-64
+
+B) Ejecutar instalador:
+   - Seleccionar componentes:
+     ✓ PostgreSQL Server
+     ✓ pgAdmin 4
+     ✓ Stack Builder
+     ✓ Command Line Tools
+   
+   - Configurar durante instalación:
+     * Directorio: C:\Program Files\PostgreSQL\16
+     * Puerto: 5432 (predeterminado)
+     * Contraseña postgres: [DEFINIR CONTRASEÑA SEGURA]
+     * Locale: Spanish_Spain.1252
+
+C) Configurar acceso remoto:
+   1. Editar archivo: C:\Program Files\PostgreSQL\16\data\pg_hba.conf
+   2. Agregar línea al final:
+      host    all    all    192.168.1.0/24    scram-sha-256
+   
+   3. Editar archivo: C:\Program Files\PostgreSQL\16\data\postgresql.conf
+   4. Buscar y modificar:
+      listen_addresses = '*'
+   
+   5. Reiniciar servicio de PostgreSQL
+
+D) Configurar firewall para PostgreSQL:
+   netsh advfirewall firewall add rule name="PostgreSQL" dir=in action=allow protocol=tcp localport=5432
+
+================================================================================
+4. INSTALACIÓN DEL SISTEMA
+================================================================================
+
+A) Ejecutar instalador:
+   - Hacer clic derecho en install-server.bat
+   - Seleccionar "Ejecutar como administrador"
+   - Seguir las instrucciones en pantalla
+
+B) Verificar instalación:
+   1. Abrir navegador en el servidor: http://localhost:3000
+   2. Iniciar sesión con:
+      - Usuario: admin
+      - Contraseña: admin123
+   3. Cambiar contraseña inmediatamente
+
+C) Configurar inicio automático:
+   1. Ejecutar services.msc
+   2. Buscar "Sistema Frigorífico Solemar"
+   3. Configurar tipo de inicio: Automático
+   4. Iniciar el servicio
+
+================================================================================
+5. CONFIGURACIÓN DE RED
+================================================================================
+
+A) Configurar firewall de Windows:
+   
+   Puertos requeridos:
+   - Puerto 3000: Acceso web al sistema
+   - Puerto 5432: Base de datos PostgreSQL (solo si hay PCs cliente)
+   - Puerto 80: Redirección HTTP (opcional)
+   - Puerto 443: HTTPS (recomendado con certificado SSL)
+
+   Comandos para abrir puertos:
+   netsh advfirewall firewall add rule name="Solemar HTTP" dir=in action=allow protocol=tcp localport=3000
+
+B) Configurar DNS local (opcional):
+   - En el servidor DNS o archivo hosts de cada PC cliente:
+     192.168.1.100    solemar.local
+
+C) Configurar acceso desde clientes:
+   - Los clientes acceden mediante: http://192.168.1.100:3000
+   - O si hay DNS: http://solemar.local:3000
+
+================================================================================
+6. CONFIGURACIÓN DE EMAIL SMTP
+================================================================================
+
+El sistema permite enviar reportes automáticos por email.
+
+A) Configuración para Office 365 / Outlook:
+   - Servidor SMTP: smtp.office365.com
+   - Puerto: 587 (TLS)
+   - Usuario: su-email@empresa.com
+   - Contraseña: su contraseña de email
+   - Requiere autenticación: Sí
+   - TLS: Sí
+
+B) Configuración para Gmail:
+   - Servidor SMTP: smtp.gmail.com
+   - Puerto: 587
+   - Usuario: su-email@gmail.com
+   - Contraseña: Contraseña de aplicación (no la contraseña normal)
+   - Nota: Debe generar una "Contraseña de aplicación" en Google Account
+
+C) Pasos para configurar:
+   1. En el sistema, ir a Configuración > Email
+   2. Completar datos del servidor SMTP
+   3. Agregar destinatarios
+   4. Configurar programación de envíos
+   5. Probar conexión
+
+D) Generar contraseña de aplicación en Gmail:
+   1. Ir a https://myaccount.google.com
+   2. Seguridad > Verificación en dos pasos (activar)
+   3. Seguridad > Contraseñas de aplicaciones
+   4. Generar nueva contraseña para "Solemar Frigorífico"
+   5. Usar esa contraseña en la configuración SMTP
+
+================================================================================
+7. RESPALDOS Y MANTENIMIENTO
+================================================================================
+
+A) Respaldo manual:
+   - Ejecutar: C:\SolemarFrigorifico\respaldar.bat
+   - El respaldo se guarda en: C:\SolemarFrigorifico\backups\
+
+B) Respaldo automático (Programador de tareas):
+   1. Abrir Programador de tareas
+   2. Crear tarea básica:
+      - Nombre: "Respaldo Solemar Diario"
+      - Desencadenador: Diario, 02:00 AM
+      - Acción: Iniciar programa
+        * Programa: C:\SolemarFrigorifico\respaldar.bat
+      - Condiciones: Iniciar solo si el equipo está conectado a corriente
+
+C) Mantenimiento de base de datos:
+   - Ejecutar semanalmente en horario de mantenimiento:
+   
+   -- Limpiar datos antiguos (ajustar días según necesidad)
+   psql -U solemar_user -d solemar_frigorifico -c "DELETE FROM auditoria WHERE fecha < NOW() - INTERVAL '90 days';"
+   
+   -- Optimizar tablas
+   psql -U solemar_user -d solemar_frigorifico -c "VACUUM ANALYZE;"
+
+D) Mantenimiento del sistema:
+   - Revisar logs: C:\SolemarFrigorifico\logs\
+   - Limpiar respaldos antiguos (mantener últimos 30 días)
+   - Verificar espacio en disco
+
+================================================================================
+8. SOLUCIÓN DE PROBLEMAS
+================================================================================
+
+A) El sistema no inicia:
+   1. Verificar que Node.js esté instalado: node --version
+   2. Verificar que PostgreSQL esté ejecutándose
+   3. Revisar logs en: C:\SolemarFrigorifico\logs\
+   4. Verificar archivo .env
+
+B) Error de conexión a base de datos:
+   1. Verificar que PostgreSQL esté ejecutándose
+      - services.msc > postgresql-x64-16
+   2. Verificar credenciales en .env
+   3. Verificar que la base de datos exista:
+      psql -U postgres -l
+
+C) Los clientes no pueden conectar:
+   1. Verificar firewall del servidor
+   2. Verificar que el servicio esté ejecutándose
+   3. Verificar conectividad de red con: ping 192.168.1.100
+   4. Verificar que el puerto 3000 esté accesible
+
+D) Error al enviar emails:
+   1. Verificar configuración SMTP en el sistema
+   2. Verificar credenciales de email
+   3. Verificar que el servidor permita conexiones salientes en puerto 587
+   4. Probar conexión SMTP con telnet:
+      telnet smtp.office365.com 587
+
+E) Base de datos lenta:
+   1. Ejecutar VACUUM ANALYZE
+   2. Verificar índices
+   3. Revisar consultas lentas en logs de PostgreSQL
+
+================================================================================
+CONTACTO DE SOPORTE
+================================================================================
+
+Para asistencia técnica, contactar al equipo de desarrollo del sistema.
+
+================================================================================

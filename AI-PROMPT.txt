@@ -1,0 +1,1169 @@
+================================================================================
+     SISTEMA FRIGORÍFICO - SOLEMAR ALIMENTARIA v2.0
+              DOCUMENTACIÓN TÉCNICA COMPLETA PARA IA
+================================================================================
+
+ÍNDICE
+======
+1. DESCRIPCIÓN GENERAL Y ARQUITECTURA
+2. TECNOLOGÍAS Y VERSIONES
+3. ESTRUCTURA DE CARPETAS
+4. BASE DE DATOS (PRISMA SCHEMA)
+5. SISTEMA DE PERMISOS Y AUTENTICACIÓN
+6. MÓDULOS DETALLADOS (ONLINE/OFFLINE)
+7. APIs Y ENDPOINTS
+8. CONFIGURACIONES Y VARIABLES DE ENTORNO
+9. INSTALACIÓN PARA WINDOWS 11
+10. COMPILACIÓN Y DESPLIEGUE
+
+================================================================================
+1. DESCRIPCIÓN GENERAL Y ARQUITECTURA
+================================================================================
+
+Sistema integral de gestión para frigorífico que controla todo el proceso
+de faena de ganado bovino y equino, desde la recepción hasta la expedición.
+
+ARQUITECTURA:
+- Frontend: React 19 con Next.js 16 App Router (Server Components + Client Components)
+- Backend: API Routes de Next.js (NO server actions)
+- Base de datos: SQLite con Prisma ORM
+- Runtime: Bun (OBLIGATORIO - NO usar Node.js)
+- Autenticación: Sesión en localStorage validada contra DB
+
+FLUJO PRINCIPAL DEL NEGOCIO:
+1. Pesaje Camiones → Recepción de tropas (peso bruto)
+2. Pesaje Camiones → Registro de tara (peso neto = bruto - tara)
+3. Pesaje Individual → Pesaje de cada animal
+4. Movimiento Hacienda → Traslado entre corrales
+5. Lista de Faena → Selección de animales a faenar
+6. Ingreso Cajón → Asignación de garrones correlativos
+7. Romaneo → Pesaje de medias reses + impresión rótulos
+8. Expedición → Despacho de productos
+
+================================================================================
+2. TECNOLOGÍAS Y VERSIONES
+================================================================================
+
+OBLIGATORIO (NO MODIFICAR):
+- Framework: Next.js 16.x con App Router
+- Runtime: Bun 1.x (NUNCA Node.js)
+- Lenguaje: TypeScript 5.x (strict mode)
+- Base de datos: SQLite (archivo en db/custom.db)
+- ORM: Prisma Client
+
+FRONTEND:
+- React 19.x
+- Tailwind CSS 4.x
+- shadcn/ui (New York style)
+- Lucide React (iconos)
+- Sonner (toasts/notificaciones)
+
+ESTADO Y DATOS:
+- React hooks (useState, useEffect, useCallback)
+- Fetch API para peticiones HTTP
+- LocalStorage para sesión offline
+
+HERRAMIENTAS DE DESARROLLO:
+- ESLint
+- TypeScript ESLint
+- PostCSS + Autoprefixer
+
+DEPENDENCIAS PRINCIPALES (package.json):
+{
+  "dependencies": {
+    "next": "^16.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "@prisma/client": "^6.0.0",
+    "sonner": "^2.0.0",
+    "lucide-react": "^0.500.0",
+    "@radix-ui/*": "varios componentes shadcn/ui",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.0.0",
+    "tailwind-merge": "^3.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "prisma": "^6.0.0",
+    "@types/react": "^19.0.0",
+    "tailwindcss": "^4.0.0",
+    "eslint": "^9.0.0"
+  }
+}
+
+================================================================================
+3. ESTRUCTURA DE CARPETAS
+================================================================================
+
+/proyecto
+├── /src
+│   ├── /app                    # Next.js App Router
+│   │   ├── layout.tsx          # Layout principal
+│   │   ├── page.tsx            # Página única (SPA)
+│   │   ├── globals.css         # Estilos globales + Tailwind
+│   │   └── /api                # API Routes (backend)
+│   │       ├── /auth           # Autenticación
+│   │       ├── /tropas         # CRUD tropas
+│   │       ├── /animales       # CRUD animales
+│   │       ├── /pesaje-camion  # Pesaje de camiones
+│   │       ├── /lista-faena    # Lista de faena
+│   │       ├── /garrones-asignados  # Asignación garrones
+│   │       ├── /romaneo        # Romaneo/pesaje medias
+│   │       ├── /camaras        # CRUD cámaras
+│   │       ├── /corrales       # CRUD corrales
+│   │       ├── /clientes       # CRUD clientes
+│   │       ├── /operadores     # CRUD operadores
+│   │       ├── /tipificadores  # CRUD tipificadores
+│   │       ├── /dashboard      # Estadísticas
+│   │       └── ...             # Otros endpoints
+│   │
+│   ├── /components             # Componentes React
+│   │   ├── /ui                 # shadcn/ui componentes
+│   │   │   ├── button.tsx
+│   │   │   ├── card.tsx
+│   │   │   ├── dialog.tsx
+│   │   │   ├── input.tsx
+│   │   │   ├── select.tsx
+│   │   │   ├── table.tsx
+│   │   │   └── ... (20+ componentes)
+│   │   │
+│   │   ├── /pesaje-camiones    # Módulo pesaje camiones
+│   │   │   ├── index.tsx       # Componente principal
+│   │   │   ├── usePesajeCamiones.ts  # Hook personalizado
+│   │   │   ├── types.ts        # Tipos TypeScript
+│   │   │   ├── constants.ts    # Constantes
+│   │   │   ├── ticketPrint.ts  # Impresión tickets
+│   │   │   ├── QuickAddDialog.tsx    # Dialog rápido agregar
+│   │   │   └── TipoAnimalCounterGrid.tsx  # Contador animales
+│   │   │
+│   │   ├── /romaneo            # Módulo romaneo
+│   │   ├── /lista-faena        # Módulo lista faena
+│   │   ├── /ingreso-cajon      # Módulo ingreso cajón
+│   │   ├── /configuracion      # Módulo configuración
+│   │   └── ... (todos los módulos)
+│   │
+│   ├── /lib                    # Utilidades
+│   │   ├── db.ts               # Prisma client singleton
+│   │   ├── utils.ts            # Funciones utilitarias
+│   │   └── offline-db.ts       # IndexedDB para offline
+│   │
+│   └── /hooks                  # Hooks personalizados
+│       ├── use-toast.ts        # Sistema de toasts
+│       └── use-mobile.ts       # Detección móvil
+│
+├── /prisma
+│   ├── schema.prisma           # Esquema de base de datos
+│   ├── seed.ts                 # Datos iniciales
+│   └── seed-test.ts            # Datos de prueba
+│
+├── /public
+│   ├── logo.png                # Logo empresa
+│   ├── logo.svg                # Logo vectorial
+│   └── robots.txt
+│
+├── /db
+│   └── custom.db               # Archivo SQLite
+│
+├── /install                    # Archivos para instalación
+│   ├── INSTRUCCIONES-INSTALACION.txt
+│   ├── AI-PROMPT.txt           # Este archivo
+│   └── install-windows.ps1     # Script instalación Windows
+│
+├── package.json
+├── tsconfig.json
+├── tailwind.config.ts
+├── next.config.ts
+├── bun.lock
+└── .env                        # Variables de entorno
+
+================================================================================
+4. BASE DE DATOS (PRISMA SCHEMA)
+================================================================================
+
+MODELOS PRINCIPALES:
+
+// ==================== CONFIGURACIÓN FRIGORÍFICO ====================
+model ConfiguracionFrigorifico {
+  id                      String   @id @default(cuid())
+  nombre                  String   @default("Solemar Alimentaria")
+  direccion               String?
+  numeroEstablecimiento   String?  // N° Establecimiento Oficial
+  cuit                    String?
+  numeroMatricula         String?
+  logo                    String?  // URL del logo
+  emailHost               String?
+  emailPuerto             Int?     @default(587)
+  emailUsuario            String?
+  emailPassword           String?
+  emailHabilitado         Boolean  @default(false)
+}
+
+// ==================== CORRALES ====================
+model Corral {
+  id            String   @id @default(cuid())
+  nombre        String   @unique
+  capacidad     Int      @default(0)
+  stockBovinos  Int      @default(0)
+  stockEquinos  Int      @default(0)
+  activo        Boolean  @default(true)
+  
+  tropas        Tropa[]
+  movimientosOrigen   MovimientoCorral[]  @relation("CorralOrigen")
+  movimientosDestino  MovimientoCorral[]  @relation("CorralDestino")
+}
+
+// ==================== CÁMARAS ====================
+model Camara {
+  id          String      @id @default(cuid())
+  nombre      String      @unique
+  tipo        TipoCamara  @default(FAENA)  // FAENA, CUARTEO, DEPOSITO
+  capacidad   Int         @default(0)
+  activo      Boolean     @default(true)
+  
+  stockMedias StockMediaRes[]
+  mediasRes   MediaRes[]
+}
+
+enum TipoCamara {
+  FAENA      // Capacidad en ganchos
+  CUARTEO    // Capacidad en KG
+  DEPOSITO   // Capacidad en KG
+}
+
+// ==================== OPERADORES ====================
+model Operador {
+  id            String   @id @default(cuid())
+  nombre        String
+  usuario       String   @unique
+  password      String   // Hash de la contraseña
+  pin           String?  // PIN numérico opcional
+  rol           RolOperador @default(OPERADOR)
+  activo        Boolean  @default(true)
+  
+  // Permisos detallados
+  puedePesajeCamiones     Boolean @default(true)
+  puedePesajeIndividual   Boolean @default(true)
+  puedeMovimientoHacienda Boolean @default(true)
+  puedeListaFaena         Boolean @default(false)
+  puedeRomaneo            Boolean @default(false)
+  puedeIngresoCajon       Boolean @default(false)
+  puedeMenudencias        Boolean @default(false)
+  puedeStock              Boolean @default(false)
+  puedeReportes           Boolean @default(false)
+  puedeCCIR               Boolean @default(false)
+  puedeFacturacion        Boolean @default(false)
+  puedeConfiguracion      Boolean @default(false)
+}
+
+enum RolOperador {
+  OPERADOR
+  SUPERVISOR
+  ADMINISTRADOR
+}
+
+// ==================== CLIENTES ====================
+model Cliente {
+  id              String   @id @default(cuid())
+  nombre          String
+  dni             String?
+  cuit            String?  @unique
+  matricula       String?
+  direccion       String?
+  localidad       String?
+  provincia       String?
+  telefono        String?
+  email           String?
+  razonSocial     String?
+  condicionIva    String?
+  esProductor     Boolean  @default(false)
+  esUsuarioFaena  Boolean  @default(false)
+  activo          Boolean  @default(true)
+  
+  tropasComoProductor    Tropa[]    @relation("ProductorTropas")
+  tropasComoUsuarioFaena Tropa[]    @relation("UsuarioFaenaTropas")
+}
+
+// ==================== TROPAS ====================
+model Tropa {
+  id              String      @id @default(cuid())
+  numero          Int         @unique
+  codigo          String      @unique   // "B 2026 0001"
+  codigoSimplificado String?            // "B0001"
+  
+  productorId     String?
+  productor       Cliente?    @relation("ProductorTropas", fields: [productorId])
+  usuarioFaenaId  String
+  usuarioFaena    Cliente     @relation("UsuarioFaenaTropas", fields: [usuarioFaenaId])
+  
+  especie         Especie     @default(BOVINO)
+  dte             String      // Documento tránsito
+  guia            String      // Guía de tránsito
+  cantidadCabezas Int
+  
+  tiposAnimales   TropaAnimalCantidad[]  // Detalle por tipo
+  
+  corralId        String?
+  corral          Corral?     @relation(fields: [corralId])
+  
+  estado          EstadoTropa @default(RECIBIDO)
+  
+  pesoBruto       Float?
+  pesoTara        Float?
+  pesoNeto        Float?
+  pesoTotalIndividual Float?
+  
+  animales        Animal[]
+}
+
+model TropaAnimalCantidad {
+  id          String   @id @default(cuid())
+  tropaId     String
+  tropa       Tropa    @relation(fields: [tropaId], onDelete: Cascade)
+  tipoAnimal  TipoAnimal
+  cantidad    Int
+  
+  @@unique([tropaId, tipoAnimal])
+}
+
+enum Especie {
+  BOVINO
+  EQUINO
+}
+
+enum TipoAnimal {
+  // Bovinos
+  TO    // Toro
+  VA    // Vaca
+  VQ    // Vaquillona
+  MEJ   // Torito/Mej
+  NO    // Novillo
+  NT    // Novillito
+  // Equinos
+  PADRILLO
+  POTRILLO
+  YEGUA
+  CABALLO
+  BURRO
+  MULA
+}
+
+enum EstadoTropa {
+  RECIBIDO
+  EN_CORRAL
+  EN_PESAJE
+  PESADO
+  LISTO_FAENA
+  EN_FAENA
+  FAENADO
+  DESPACHADO
+}
+
+// ==================== ANIMALES ====================
+model Animal {
+  id             String       @id @default(cuid())
+  tropaId        String
+  tropa          Tropa        @relation(fields: [tropaId])
+  
+  numero         Int          // Número dentro de la tropa
+  codigo         String       @unique  // "B20260001-001"
+  caravana       String?
+  tipoAnimal     TipoAnimal
+  raza           String?
+  
+  pesoVivo       Float?
+  estado         EstadoAnimal @default(RECIBIDO)
+  corralId       String?
+  
+  fechaBaja      DateTime?
+  motivoBaja     String?
+  
+  pesajeIndividual PesajeIndividual?
+  asignacionGarron  AsignacionGarron?
+  
+  @@unique([tropaId, numero])
+}
+
+enum EstadoAnimal {
+  RECIBIDO
+  PESADO
+  EN_FAENA
+  FAENADO
+  EN_CAMARA
+  DESPACHADO
+  FALLECIDO
+}
+
+// ==================== PESAJE CAMIÓN ====================
+model PesajeCamion {
+  id              String          @id @default(cuid())
+  tipo            TipoPesajeCamion @default(INGRESO_HACIENDA)
+  numeroTicket    Int             @unique
+  
+  patenteChasis   String
+  patenteAcoplado String?
+  choferNombre    String?
+  choferDni       String?
+  
+  transportistaId String?
+  transportista   Transportista?  @relation(fields: [transportistaId])
+  
+  tropa           Tropa?          // Para ingreso hacienda
+  
+  destino         String?
+  remito          String?
+  factura         String?
+  precintos       String?
+  
+  pesoBruto       Float?
+  pesoTara        Float?
+  pesoNeto        Float?
+  
+  estado          EstadoPesaje    @default(ABIERTO)
+  operadorId      String?
+  
+  fecha           DateTime        @default(now())
+  fechaTara       DateTime?
+}
+
+enum TipoPesajeCamion {
+  INGRESO_HACIENDA
+  PESAJE_PARTICULAR
+  SALIDA_MERCADERIA
+}
+
+enum EstadoPesaje {
+  ABIERTO
+  CERRADO
+  ANULADO
+}
+
+// ==================== LISTA DE FAENA ====================
+model ListaFaena {
+  id            String          @id @default(cuid())
+  fecha         DateTime        @default(now())
+  estado        EstadoListaFaena @default(ABIERTA)
+  cantidadTotal Int             @default(0)
+  supervisorId  String?
+  fechaCierre   DateTime?
+  
+  tropas        ListaFaenaTropa[]
+  asignaciones  AsignacionGarron[]
+}
+
+model ListaFaenaTropa {
+  id            String   @id @default(cuid())
+  listaFaenaId  String
+  listaFaena    ListaFaena @relation(fields: [listaFaenaId], onDelete: Cascade)
+  tropaId       String
+  tropa         Tropa    @relation(fields: [tropaId])
+  cantidad      Int
+  
+  @@unique([listaFaenaId, tropaId])
+}
+
+enum EstadoListaFaena {
+  ABIERTA
+  EN_PROCESO
+  CERRADA
+  ANULADA
+}
+
+// ==================== ASIGNACIÓN DE GARRÓN ====================
+model AsignacionGarron {
+  id            String       @id @default(cuid())
+  listaFaenaId  String?
+  listaFaena    ListaFaena?  @relation(fields: [listaFaenaId])
+  
+  garron        Int          // Correlativo por día
+  
+  animalId      String?      @unique
+  animal        Animal?      @relation(fields: [animalId])
+  
+  tropaCodigo   String?
+  animalNumero  Int?
+  tipoAnimal    String?
+  pesoVivo      Float?
+  
+  tieneMediaDer Boolean      @default(false)
+  tieneMediaIzq Boolean      @default(false)
+  completado    Boolean      @default(false)
+  
+  horaIngreso   DateTime     @default(now())
+  
+  @@unique([listaFaenaId, garron])
+}
+
+// ==================== ROMANEO ====================
+model Romaneo {
+  id                String        @id @default(cuid())
+  listaFaenaId      String?
+  fecha             DateTime      @default(now())
+  
+  garron            Int
+  tropaCodigo       String?
+  numeroAnimal      Int?
+  tipoAnimal        TipoAnimal?
+  pesoVivo          Float?
+  
+  denticion        String?
+  tipificadorId    String?
+  
+  pesoMediaIzq      Float?
+  pesoMediaDer      Float?
+  pesoTotal         Float?
+  rinde             Float?
+  
+  estado            EstadoRomaneo @default(PENDIENTE)
+  operadorId        String?
+  
+  mediasRes         MediaRes[]
+}
+
+enum EstadoRomaneo {
+  PENDIENTE
+  CONFIRMADO
+  ANULADO
+}
+
+// ==================== MEDIAS RESES ====================
+model MediaRes {
+  id            String       @id @default(cuid())
+  romaneoId     String
+  romaneo       Romaneo      @relation(fields: [romaneoId])
+  
+  lado          LadoMedia    // IZQUIERDA o DERECHA
+  peso          Float
+  sigla         SiglaMedia   @default(A)  // A, T, D
+  
+  codigo        String       @unique
+  
+  estado        EstadoMediaRes @default(EN_CAMARA)
+  
+  camaraId      String?
+  camara        Camara?      @relation(fields: [camaraId])
+  
+  @@unique([romaneoId, lado, sigla])
+}
+
+enum LadoMedia {
+  IZQUIERDA
+  DERECHA
+}
+
+enum SiglaMedia {
+  A   // Asado
+  T   // Trasero
+  D   // Delantero
+}
+
+enum EstadoMediaRes {
+  EN_CAMARA
+  EN_CUARTEO
+  DESPACHADO
+}
+
+// ==================== STOCK CÁMARA ====================
+model StockMediaRes {
+  id            String   @id @default(cuid())
+  camaraId      String
+  camara        Camara   @relation(fields: [camaraId])
+  
+  tropaCodigo   String?
+  especie       Especie
+  
+  cantidad      Int      @default(0)
+  pesoTotal     Float    @default(0)
+  
+  fechaIngreso  DateTime @default(now())
+  
+  @@unique([camaraId, tropaCodigo, especie])
+}
+
+// ==================== TIPIFICADORES ====================
+model Tipificador {
+  id            String   @id @default(cuid())
+  nombre        String
+  apellido      String
+  numero        String?
+  matricula     String   @unique
+  activo        Boolean  @default(true)
+  
+  romaneos      Romaneo[]
+}
+
+// ==================== NUMERADORES ====================
+model Numerador {
+  id            String   @id @default(cuid())
+  nombre        String   @unique  // "TROPA_BOVINO", "TICKET"
+  ultimoNumero  Int      @default(0)
+  anio          Int?
+}
+
+// ==================== AUDITORÍA ====================
+model Auditoria {
+  id            String   @id @default(cuid())
+  operadorId    String?
+  operador      Operador? @relation(fields: [operadorId])
+  
+  modulo        String
+  accion        String   // CREATE, UPDATE, DELETE, LOGIN, LOGOUT
+  entidad       String
+  entidadId     String?
+  descripcion   String
+  datosAntes    String?  // JSON
+  datosDespues  String?  // JSON
+  
+  fecha         DateTime @default(now())
+  ip            String?
+}
+
+================================================================================
+5. SISTEMA DE PERMISOS Y AUTENTICACIÓN
+================================================================================
+
+AUTENTICACIÓN:
+- Login con usuario/password O con PIN numérico (4-6 dígitos)
+- Sesión guardada en localStorage como JSON
+- Validación contra base de datos en cada carga de página
+- Logout elimina sesión de localStorage
+
+FLUJO DE AUTENTICACIÓN (api/auth/route.ts):
+
+POST /api/auth (login):
+  Body: { usuario: string, password: string } | { pin: string }
+  Response: { success: boolean, data: Operador | null, error?: string }
+  
+  - Busca operador por usuario o PIN
+  - Compara password (texto plano en esta versión)
+  - Devuelve operador con todos sus permisos
+
+GET /api/auth (validar sesión):
+  Query: ?operadorId=string
+  Response: { success: boolean, data: Operador | null }
+  
+  - Valida que el operador existe en la DB
+  - Devuelve datos actualizados
+
+DELETE /api/auth (logout):
+  Body: { operadorId: string }
+  - Registra logout en auditoría
+
+PERMISOS DEL OPERADOR:
+cada permiso es un boolean en el modelo Operador:
+
+puedePesajeCamiones     → Acceso a módulo Pesaje Camiones
+puedePesajeIndividual   → Acceso a módulo Pesaje Individual
+puedeMovimientoHacienda → Acceso a módulo Movimiento de Hacienda
+puedeListaFaena         → Acceso a módulo Lista de Faena
+puedeIngresoCajon       → Acceso a módulo Ingreso a Cajón
+puedeRomaneo            → Acceso a módulos Romaneo y VB Romaneo
+puedeMenudencias        → Acceso a módulos de subproductos
+puedeStock              → Acceso a módulos de stock
+puedeReportes           → Acceso a módulos de reportes
+puedeCCIR               → Acceso a módulo CCIR
+puedeFacturacion        → Acceso a módulo Facturación
+puedeConfiguracion      → Acceso a módulos de configuración
+
+VERIFICACIÓN DE PERMISOS EN FRONTEND (page.tsx):
+function canAccess(page: Page): boolean {
+  if (!operador) return false
+  // Busca el permiso requerido en NAV_GROUPS
+  const item = findNavItem(page)
+  if (!item.permiso) return true
+  return operador.permisos[item.permiso] === true
+}
+
+VERIFICACIÓN DE PERMISOS EN BACKEND:
+Cada API debe verificar el permiso antes de ejecutar:
+const operador = await db.operador.findUnique({ where: { id: operadorId } })
+if (!operador?.puedePesajeCamiones) {
+  return NextResponse.json({ error: 'Sin permisos' }, { status: 403 })
+}
+
+================================================================================
+6. MÓDULOS DETALLADOS (ONLINE/OFFLINE)
+================================================================================
+
+Cada módulo sigue el patrón:
+1. Carga datos desde API (online)
+2. Muestra UI con datos
+3. Guarda en localStorage si hay error de conexión (offline)
+4. Sincroniza cuando vuelve la conexión
+
+--------------------------------------------------------------------------------
+6.1 MÓDULO PESAJE CAMIONES
+--------------------------------------------------------------------------------
+Archivo: /src/components/pesaje-camiones/index.tsx
+Hook: /src/components/pesaje-camiones/usePesajeCamiones.ts
+API: /src/app/api/pesaje-camion/route.ts
+
+FUNCIONALIDAD ONLINE:
+- Registrar peso bruto de ingreso (camión con animales)
+- Registrar tara (camión vacío)
+- Calcular peso neto automático
+- Imprimir ticket de pesaje
+- Gestionar 3 tipos: INGRESO_HACIENDA, PESAJE_PARTICULAR, SALIDA_MERCADERIA
+- Crear tropa automáticamente al registrar ingreso
+- Asignar corral disponible
+- Crear animales individuales automáticamente
+
+FUNCIONALIDAD OFFLINE:
+- Guarda pesajes en localStorage
+- Sincroniza cuando vuelve la conexión
+- Muestra indicador de modo offline
+
+LÓGICA DE NEGOCIO:
+1. INGRESO_HACIENDA:
+   a. Registrar datos del vehículo (patentes, chofer, transportista)
+   b. Ingresar documentos: DTE, Guía
+   c. Seleccionar productor y usuario faena
+   d. Seleccionar especie (BOVINO/EQUINO)
+   e. Ingresar cantidad por tipo de animal (NO, VA, VQ, etc.)
+   f. Seleccionar corral disponible (valida capacidad)
+   g. Registrar peso bruto
+   h. Crear registro PesajeCamion (estado ABIERTO)
+   i. Crear Tropa con código automático "B 2026 0001"
+   j. Crear registros Animal (uno por cada cabeza)
+   k. Actualizar stock del corral
+   l. Esperar tara para cerrar pesaje
+
+2. PESAJE_PARTICULAR:
+   a. Registrar datos del vehículo
+   b. Registrar peso bruto y tara en cualquier orden
+   c. Calcular neto y cerrar
+
+3. SALIDA_MERCADERIA:
+   a. Registrar datos del vehículo
+   b. Ingresar destino y remito
+   c. Registrar tara (vacío) luego bruto (cargado)
+   d. Calcular neto de mercadería
+
+ESTADOS DE PESAJE:
+- ABIERTO: Pendiente de tara
+- CERRADO: Completo (con neto)
+- ANULADO: Anulado por supervisor
+
+IMPRESIÓN DE TICKET:
+Archivo: /src/components/pesaje-camiones/ticketPrint.ts
+- Abre ventana emergente con diseño de ticket
+- Formato: 80mm de ancho (térmico)
+- Incluye: N° ticket, fecha, patentes, pesos, tropa, corral
+- Auto-imprime y cierra
+
+--------------------------------------------------------------------------------
+6.2 MÓDULO PESAJE INDIVIDUAL
+--------------------------------------------------------------------------------
+Archivo: /src/components/pesaje-individual-module.tsx
+API: /src/app/api/animales/route.ts
+
+FUNCIONALIDAD ONLINE:
+- Listar animales pendientes de pesaje
+- Pesaje individual de cada animal
+- Actualizar peso vivo del animal
+- Cambiar estado del animal a PESADO
+- Actualizar peso total de la tropa
+
+LÓGICA:
+1. Seleccionar tropa con animales pendientes
+2. Escanear caravana O seleccionar animal de lista
+3. Registrar peso individual
+4. Actualizar Animal.pesoVivo
+5. Actualizar Tropa.pesoTotalIndividual
+6. Cambiar Animal.estado a PESADO
+
+--------------------------------------------------------------------------------
+6.3 MÓDULO MOVIMIENTO HACIENDA
+--------------------------------------------------------------------------------
+Archivo: /src/components/movimiento-hacienda-module.tsx
+API: /src/app/api/tropas/mover/route.ts
+
+FUNCIONALIDAD:
+- Mover tropas completas entre corrales
+- Validar capacidad del corral destino
+- Actualizar stock de corrales origen y destino
+- Registrar movimiento en MovimientoCorral
+
+LÓGICA:
+1. Seleccionar tropa
+2. Seleccionar corral destino
+3. Validar capacidad disponible
+4. Actualizar Corral.stockBovinos o stockEquinos
+5. Actualizar Tropa.corralId
+6. Crear registro MovimientoCorral
+
+--------------------------------------------------------------------------------
+6.4 MÓDULO LISTA DE FAENA
+--------------------------------------------------------------------------------
+Archivo: /src/components/lista-faena/index.tsx
+API: /src/app/api/lista-faena/route.ts
+
+FUNCIONALIDAD:
+- Crear lista de faena del día
+- Seleccionar animales de múltiples tropas
+- Cerrar lista (bloquea modificaciones)
+- Generar orden de faena
+
+LÓGICA:
+1. Crear ListaFaena para el día (una por día)
+2. Agregar tropas y cantidad de animales
+3. Validar que animales estén pesados (estado PESADO)
+4. Cerrar lista → genera AsignacionGarron pendientes
+5. Cambiar animales a estado EN_FAENA
+
+--------------------------------------------------------------------------------
+6.5 MÓDULO INGRESO A CAJÓN
+--------------------------------------------------------------------------------
+Archivo: /src/components/ingreso-cajon/index.tsx
+API: /src/app/api/garrones-asignados/route.ts
+
+FUNCIONALIDAD:
+- Asignar número de garrón correlativo a cada animal
+- Buscar animal por código o número de tropa
+- Permitir garrones "sin identificar" (sin animal asignado)
+- Corregir asignaciones erróneas
+- Intercambiar garrones entre animales
+
+LÓGICA:
+1. Obtener próximo número de garrón (correlativo diario)
+2. Buscar animal por código "B20260001-005" o número
+3. Crear AsignacionGarron con:
+   - garron: número correlativo
+   - animalId: ID del animal
+   - tropaCodigo, tipoAnimal, pesoVivo (denormalizado)
+4. Permitir crear garrón sin animal (animalId null)
+5. Funciones especiales:
+   - Desasignar: quita animal del garrón
+   - Intercambiar: cambia animal entre dos garrones
+   - Cambiar animal: reasigna otro animal al garrón
+   - Corregir correlatividad: renumera garrones
+
+--------------------------------------------------------------------------------
+6.6 MÓDULO ROMANEO
+--------------------------------------------------------------------------------
+Archivo: /src/components/romaneo/index.tsx
+API: /src/app/api/romaneo/pesar/route.ts
+
+FUNCIONALIDAD ONLINE:
+- Pesaje de medias reses (derecha e izquierda)
+- Asignación de tipificador y cámara
+- Impresión de 3 rótulos por media (A, T, D)
+- Cálculo automático de rinde
+- Ingreso automático a cámara
+
+FLUJO DE PESAJE:
+1. Configurar tipificador y cámara al inicio del turno
+2. Seleccionar garrón (automático o manual)
+3. Verificar datos del animal asignado
+4. Pesar MEDIA DERECHA primero
+   - Ingresar peso
+   - Seleccionar dentición (0, 2, 4, 6, 8 dientes)
+   - Aceptar → Imprime 3 rótulos (A, T, D)
+5. Pesar MEDIA IZQUIERDA
+   - Ingresar peso
+   - Aceptar → Imprime 3 rótulos (A, T, D)
+6. Calcular peso total = der + izq
+7. Calcular rinde = (peso total / peso vivo) * 100
+8. Crear MediaRes en estado EN_CAMARA
+9. Actualizar AsignacionGarron.completado = true
+
+RÓTULOS:
+Formato: 100mm x 70mm (tamaño medio oficio)
+Contenido:
+- Empresa: SOLEMAR ALIMENTARIA
+- Número de garrón
+- Código de tropa
+- Tipo de animal
+- Peso de la media
+- Cámara destino
+- Dentición
+- Sigla (A=Asado, T=Trasero, D=Delantero)
+- Código de barras: *AA-MM-DD-GARRON-LADO-SIGLA*
+- Tipificador y matrícula
+
+IMPRESIÓN:
+- Abre ventana emergente
+- Genera HTML con 3 rótulos
+- window.print() automático
+- Cierra después de imprimir
+
+--------------------------------------------------------------------------------
+6.7 MÓDULO VB ROMANEO (Verificación)
+--------------------------------------------------------------------------------
+Archivo: /src/components/vb-romaneo/index.tsx
+API: /src/app/api/garrones-asignados/route.ts
+
+FUNCIONALIDAD:
+- Verificar y corregir asignaciones de garrones
+- Ver listado de garrones del día
+- Identificar garrones sin animal
+- Intercambiar animales entre garrones
+- Corregir correlatividad de números
+
+--------------------------------------------------------------------------------
+6.8 MÓDULO STOCK CÁMARAS
+--------------------------------------------------------------------------------
+Archivo: /src/components/stock-camaras/index.tsx
+API: /src/app/api/stock-camaras/route.ts
+
+FUNCIONALIDAD:
+- Ver stock de medias por cámara
+- Filtrar por tropa, especie
+- Ver cantidad de medias y peso total
+- Mover medias entre cámaras
+
+--------------------------------------------------------------------------------
+6.9 MÓDULO REPORTES
+--------------------------------------------------------------------------------
+Archivos:
+- /src/components/reportes/index.tsx
+- /src/components/planilla-01/index.tsx
+- /src/components/rindes-tropa.tsx
+- /src/components/stocks-corrales/index.tsx
+
+REPORTES DISPONIBLES:
+1. Planilla 01 (SENASA): Listado oficial de faena
+2. Rindes por tropa: Análisis de rendimiento
+3. Stocks corrales: Animales por corral
+4. Stocks cámaras: Medias por cámara
+5. Búsqueda por filtro: Búsqueda avanzada
+
+--------------------------------------------------------------------------------
+6.10 MÓDULO CONFIGURACIÓN
+--------------------------------------------------------------------------------
+Archivo: /src/components/configuracion/index.tsx
+Submódulos:
+- Camaras: CRUD de cámaras frigoríficas
+- Corrales: CRUD de corrales
+- Operadores: CRUD de operadores con permisos
+- Tipificadores: CRUD de tipificadores
+- Clientes: CRUD de clientes/productores
+- Transportistas: CRUD de transportistas
+- Productos: CRUD de productos
+- Subproductos: CRUD de tipos de subproducto
+- Insumos: CRUD de insumos
+
+================================================================================
+7. APIs Y ENDPOINTS
+================================================================================
+
+AUTENTICACIÓN:
+POST   /api/auth           → Login (usuario/password o PIN)
+GET    /api/auth           → Validar sesión (?operadorId=xxx)
+DELETE /api/auth           → Logout
+
+DATOS MAESTROS:
+GET    /api/clientes       → Listar clientes
+POST   /api/clientes       → Crear cliente
+PUT    /api/clientes       → Actualizar cliente
+DELETE /api/clientes       → Eliminar cliente
+
+GET    /api/transportistas → Listar transportistas
+POST   /api/transportistas → Crear transportista
+
+GET    /api/corrales       → Listar corrales con stock
+POST   /api/corrales       → Crear corral
+GET    /api/corrales/stock → Stock actualizado
+
+GET    /api/camaras        → Listar cámaras
+POST   /api/camaras        → Crear cámara
+
+GET    /api/tipificadores  → Listar tipificadores
+POST   /api/tipificadores  → Crear tipificador
+
+GET    /api/operadores     → Listar operadores
+POST   /api/operadores     → Crear operador
+PUT    /api/operadores     → Actualizar operador
+
+OPERACIONES:
+GET    /api/pesaje-camion          → Listar pesajes
+POST   /api/pesaje-camion          → Crear pesaje
+PUT    /api/pesaje-camion          → Actualizar (agregar tara)
+
+GET    /api/tropas                 → Listar tropas
+POST   /api/tropas                 → Crear tropa
+GET    /api/tropas/[id]            → Detalle de tropa
+POST   /api/tropas/mover           → Mover tropa de corral
+
+GET    /api/animales               → Listar animales
+POST   /api/animales               → Actualizar peso individual
+POST   /api/animales/baja          → Registrar baja/fallecimiento
+
+GET    /api/lista-faena            → Listar listas de faena
+POST   /api/lista-faena            → Crear/agregar a lista
+GET    /api/lista-faena/tropas     → Tropas disponibles
+GET    /api/lista-faena/animales-hoy → Animales para hoy
+POST   /api/lista-faena/cerrar     → Cerrar lista
+
+GET    /api/garrones-asignados     → Listar asignaciones
+POST   /api/garrones-asignados     → Crear asignación
+POST   /api/garrones-asignados/desasignar   → Desasignar
+POST   /api/garrones-asignados/intercambiar → Intercambiar
+POST   /api/garrones-asignados/cambiar-animal → Reasignar
+POST   /api/garrones-asignados/corregir-correlatividad → Renumerar
+
+GET    /api/romaneo/medias-dia     → Medias pesadas hoy
+POST   /api/romaneo/pesar          → Registrar pesaje de media
+
+GET    /api/stock-camaras          → Stock por cámara
+GET    /api/romaneos-dia           → Romaneos del día
+
+REPORTES:
+GET    /api/dashboard              → Estadísticas generales
+GET    /api/reportes               → Listado de reportes
+GET    /api/reportes/faena         → Reporte de faena
+GET    /api/reportes/produccion    → Reporte de producción
+GET    /api/reportes/rendimiento   → Reporte de rendimiento
+GET    /api/planilla01             → Planilla 01 SENASA
+
+================================================================================
+8. CONFIGURACIONES Y VARIABLES DE ENTORNO
+================================================================================
+
+ARCHIVO .env:
+DATABASE_URL="file:./db/custom.db"
+NODE_ENV="development"
+
+ARCHIVO next.config.ts:
+const nextConfig = {
+  reactStrictMode: true,
+  images: {
+    domains: [],
+    unoptimized: true
+  }
+}
+
+ARCHIVO tailwind.config.ts:
+- Extend colors para amber (color principal)
+- Font family: system-ui
+- Border radius variables para shadcn/ui
+
+ARCHIVO tsconfig.json:
+- Strict mode habilitado
+- Paths: @/ → ./src/
+- Target: ES2022
+
+================================================================================
+9. INSTALACIÓN PARA WINDOWS 11
+================================================================================
+
+REQUISITOS PREVIOS:
+1. Windows 11 Pro o Home
+2. PowerShell 5.1+ (incluido en Windows 11)
+3. Conexión a internet
+4. Permisos de administrador (para algunas instalaciones)
+
+PASO 1: INSTALAR BUN
+Abra PowerShell como administrador:
+> Set-ExecutionPolicy Bypass -Scope Process -Force
+> irm bun.sh/install.ps1 | iex
+
+Verificar instalación:
+> bun --version
+
+PASO 2: COPIAR PROYECTO
+Opción A: Desde ZIP
+- Descomprimir proyecto-trazabilidad.zip en C:\frigorifico
+
+Opción B: Desde Git
+> git clone https://github.com/usuario/frigorifico.git C:\frigorifico
+> cd C:\frigorifico
+
+PASO 3: INSTALAR DEPENDENCIAS
+> cd C:\frigorifico
+> bun install
+
+PASO 4: CONFIGURAR BASE DE DATOS
+> bunx prisma generate
+> bun run db:push
+
+PASO 5: CARGAR DATOS INICIALES
+> bun run seed
+
+PASO 6: INICIAR APLICACIÓN
+> bun run dev
+
+La aplicación estará disponible en: http://localhost:3000
+
+SCRIPT AUTOMATIZADO (install-windows.ps1):
+# Ejecutar desde PowerShell
+.\install-windows.ps1
+
+CONTENIDO DEL SCRIPT:
+```powershell
+# install-windows.ps1
+Write-Host "Instalando Sistema Frigorífico..." -ForegroundColor Green
+
+# Verificar Bun
+if (!(Get-Command bun -ErrorAction SilentlyContinue)) {
+    Write-Host "Instalando Bun..." -ForegroundColor Yellow
+    irm bun.sh/install.ps1 | iex
+}
+
+# Instalar dependencias
+Write-Host "Instalando dependencias..." -ForegroundColor Yellow
+bun install
+
+# Configurar base de datos
+Write-Host "Configurando base de datos..." -ForegroundColor Yellow
+bunx prisma generate
+bun run db:push
+
+# Cargar datos iniciales
+Write-Host "Cargando datos iniciales..." -ForegroundColor Yellow
+bun run seed
+
+Write-Host "Instalación completa!" -ForegroundColor Green
+Write-Host "Ejecute 'bun run dev' para iniciar la aplicación" -ForegroundColor Cyan
+```
+
+DATOS INICIALES (seed.ts):
+- Usuario admin/admin123 con todos los permisos
+- Cámaras de faena predefinidas
+- Corrales predefinidos
+- Códigos de especie y transporte
+
+================================================================================
+10. COMPILACIÓN Y DESPLIEGUE
+================================================================================
+
+MODO DESARROLLO:
+> bun run dev
+
+MODO PRODUCCIÓN:
+> bun run build
+> bun run start
+
+COMPILAR EJECUTABLE (opcional):
+Usar pkg o similar:
+> bun run build
+> npx pkg . --targets node18-win-x64 --output frigorifico.exe
+
+BACKUP DE BASE DE DATOS:
+Copiar archivo db/custom.db
+
+RESTAURAR BACKUP:
+Reemplazar db/custom.db con backup
+
+================================================================================
+                     NOTAS IMPORTANTES PARA IA
+================================================================================
+
+1. NUNCA usar Node.js, siempre Bun
+2. NUNCA usar server actions, siempre API routes
+3. NUNCA modificar package.json sin verificar compatibilidad
+4. Los permisos se verifican en frontend (canAccess) Y backend
+5. Códigos de tropa: "B 2026 0001" (con espacios)
+6. Códigos de animal: "B20260001-001" (sin espacios)
+7. Garrones son correlativos DIARIOS (reinician cada día en 1)
+8. Orden de pesaje en romaneo: DERECHA primero, IZQUIERDA después
+9. Se imprimen 3 rótulos por media: A (Asado), T (Trasero), D (Delantero)
+10. Base de datos SQLite en db/custom.db
+11. Usar componentes shadcn/ui existentes, NO crear nuevos
+12. Colores principales: amber (primario), stone (neutros)
+13. Responsive design obligatorio (mobile-first)
+14. Toast notifications con sonner
+15. Validar siempre inputs del usuario
+
+================================================================================
+                     © 2024 Solemar Alimentaria
+================================================================================

@@ -1,0 +1,662 @@
+[
+  {
+    "id": "",
+    "nombre": "MONEDERO LEANDRO",
+    "cuit": "23-31977901-9",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "SCHINDLER MARTIN",
+    "cuit": "20-21811316-9",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "ESTANCIA NUEVA AURORA S.A",
+    "cuit": "33-63082153-9",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "LOGINPET SRL",
+    "cuit": "30-71052720-9",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "SORBELLINI EDUARDO CESAR",
+    "cuit": "20-21388428-0",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "KREITZ JUAN EDUARDO",
+    "cuit": "20-27965919-9",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "KREITZ JUAN CARLOS",
+    "cuit": "20-05519189-2",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "KREITZ ALEJANDRA MARIEL",
+    "cuit": "27-31149835-0",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "LM CONSIGNATARIA S.A.S",
+    "cuit": "30-71668993-6",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "LASTRA PATRICIO ROSENDO",
+    "cuit": "23-25405120-9",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "TASSILE JUAN BLAS",
+    "cuit": "20-43372396-2",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "LAS TAPERITAS S.A",
+    "cuit": "30-61537464-0",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "ROMARIZ GUSTAVO ANDRES",
+    "cuit": "23-20856751-9",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "ZUAIN FRANCISCO RODOLFO",
+    "cuit": "30-71627303-9",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "LOPEZ ROBERTO ANIBAL",
+    "cuit": "20-22943281-9",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "TRANSPORTES DOLORES PARRA S.A",
+    "cuit": "30-70825920-5",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "AGROPECUARIA DON MANUEL S.A",
+    "cuit": "30-70746390-9",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "SARASOLA ESMIR ANTONIO",
+    "cuit": "20-17290566-9",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "RUFFINI GABRIEL HORACIO",
+    "cuit": "20-21517858-8",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "YAMINUHE SRL",
+    "cuit": "30-70898735-9",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "MONEDERO ARMANDO DANIEL",
+    "cuit": "20-29191015-8",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "RODRIGUEZ MARIO ISAIAS",
+    "cuit": "23-08212661-9",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "BERTIL GRAHN S.A.A",
+    "cuit": "30-52732728-4",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "ARANEDA MARIO ALEJANDRO",
+    "cuit": "20-23680826-3",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "LEDESMA ARIEL A.",
+    "cuit": "20-33920177-4",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "LAMA MIGUEL ANGEL",
+    "cuit": "20-08210169-2",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "VINCENTY JORGE A.",
+    "cuit": "20-12684043-9",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "SEIRA HECTOR",
+    "cuit": "20-11777707-4",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "LA MANADA S.A",
+    "cuit": "30-64097516-0",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "DIETZEL FACUNDO ROBERTO",
+    "cuit": "20-33379818-3",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "ARMINDA SRL",
+    "cuit": "30-71166658-3",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "BONADE MARIO ANTONIO",
+    "cuit": "20-13251771-2",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "BELLOCCHIO JUAN IGNACIO",
+    "cuit": "23-34726694-9",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "KEDING ELSA OTILIA",
+    "cuit": "27-10749548-2",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "BONADE Marcelo JAVIER",
+    "cuit": "20-29760961-1",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "COLLINO GABRIEL DARIO",
+    "cuit": "20-23856795-6",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "OSORIO ANDREA CECILIA",
+    "cuit": "27-27432075-9",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "ESTANCIA CHELFORO S.A",
+    "cuit": "30-71412285-2",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "QUIROGA JULIO HUGO",
+    "cuit": "20-33621523-5",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "ANSOLA CARLOS ALBERTO",
+    "cuit": "20-10595415-9",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "BENENTE CHRISTIAN ALBERTO",
+    "cuit": "20-25269954-7",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "VINCENTY PEDRO JORGE",
+    "cuit": "20-11375501-7",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "BURTRE CRISTIAN BASILIO",
+    "cuit": "20-23571495-8",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "AGROSERVICE S.A",
+    "cuit": "30-70749828-1",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "BOSQUE ANDINO S.A",
+    "cuit": "30-69725524-5",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "FV AGROPECUARIA SRL",
+    "cuit": "30-71570285-8",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "VILLA NORBERTO FABIAN",
+    "cuit": "20-30951192-2",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "LA MASCOTA SRL",
+    "cuit": "30-71220201-3",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "STIER NICOLAS MARIA",
+    "cuit": "20-33174254-7",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "ZUAIN ARIEL HERNAN",
+    "cuit": "20-12141560-8",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "AGUIRREZABALA SILVANA",
+    "cuit": "27-28559990-9",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "OVIEDO GABRIEL ALEJANDRO",
+    "cuit": "20-23580885-8",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "GRANJAS INTEGRADAS SANTA INES",
+    "cuit": "30-71045474-0",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "JONES ALAN MORGAN AARON",
+    "cuit": "20-33184755-1",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "EL REFUGIO SOCIEDAD EN COMANDITA",
+    "cuit": "30-56980444-9",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "LEALI JUAN ALBERTO",
+    "cuit": "20-29456178-2",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "SEGATORI RAMIRO",
+    "cuit": "20-26663896-6",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "SAN LEON SRL",
+    "cuit": "30-71357700-2",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "CABEZAS FACUNDO",
+    "cuit": "20-23329350-5",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "MONTE CRISTALINA S.A",
+    "cuit": "30-70816238-4",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "ARANEDA MARIO ALEJANDRO",
+    "cuit": "20-23880826-3",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "SUCESION DE LENZI ALDO R.",
+    "cuit": "20-07303372-2",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "GALLARDO CARLOS DARIO",
+    "cuit": "23-25465981-9",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "TERNEROS DE LA PATAGONIA SRL",
+    "cuit": "30-71031818-9",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "HERMANOS UNGESCHUCK",
+    "cuit": "30-71691745-9",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  },
+  {
+    "id": "",
+    "nombre": "VINCENTY PEDRO JORGE",
+    "cuit": "20-11375550-7",
+    "email": null,
+    "telefono": null,
+    "contacto": null,
+    "esProductor": true,
+    "esUsuarioFaena": false
+  }
+]
