@@ -773,8 +773,8 @@ function ReportesPHTab() {
   const [fechaHasta, setFechaHasta] = useState('')
   const [filtroTropa, setFiltroTropa] = useState('')
   const [filtroProductor, setFiltroProductor] = useState('')
-  const [filtroUsuarioFaena, setFiltroUsuarioFaena] = useState('')
-  const [filtroTipoAnimal, setFiltroTipoAnimal] = useState('')
+  const [filtroUsuarioFaena, setFiltroUsuarioFaena] = useState('__TODOS__')
+  const [filtroTipoAnimal, setFiltroTipoAnimal] = useState('__TODOS__')
   const [filtroClasificacion, setFiltroClasificacion] = useState('TODAS')
   const [filtroPhMin, setFiltroPhMin] = useState('')
   const [filtroPhMax, setFiltroPhMax] = useState('')
@@ -817,10 +817,10 @@ function ReportesPHTab() {
       const params = new URLSearchParams()
       if (fechaDesde) params.set('fechaDesde', fechaDesde)
       if (fechaHasta) params.set('fechaHasta', fechaHasta)
-      if (filtroTropa) params.set('tropaCodigo', filtroTropa)
-      if (filtroProductor) params.set('productorId', filtroProductor)
-      if (filtroUsuarioFaena) params.set('usuarioFaenaId', filtroUsuarioFaena)
-      if (filtroTipoAnimal) params.set('tipoAnimal', filtroTipoAnimal)
+      if (filtroTropa && filtroTropa !== '__TODOS__') params.set('tropaCodigo', filtroTropa)
+      if (filtroProductor && filtroProductor !== '__TODOS__') params.set('productorId', filtroProductor)
+      if (filtroUsuarioFaena && filtroUsuarioFaena !== '__TODOS__') params.set('usuarioFaenaId', filtroUsuarioFaena)
+      if (filtroTipoAnimal && filtroTipoAnimal !== '__TODOS__') params.set('tipoAnimal', filtroTipoAnimal)
 
       if (subTab === 'resumen') {
         const res = await fetch(`/api/calidad-ph/reportes?modo=resumen&${params}`)
@@ -872,8 +872,8 @@ function ReportesPHTab() {
       const params = new URLSearchParams()
       if (fechaDesde) params.set('fechaDesde', fechaDesde)
       if (fechaHasta) params.set('fechaHasta', fechaHasta)
-      if (filtroTropa) params.set('tropaCodigo', filtroTropa)
-      if (filtroProductor) params.set('productorId', filtroProductor)
+      if (filtroTropa && filtroTropa !== '__TODOS__') params.set('tropaCodigo', filtroTropa)
+      if (filtroProductor && filtroProductor !== '__TODOS__') params.set('productorId', filtroProductor)
       params.set('limit', '10000')
 
       const res = await fetch(`/api/calidad-ph?${params}`)
@@ -1053,7 +1053,7 @@ function ReportesPHTab() {
               <Select value={filtroUsuarioFaena} onValueChange={v => setFiltroUsuarioFaena(v)}>
                 <SelectTrigger className="h-9"><SelectValue placeholder="Todos" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos</SelectItem>
+                  <SelectItem value="__TODOS__">Todos</SelectItem>
                   {listaUsuariosFaena.map(u => (
                     <SelectItem key={u.id} value={u.id}>{u.nombre}</SelectItem>
                   ))}
@@ -1065,7 +1065,7 @@ function ReportesPHTab() {
               <Select value={filtroProductor} onValueChange={v => setFiltroProductor(v)}>
                 <SelectTrigger className="h-9"><SelectValue placeholder="Todos" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos</SelectItem>
+                  <SelectItem value="__TODOS__">Todos</SelectItem>
                   {listaProductores.map(p => (
                     <SelectItem key={p.id} value={p.id}>{p.nombre}</SelectItem>
                   ))}
@@ -1077,7 +1077,7 @@ function ReportesPHTab() {
               <Select value={filtroTropa} onValueChange={v => setFiltroTropa(v)}>
                 <SelectTrigger className="h-9"><SelectValue placeholder="Todas" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todas</SelectItem>
+                  <SelectItem value="__TODOS__">Todas</SelectItem>
                   {listaTropas.map(t => (
                     <SelectItem key={t.id} value={t.codigo}>{t.codigo} (N° {t.numero})</SelectItem>
                   ))}
@@ -1089,7 +1089,7 @@ function ReportesPHTab() {
               <Select value={filtroTipoAnimal} onValueChange={v => setFiltroTipoAnimal(v)}>
                 <SelectTrigger className="h-9"><SelectValue placeholder="Todos" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos</SelectItem>
+                  <SelectItem value="__TODOS__">Todos</SelectItem>
                   {listaTiposAnimal.map(t => (
                     <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
                   ))}

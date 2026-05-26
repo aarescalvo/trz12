@@ -69,46 +69,36 @@ export async function GET(request: NextRequest) {
 
       // 2) Si no encontró nada, buscar por garrón (rango de la tropa)
       if (medias.length === 0) {
-        // Buscar la tropa para obtener el rango de garrones
-        const tropa = await db.tropa.findFirst({
-          where: {
-            OR: [
-              { codigo: tropaCodigo },
-              { codigoSimplificado: tropaCodigo },
-              { numero: parseInt(tropaCodigo.replace(/\D/g, '')) || 0 }
-            ]
-          },
-          include: {
-            animales: { select: { garron: true }, where: { garron: { not: null } }, orderBy: { garron: 'asc' } },
-            listasFaena: {
-              select: { listaFaena: { select: { romaneos: { select: { garron: true } } } } }
-            }
-          }
+        // Buscar romaneos por tropaCodigo (pueden tener garrones asignados)
+        const romaneos = await db.romaneo.findMany({
+          where: { tropaCodigo },
+          select: { garron: true }
         })
 
-        if (tropa) {
-          // Obtener todos los garrones de la tropa (desde animales o lista de faena)
-          const garrones = new Set<number>()
-          tropa.animales?.forEach(a => { if (a.garron) garrones.add(a.garron) })
-          tropa.listasFaena?.forEach(lf => {
-            lf.listaFaena?.romaneos?.forEach(r => garrones.add(r.garron))
+        // También buscar garrones por AsignacionGarron
+        const asignaciones = await db.asignacionGarron.findMany({
+          where: { tropaCodigo },
+          select: { garron: true }
+        })
+
+        const garrones = new Set<number>()
+        romaneos.forEach(r => garrones.add(r.garron))
+        asignaciones.forEach(a => garrones.add(a.garron))
+
+        if (garrones.size > 0) {
+          const garronArray = Array.from(garrones)
+          console.log(`[medias-res] Tropa ${tropaCodigo}: buscando por ${garronArray.length} garrones`)
+
+          medias = await db.mediaRes.findMany({
+            where: { romaneo: { garron: { in: garronArray } } },
+            include: {
+              romaneo: { include: { tipificador: true } },
+              camara: true
+            },
+            orderBy: { createdAt: 'desc' },
+            take: limit
           })
-
-          if (garrones.size > 0) {
-            const garronArray = Array.from(garrones)
-            console.log(`[medias-res] Tropa ${tropaCodigo}: buscando por ${garronArray.length} garrones`, garronArray.slice(0, 10), '...')
-
-            medias = await db.mediaRes.findMany({
-              where: { romaneo: { garron: { in: garronArray } } },
-              include: {
-                romaneo: { include: { tipificador: true } },
-                camara: true
-              },
-              orderBy: { createdAt: 'desc' },
-              take: limit
-            })
-            console.log(`[medias-res] Medias res encontradas por búsqueda alternativa (garrón): ${medias.length}`)
-          }
+          console.log(`[medias-res] Medias res encontradas por búsqueda alternativa (garrón): ${medias.length}`)
         }
       } else {
         console.log(`[medias-res] Medias res encontradas por tropaCodigo: ${medias.length}`)
@@ -117,45 +107,27 @@ export async function GET(request: NextRequest) {
       // 3) Si todavía no hay medias res y autoGenerar=true, crearlas desde romaneos
       if (medias.length === 0 && autoGenerar) {
         // Buscar romaneos con peso que no tengan medias res
-        const romaneos = await db.romaneo.findMany({
-          where: {
-            OR: [
-              { tropaCodigo },
-              // También buscar por garrón si la tropa tiene animales
-            ]
-          },
-          include: {
-            mediasRes: true
-          }
+        const romaneosConPeso = await db.romaneo.findMany({
+          where: { tropaCodigo },
+          include: { mediasRes: true }
         })
 
-        // Si no encontró por tropaCodigo, buscar por garrón
-        let romaneosParaGenerar = romaneos.filter(r => r.mediasRes.length === 0 && (r.pesoMediaIzq || r.pesoMediaDer))
+        let romaneosParaGenerar = romaneosConPeso.filter(r => r.mediasRes.length === 0 && (r.pesoMediaIzq || r.pesoMediaDer))
 
         if (romaneosParaGenerar.length === 0) {
-          // Buscar tropa y sus garrones
-          const tropa = await db.tropa.findFirst({
-            where: {
-              OR: [
-                { codigo: tropaCodigo },
-                { codigoSimplificado: tropaCodigo },
-                { numero: parseInt(tropaCodigo.replace(/\D/g, '')) || 0 }
-              ]
-            },
-            include: { animales: { select: { garron: true } } }
+          // Buscar por AsignacionGarron si no hay romaneos con tropaCodigo
+          const asignaciones = await db.asignacionGarron.findMany({
+            where: { tropaCodigo },
+            select: { garron: true }
           })
+          const garronesAlt = asignaciones.map(a => a.garron)
 
-          if (tropa) {
-            const garrones = new Set<number>()
-            tropa.animales?.forEach(a => { if (a.garron) garrones.add(a.garron) })
-
-            if (garrones.size > 0) {
-              const romaneosPorGarron = await db.romaneo.findMany({
-                where: { garron: { in: Array.from(garrones) } },
-                include: { mediasRes: true }
-              })
-              romaneosParaGenerar = romaneosPorGarron.filter(r => r.mediasRes.length === 0 && (r.pesoMediaIzq || r.pesoMediaDer))
-            }
+          if (garronesAlt.length > 0) {
+            const romaneosPorGarron = await db.romaneo.findMany({
+              where: { garron: { in: garronesAlt } },
+              include: { mediasRes: true }
+            })
+            romaneosParaGenerar = romaneosPorGarron.filter(r => r.mediasRes.length === 0 && (r.pesoMediaIzq || r.pesoMediaDer))
           }
         }
 
