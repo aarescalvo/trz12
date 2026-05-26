@@ -173,15 +173,15 @@ export async function POST(request: NextRequest) {
     const prodData = [
       { v: 'Productor:', c: 1, w: 2, bold: true },
       { v: tropa.productor?.nombre || tropa.usuarioFaena?.nombre || '-', c: 3, w: 4 },
-      { v: 'CUIT:', c: 5, w: 1, bold: true },
-      { v: tropa.productor?.cuit || tropa.usuarioFaena?.cuit || '-', c: 6, w: 2 },
-      { v: 'Tropa N°:', c: 8, w: 1, bold: true },
-      { v: tropa.numero?.toString() || tropa.codigo || '-', c: 9, w: 2 },
-      { v: 'Cabezas:', c: 11, w: 1, bold: true },
-      { v: String(tropa.cantidadCabezas), c: 12, w: 1 },
+      { v: 'CUIT:', c: 7, w: 1, bold: true },
+      { v: tropa.productor?.cuit || tropa.usuarioFaena?.cuit || '-', c: 8, w: 2 },
+      { v: 'Tropa N°:', c: 10, w: 1, bold: true },
+      { v: tropa.numero?.toString() || tropa.codigo || '-', c: 11, w: 1 },
+      { v: 'Cabezas:', c: 12, w: 1, bold: true },
+      { v: String(tropa.cantidadCabezas), c: 13, w: 1 },
     ]
     prodData.forEach(d => {
-      if (d.w) ws.mergeCells(r, d.c, r, d.c + d.w - 1)
+      if (d.w > 1) ws.mergeCells(r, d.c, r, d.c + d.w - 1)
       const cell = prodRow.getCell(d.c)
       cell.value = d.v
       applyCell(cell, {
@@ -220,7 +220,7 @@ export async function POST(request: NextRequest) {
       { v: tropa.pesajeCamion?.choferDni || '-', c: 11, w: 2 },
     ]
     transData1.forEach(d => {
-      if (d.w) ws.mergeCells(r, d.c, r, d.c + d.w - 1)
+      if (d.w > 1) ws.mergeCells(r, d.c, r, d.c + d.w - 1)
       const cell = transRow1.getCell(d.c)
       cell.value = d.v
       applyCell(cell, {
@@ -244,7 +244,7 @@ export async function POST(request: NextRequest) {
       { v: tropa.pesajeCamion?.precintos || '-', c: 11, w: 2 },
     ]
     transData2.forEach(d => {
-      if (d.w) ws.mergeCells(r, d.c, r, d.c + d.w - 1)
+      if (d.w > 1) ws.mergeCells(r, d.c, r, d.c + d.w - 1)
       const cell = transRow2.getCell(d.c)
       cell.value = d.v
       applyCell(cell, {
@@ -282,7 +282,7 @@ export async function POST(request: NextRequest) {
       { v: tropa.corral?.nombre || '-', c: 11, w: 2 },
     ]
     docData.forEach(d => {
-      if (d.w) ws.mergeCells(r, d.c, r, d.c + d.w - 1)
+      if (d.w > 1) ws.mergeCells(r, d.c, r, d.c + d.w - 1)
       const cell = docRow.getCell(d.c)
       cell.value = d.v
       applyCell(cell, {
