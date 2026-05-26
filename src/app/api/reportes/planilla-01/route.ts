@@ -227,16 +227,15 @@ export async function GET(request: NextRequest) {
     // Preparar datos de la tabla
     const tableData = tropa.animales.map((animal, index) => {
       const tipoAnimalStr = formatTipoAnimal(animal.tipoAnimal)
-      const sexo = getSexoFromTipo(animal.tipoAnimal)
       const peso = animal.pesajeIndividual?.peso || animal.pesoVivo || null
 
       return [
         (index + 1).toString(),
+        animal.caravana || '',
         tipoAnimalStr,
-        sexo,
         animal.raza || '',
         peso ? peso.toFixed(1) : '',
-        animal.caravana || '',
+        tropa.corral?.nombre || '',
         animal.observaciones || ''
       ]
     })
@@ -244,11 +243,11 @@ export async function GET(request: NextRequest) {
     // Headers
     const headers = [
       'N\u00ba',
-      'Tipo',
-      'Sexo',
-      'Raza',
-      'Peso Entrada (kg)',
       'Caravana',
+      'Tipo',
+      'Raza',
+      'Peso (kg)',
+      'Corral',
       'Observaciones'
     ]
 
@@ -269,12 +268,12 @@ export async function GET(request: NextRequest) {
       },
       columnStyles: {
         0: { cellWidth: 10, halign: 'center' },
-        1: { cellWidth: 20, halign: 'center' },
-        2: { cellWidth: 10, halign: 'center' },
-        3: { cellWidth: 22, halign: 'center' },
-        4: { cellWidth: 28, halign: 'right' },
-        5: { cellWidth: 35, halign: 'center' },
-        6: { cellWidth: 20, halign: 'center' }
+        1: { cellWidth: 30, halign: 'center' },
+        2: { cellWidth: 18, halign: 'center' },
+        3: { cellWidth: 18, halign: 'center' },
+        4: { cellWidth: 22, halign: 'right' },
+        5: { cellWidth: 18, halign: 'center' },
+        6: { cellWidth: 30, halign: 'left' }
       },
       margin: { left: margin, right: margin },
       didDrawPage: (data) => {
