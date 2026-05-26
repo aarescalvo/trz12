@@ -68,3 +68,28 @@ Stage Summary:
 - Los filtros de reportes (peso, clasificación, tipo animal, pH) ahora funcionan en todos los sub-tabs
 - El dropdown de productores usa un endpoint dedicado más eficiente
 - Pendiente: push a GitHub trz11
+
+---
+Task ID: 4
+Agent: Main Agent
+Task: Fix medias reses no visibles en control de pH + push a GitHub
+
+Work Log:
+- Investigado por qué el usuario aún no ve medias reses en control de pH tras los fixes previos
+- Verificado que los fixes de permisos (checkAnyPermission en GET) estaban correctamente subidos a trz11
+- Encontrado Bug 1: En medias-res/route.ts, POST y PUT usaban checkPermission (singular) que NO estaba importado, solo checkAnyPermission lo estaba. Esto causaba TypeError en operaciones de escritura
+- Encontrado Bug 2: En calidad-ph/index.tsx, si la API devolvía error (403/500), el código NO mostraba mensaje alguno — solo decía "No se encontraron medias reses" de forma engañosa
+- Encontrado Bug 3: tropaCodigo con espacios (ej: "B 2026 0001") no usaba encodeURIComponent
+- Fix 1: Agregado checkPermission al import en medias-res/route.ts
+- Fix 2: Agregado bloque else con toast.error + console.error cuando la API de medias res falla
+- Fix 3: Agregado encodeURIComponent() en todas las llamadas con tropaCodigo
+- Commit c5cb66e creado y pusheado a origin/main de trz11
+
+Archivos modificados:
+- src/app/api/medias-res/route.ts (import checkPermission)
+- src/components/calidad-ph/index.tsx (error handling + encodeURIComponent)
+
+Stage Summary:
+- Push exitoso a https://github.com/aarescalvo/trz11 (commit c5cb66e)
+- El usuario ahora verá mensajes de error claros si hay problemas de permisos
+- POST/PUT de medias-res ya no crashean por falta de import
