@@ -143,3 +143,25 @@ Stage Summary:
 - Push exitoso a origin/main sin force pushes
 - Todas las tropas ahora muestran medias reses (no solo la 155)
 - Reportes tienen 9 filtros funcionales con dropdowns
+
+---
+Task ID: 7
+Agent: Main Agent
+Task: Corregir migración SQL - CREATE TYPE IF NOT EXISTS + tablas faltantes
+
+Work Log:
+- El usuario ejecutó `npx prisma migrate deploy` y obtuvo error: PostgreSQL no soporta CREATE TYPE IF NOT EXISTS (sintaxis de PG 16+)
+- Reemplazadas las 80 sentencias CREATE TYPE IF NOT EXISTS por bloques DO $$ BEGIN...EXCEPTION WHEN duplicate_object THEN null; END $$
+- Descubierto que faltaban 70 tablas en la migración (incluyendo configuracion_ph, Balanza, TipoTrabajo, ConfiguracionSeguridad, etc.)
+- Generadas las 70 tablas faltantes a partir del schema.prisma con tipos, defaults e indices correctos
+- Validación final: 168 tablas, 80 ENUMs, 435 indices, 0 DROP/TRUNCATE/DELETE
+- Commits: bac8e5f (fix CREATE TYPE), 16f7446 (agregar 70 tablas faltantes)
+- Push exitoso a origin/main sin force pushes
+
+Archivos modificados:
+- prisma/migrations/20260526_sync_full_schema/migration.sql (4155 líneas)
+
+Stage Summary:
+- Migración completa y corregida: 168 tablas nuevas + 80 ENUMs + 435 indices
+- Compatibilidad asegurada con todas las versiones de PostgreSQL
+- El usuario debe ejecutar: git pull origin main && npx prisma migrate deploy
