@@ -19,6 +19,14 @@ export async function GET(
         productor: true,
         usuarioFaena: true,
         tiposAnimales: true,
+        corral: { select: { id: true, nombre: true } },
+        pesajeCamion: {
+          select: {
+            id: true, numeroTicket: true, tipo: true, patenteChasis: true, patenteAcoplado: true,
+            choferNombre: true, choferDni: true, transportista: { select: { id: true, nombre: true, cuit: true } },
+            precintos: true, pesoBruto: true, pesoTara: true, pesoNeto: true, estado: true
+          }
+        },
         animales: {
           orderBy: { numero: 'asc' },
           include: { corral: { select: { id: true, nombre: true } } }

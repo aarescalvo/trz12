@@ -26,24 +26,33 @@ interface Tropa {
   dte: string
   guia: string
   fechaRecepcion: string
-  corral?: { nombre: string }
+  corral?: { id: string; nombre: string }
   productor?: { nombre: string; cuit: string }
   usuarioFaena: { nombre: string; cuit: string }
   pesajeCamion?: {
+    id: string
+    numeroTicket: number
+    tipo: string
     patenteChasis: string
     patenteAcoplado?: string
     choferNombre?: string
     choferDni?: string
     transportista?: { nombre: string; cuit: string }
     precintos?: string
+    pesoBruto?: number
+    pesoTara?: number
+    pesoNeto?: number
+    estado: string
   }
   animales: Array<{
     id: string
     numero: number
+    codigo?: string
     tipoAnimal: string
     caravana?: string
     pesoVivo?: number
     raza?: string
+    estado?: string
   }>
 }
 
@@ -151,65 +160,167 @@ export function Planilla01Module({ operador }: Props) {
     }
   }
 
+  // Cálculos de pesaje
+  const getDatosPesaje = () => {
+    const kgNetoCamion = tropaSeleccionada?.pesajeCamion?.pesoNeto || 0
+    const kgBrutoCamion = tropaSeleccionada?.pesajeCamion?.pesoBruto || 0
+    const kgTaraCamion = tropaSeleccionada?.pesajeCamion?.pesoTara || 0
+    const kgNetoAnimales = (tropaSeleccionada?.animales || []).reduce((sum, a) => sum + (a.pesoVivo || 0), 0)
+    const animalesPesados = (tropaSeleccionada?.animales || []).filter(a => a.pesoVivo && a.pesoVivo > 0).length
+    const diferencia = kgNetoCamion - kgNetoAnimales
+    return { kgNetoCamion, kgBrutoCamion, kgTaraCamion, kgNetoAnimales, animalesPesados, diferencia }
+  }
+
   const handleGenerarPDF = async () => {
     if (!tropaSeleccionada) return
     setGenerando('pdf')
     try {
       const doc = new jsPDF('landscape', 'mm', 'a4')
       const pageWidth = doc.internal.pageSize.getWidth()
-      
+      const datos = getDatosPesaje()
+
       // Título principal
-      doc.setFontSize(16)
+      doc.setFontSize(14)
       doc.setFont('helvetica', 'bold')
-      doc.text('PLANILLA 01 - REGISTRO DE INGRESO DE HACIENDA', pageWidth / 2, 15, { align: 'center' })
-      
-      // Datos del establecimiento
-      doc.setFontSize(10)
+      doc.text('PLANILLA 01 - REGISTRO DE INGRESO DE HACIENDA', pageWidth / 2, 12, { align: 'center' })
+
+      // Fila 1: Establecimiento + Semana/Fecha
+      doc.setFontSize(9)
       doc.setFont('helvetica', 'bold')
-      doc.text('ESTABLECIMIENTO: SOLEMAR ALIMENTARIA S.A.', 14, 28)
+      doc.text('ESTABLECIMIENTO:', 14, 20)
       doc.setFont('helvetica', 'normal')
-      doc.text(`N° SENASA: 3986`, 120, 28)
-      doc.text(`MATRÍCULA: 300`, 180, 28)
-      
-      // Semana y fecha
-      const getSemana = (fecha: string) => {
-        const d = new Date(fecha)
-        const start = new Date(d.getFullYear(), 0, 1)
-        return Math.ceil(((d.getTime() - start.getTime()) / 86400000 + start.getDay() + 1) / 7)
-      }
-      
-      doc.text(`SEMANA N°: ${getSemana(tropaSeleccionada.fechaRecepcion)}`, 14, 35)
-      doc.text(`AÑO: ${new Date(tropaSeleccionada.fechaRecepcion).getFullYear()}`, 80, 35)
-      doc.text(`FECHA: ${new Date(tropaSeleccionada.fechaRecepcion).toLocaleDateString('es-AR')}`, 140, 35)
-      
-      // Datos del usuario de faena
+      doc.text('Solemar Alimentaria S.A.', 48, 20)
       doc.setFont('helvetica', 'bold')
-      doc.text('DATOS DEL USUARIO FAENA / PRODUCTOR', 14, 45)
+      doc.text('SENASA:', 120, 20)
       doc.setFont('helvetica', 'normal')
-      doc.text(`Usuario Faena: ${tropaSeleccionada.usuarioFaena?.nombre || tropaSeleccionada.productor?.nombre || '-'}`, 14, 52)
-      doc.text(`CUIT: ${tropaSeleccionada.usuarioFaena?.cuit || tropaSeleccionada.productor?.cuit || '-'}`, 120, 52)
-      doc.text(`Tropa N°: ${tropaSeleccionada.codigo || '-'}`, 200, 52)
-      
-      // Datos del transporte
+      doc.text('3986', 140, 20)
       doc.setFont('helvetica', 'bold')
-      doc.text('DATOS DEL TRANSPORTE', 14, 62)
+      doc.text('MATRÍCULA:', 165, 20)
       doc.setFont('helvetica', 'normal')
-      doc.text(`Transportista: ${tropaSeleccionada.pesajeCamion?.transportista?.nombre || '-'}`, 14, 69)
-      doc.text(`Chofer: ${tropaSeleccionada.pesajeCamion?.choferNombre || '-'}`, 120, 69)
-      doc.text(`DNI: ${tropaSeleccionada.pesajeCamion?.choferDni || '-'}`, 200, 69)
-      doc.text(`Patente Chasis: ${tropaSeleccionada.pesajeCamion?.patenteChasis || '-'}`, 14, 76)
-      doc.text(`Patente Acoplado: ${tropaSeleccionada.pesajeCamion?.patenteAcoplado || '-'}`, 80, 76)
-      doc.text(`Precintos: ${tropaSeleccionada.pesajeCamion?.precintos || '-'}`, 160, 76)
-      
-      // Documentación
+      doc.text('300', 192, 20)
+
+      const semana = getSemana(tropaSeleccionada.fechaRecepcion)
+      const anio = new Date(tropaSeleccionada.fechaRecepcion).getFullYear()
       doc.setFont('helvetica', 'bold')
-      doc.text('DOCUMENTACIÓN', 14, 86)
+      doc.text('SEMANA:', 210, 20)
       doc.setFont('helvetica', 'normal')
-      doc.text(`DTE: ${tropaSeleccionada.dte || '-'}`, 14, 93)
-      doc.text(`Guía: ${tropaSeleccionada.guia || '-'}`, 80, 93)
-      doc.text(`Corral: ${tropaSeleccionada.corral?.nombre || '-'}`, 160, 93)
-      
+      doc.text(`${semana} - AÑO: ${anio}`, 240, 20)
+      doc.setFont('helvetica', 'bold')
+      doc.text('FECHA:', 268, 20)
+      doc.setFont('helvetica', 'normal')
+      doc.text(new Date(tropaSeleccionada.fechaRecepcion).toLocaleDateString('es-AR'), 284, 20)
+
+      // Fila 2: Usuario Faena / Productor
+      let y = 26
+      doc.setFont('helvetica', 'bold')
+      doc.text('USUARIO FAENA:', 14, y)
+      doc.setFont('helvetica', 'normal')
+      doc.text(tropaSeleccionada.usuarioFaena?.nombre || '-', 52, y)
+      doc.setFont('helvetica', 'bold')
+      doc.text('CUIT:', 160, y)
+      doc.setFont('helvetica', 'normal')
+      doc.text(tropaSeleccionada.usuarioFaena?.cuit || '-', 172, y)
+      doc.setFont('helvetica', 'bold')
+      doc.text('TROPA:', 230, y)
+      doc.setFont('helvetica', 'normal')
+      doc.text(tropaSeleccionada.codigo || '-', 252, y)
+
+      // Fila 3: Productor
+      y = 31
+      doc.setFont('helvetica', 'bold')
+      doc.text('PRODUCTOR:', 14, y)
+      doc.setFont('helvetica', 'normal')
+      doc.text(tropaSeleccionada.productor?.nombre || '-', 52, y)
+      doc.setFont('helvetica', 'bold')
+      doc.text('CUIT:', 160, y)
+      doc.setFont('helvetica', 'normal')
+      doc.text(tropaSeleccionada.productor?.cuit || '-', 172, y)
+
+      // Fila 4: Transporte
+      y = 36
+      doc.setFont('helvetica', 'bold')
+      doc.text('TRANSPORTISTA:', 14, y)
+      doc.setFont('helvetica', 'normal')
+      doc.text(tropaSeleccionada.pesajeCamion?.transportista?.nombre || '-', 52, y)
+      doc.setFont('helvetica', 'bold')
+      doc.text('CHOFER:', 160, y)
+      doc.setFont('helvetica', 'normal')
+      doc.text(tropaSeleccionada.pesajeCamion?.choferNombre || '-', 185, y)
+      doc.setFont('helvetica', 'bold')
+      doc.text('DNI:', 230, y)
+      doc.setFont('helvetica', 'normal')
+      doc.text(tropaSeleccionada.pesajeCamion?.choferDni || '-', 244, y)
+
+      // Fila 5: Patentes / Precintos
+      y = 41
+      doc.setFont('helvetica', 'bold')
+      doc.text('PATENTE CHASIS:', 14, y)
+      doc.setFont('helvetica', 'normal')
+      doc.text(tropaSeleccionada.pesajeCamion?.patenteChasis || '-', 52, y)
+      doc.setFont('helvetica', 'bold')
+      doc.text('ACOPLADO:', 100, y)
+      doc.setFont('helvetica', 'normal')
+      doc.text(tropaSeleccionada.pesajeCamion?.patenteAcoplado || '-', 126, y)
+      doc.setFont('helvetica', 'bold')
+      doc.text('PRECINTOS:', 170, y)
+      doc.setFont('helvetica', 'normal')
+      doc.text(tropaSeleccionada.pesajeCamion?.precintos || '-', 196, y)
+
+      // Fila 6: Documentación
+      y = 46
+      doc.setFont('helvetica', 'bold')
+      doc.text('DTE:', 14, y)
+      doc.setFont('helvetica', 'normal')
+      doc.text(tropaSeleccionada.dte || '-', 30, y)
+      doc.setFont('helvetica', 'bold')
+      doc.text('GUÍA:', 80, y)
+      doc.setFont('helvetica', 'normal')
+      doc.text(tropaSeleccionada.guia || '-', 96, y)
+      doc.setFont('helvetica', 'bold')
+      doc.text('CORRAL:', 140, y)
+      doc.setFont('helvetica', 'normal')
+      doc.text(tropaSeleccionada.corral?.nombre || '-', 164, y)
+
+      // Sección Comparativo de Pesaje
+      y = 50
+      doc.setFillColor(230, 240, 250)
+      doc.rect(14, y - 2, pageWidth - 28, 14, 'F')
+      doc.setFont('helvetica', 'bold')
+      doc.setFontSize(9)
+      doc.text('COMPARATIVO DE PESAJE', 14, y + 2)
+      doc.setFont('helvetica', 'normal')
+      doc.setFontSize(8)
+      doc.text(`Ticket: ${tropaSeleccionada.pesajeCamion?.numeroTicket || '-'}`, 90, y + 2)
+
+      // Datos de pesaje en la misma barra
+      y = y + 7
+      doc.setFont('helvetica', 'bold')
+      doc.setFontSize(8)
+      doc.text('Bruto Camión:', 14, y)
+      doc.setFont('helvetica', 'normal')
+      doc.text(`${datos.kgBrutoCamion.toFixed(0)} kg`, 50, y)
+      doc.setFont('helvetica', 'bold')
+      doc.text('Tara:', 75, y)
+      doc.setFont('helvetica', 'normal')
+      doc.text(`${datos.kgTaraCamion.toFixed(0)} kg`, 92, y)
+      doc.setFont('helvetica', 'bold')
+      doc.setTextColor(0, 80, 0)
+      doc.text('NETO CAMIÓN:', 120, y)
+      doc.setFont('helvetica', 'normal')
+      doc.text(`${datos.kgNetoCamion.toFixed(1)} kg`, 164, y)
+      doc.setTextColor(0, 0, 0)
+      doc.setFont('helvetica', 'bold')
+      doc.text('NETO ANIMALES:', 190, y)
+      doc.setFont('helvetica', 'normal')
+      doc.text(`${datos.kgNetoAnimales.toFixed(1)} kg (${datos.animalesPesados}/${tropaSeleccionada.animales?.length || 0})`, 248, y)
+      doc.setFont('helvetica', 'bold')
+      const diffColor = datos.diferencia > 0 ? [0, 80, 0] : datos.diferencia < 0 ? [180, 0, 0] : [100, 100, 100]
+      doc.setTextColor(...diffColor)
+      doc.text(`DIFERENCIA: ${datos.diferencia > 0 ? '+' : ''}${datos.diferencia.toFixed(1)} kg`, 14, y + 5)
+      doc.setTextColor(0, 0, 0)
+
       // Tabla de animales
+      y = y + 10
       const animalesData = (tropaSeleccionada.animales || []).map((a, idx) => [
         idx + 1,
         a.caravana || '-',
@@ -218,44 +329,43 @@ export function Planilla01Module({ operador }: Props) {
         a.pesoVivo?.toFixed(0) || '-',
         ''
       ])
-      
-      const totalKg = (tropaSeleccionada.animales || []).reduce((sum, a) => sum + (a.pesoVivo || 0), 0)
+
       const totalAnimales = (tropaSeleccionada.animales || []).length
-      
+
       autoTable(doc, {
-        startY: 100,
+        startY: y,
         head: [['N°', 'CARAVANA', 'TIPO', 'RAZA', 'PESO (kg)', 'OBSERVACIONES']],
         body: animalesData,
         theme: 'grid',
-        styles: { fontSize: 8, cellPadding: 2 },
+        styles: { fontSize: 8, cellPadding: 1.5 },
         headStyles: { fillColor: [217, 217, 217], textColor: [0, 0, 0], fontStyle: 'bold' },
         columnStyles: {
-          0: { cellWidth: 15, halign: 'center' },
+          0: { cellWidth: 12, halign: 'center' },
           1: { cellWidth: 30, halign: 'center' },
-          2: { cellWidth: 25, halign: 'center' },
-          3: { cellWidth: 30, halign: 'center' },
-          4: { cellWidth: 25, halign: 'right' },
-          5: { cellWidth: 50 }
+          2: { cellWidth: 22, halign: 'center' },
+          3: { cellWidth: 25, halign: 'center' },
+          4: { cellWidth: 22, halign: 'right' },
+          5: { cellWidth: '*' }
         },
         foot: [
-          [{ content: 'TOTAL ANIMALES:', colSpan: 2, styles: { fontStyle: 'bold' } }, 
-           { content: totalAnimales, styles: { fontStyle: 'bold' } },
-           { content: 'TOTAL KG:', colSpan: 2, styles: { fontStyle: 'bold' } },
-           { content: totalKg.toFixed(0), styles: { fontStyle: 'bold', halign: 'right' } },
+          [{ content: `TOTAL ANIMALES: ${totalAnimales}`, colSpan: 3, styles: { fontStyle: 'bold' } },
+           { content: 'TOTAL KG INDIVIDUALES:', colSpan: 2, styles: { fontStyle: 'bold' } },
+           { content: datos.kgNetoAnimales.toFixed(1), styles: { fontStyle: 'bold', halign: 'right' } },
            '']
         ],
-        footStyles: { fillColor: [245, 245, 245] }
+        footStyles: { fillColor: [245, 245, 245] },
+        margin: { left: 14, right: 14 }
       })
-      
+
       // Firmas
-      const finalY = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 20
+      const finalY = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 15
+      doc.setFontSize(8)
+      doc.setFont('helvetica', 'normal')
       doc.text('_________________________', 50, finalY)
       doc.text('_________________________', 170, finalY)
-      doc.setFontSize(8)
       doc.text('FIRMA RESPONSABLE INGRESO', 35, finalY + 5)
       doc.text('FIRMA TRANSPORTISTA', 155, finalY + 5)
-      
-      // Guardar
+
       doc.save(`Planilla01_${tropaSeleccionada.codigo?.replace(/\s/g, '_') || tropaSeleccionada.id}.pdf`)
       toast.success('PDF generado correctamente')
     } catch (error) {
@@ -502,11 +612,70 @@ export function Planilla01Module({ operador }: Props) {
                       </div>
                     </div>
 
+                    {/* Comparativo de Pesaje */}
+                    {(() => {
+                      const datos = getDatosPesaje()
+                      return (
+                        <div className="border rounded-lg overflow-hidden bg-white">
+                          <div className="bg-blue-50 px-4 py-2 border-b flex items-center justify-between">
+                            <h4 className="font-semibold text-blue-800 flex items-center gap-2">
+                              <Truck className="w-4 h-4" />
+                              Comparativo de Pesaje
+                            </h4>
+                            {tropaSeleccionada.pesajeCamion?.numeroTicket && (
+                              <Badge variant="outline" className="text-xs">Ticket N° {tropaSeleccionada.pesajeCamion.numeroTicket}</Badge>
+                            )}
+                          </div>
+                          <div className="p-4">
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                              {/* Pesaje Camión */}
+                              <div className="space-y-1">
+                                <p className="text-xs text-stone-500 uppercase font-medium">Pesaje Camión</p>
+                                <p className="text-xs text-stone-500">Bruto: <span className="font-mono font-semibold text-stone-700">{datos.kgBrutoCamion.toFixed(0)} kg</span></p>
+                                <p className="text-xs text-stone-500">Tara: <span className="font-mono font-semibold text-stone-700">{datos.kgTaraCamion.toFixed(0)} kg</span></p>
+                                <p className="text-lg font-bold text-green-700">{datos.kgNetoCamion.toFixed(1)} kg</p>
+                                <p className="text-xs text-stone-400">Neto Camión</p>
+                              </div>
+                              {/* Pesaje Individual */}
+                              <div className="space-y-1">
+                                <p className="text-xs text-stone-500 uppercase font-medium">Pesaje Individual</p>
+                                <p className="text-xs text-stone-500">Animales pesados: <span className="font-mono font-semibold text-stone-700">{datos.animalesPesados} / {tropaSeleccionada.animales?.length || 0}</span></p>
+                                <p className="text-xs text-stone-400">Promedio: <span className="font-mono text-stone-700">{datos.animalesPesados > 0 ? (datos.kgNetoAnimales / datos.animalesPesados).toFixed(0) : '-'} kg</span></p>
+                                <p className="text-lg font-bold text-blue-700">{datos.kgNetoAnimales.toFixed(1)} kg</p>
+                                <p className="text-xs text-stone-400">Suma Individual</p>
+                              </div>
+                              {/* Diferencia */}
+                              <div className="space-y-1">
+                                <p className="text-xs text-stone-500 uppercase font-medium">Diferencia</p>
+                                <p className="text-xs text-stone-400">Camión - Individual</p>
+                                <p className={`text-2xl font-bold ${datos.diferencia > 0 ? 'text-green-600' : datos.diferencia < 0 ? 'text-red-600' : 'text-stone-500'}`}>
+                                  {datos.diferencia > 0 ? '+' : ''}{datos.diferencia.toFixed(1)} kg
+                                </p>
+                                <p className="text-xs text-stone-400">
+                                  {datos.diferencia > 5 ? 'Sobra kg en camión' : datos.diferencia < -5 ? 'Falta pesar animales' : 'Dentro de tolerancia'}
+                                </p>
+                              </div>
+                              {/* Estado pesaje */}
+                              <div className="space-y-1">
+                                <p className="text-xs text-stone-500 uppercase font-medium">Estado</p>
+                                <p className="text-xs">Ticket: <span className={`font-semibold ${tropaSeleccionada.pesajeCamion?.estado === 'CERRADO' ? 'text-green-600' : 'text-amber-600'}`}>{tropaSeleccionada.pesajeCamion?.estado === 'CERRADO' ? 'Cerrado' : 'Abierto'}</span></p>
+                                <p className="text-xs">Peso vivo cargado: <span className={`font-semibold ${datos.animalesPesados === (tropaSeleccionada.animales?.length || 0) ? 'text-green-600' : 'text-amber-600'}`}>{datos.animalesPesados === (tropaSeleccionada.animales?.length || 0) ? 'Completo' : `Faltan ${((tropaSeleccionada.animales?.length || 0) - datos.animalesPesados)} animales`}</span></p>
+                                {datos.kgBrutoCamion === 0 && (
+                                  <p className="text-xs text-amber-600 font-medium">Sin pesaje de camión</p>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    })()}
+
                     <div className="border rounded-lg overflow-hidden bg-white">
-                      <div className="bg-stone-100 px-4 py-2 border-b">
+                      <div className="bg-stone-100 px-4 py-2 border-b flex items-center justify-between">
                         <h4 className="font-semibold text-stone-700">
                           <TextoEditable id="planilla01-detalle-animales" original="Detalle de Animales" tag="span" /> ({tropaSeleccionada.animales?.length || 0})
                         </h4>
+                        <span className="text-xs text-stone-400">Mostrando {Math.min(tropaSeleccionada.animales?.length || 0, 20)} de {tropaSeleccionada.animales?.length || 0}</span>
                       </div>
                       <Table>
                         <TableHeader>
@@ -533,7 +702,7 @@ export function Planilla01Module({ operador }: Props) {
                               <TableCell className="text-center"><Badge variant="outline">{TIPOS_ANIMAL_LABELS[animal.tipoAnimal] || animal.tipoAnimal}</Badge></TableCell>
                               <TableCell>{animal.raza || '-'}</TableCell>
                               <TableCell className="font-mono text-sm">{animal.caravana || '-'}</TableCell>
-                              <TableCell className="text-right">{animal.pesoVivo?.toFixed(0) || '-'}</TableCell>
+                              <TableCell className={`text-right font-mono ${!animal.pesoVivo || animal.pesoVivo === 0 ? 'text-stone-300' : 'font-semibold'}`}>{animal.pesoVivo?.toFixed(0) || '-'}</TableCell>
                             </TableRow>
                           ))}
                         </TableBody>
