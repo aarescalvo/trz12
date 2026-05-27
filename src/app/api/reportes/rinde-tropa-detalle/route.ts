@@ -126,6 +126,17 @@ export async function POST(request: NextRequest) {
     // ===== CREAR WORKBOOK =====
     const cfg = reporteConfig.excel
     const fmt = cfg.formatosNumericos
+    const alAnim = (cfg as any).alineacionAnimales || {}
+    const alMen = (cfg as any).alineacionMenudencia || {}
+    const alRes = (cfg as any).alineacionResumen || {}
+    const bordes = (cfg as any).bordes || {}
+    const separadores = (cfg as any).separadores || {}
+    const logoCfg = (cfg as any).logo || { visible: false, posicion: 'arriba-izquierda', ancho: 100, alto: 50 }
+
+    // Helper for alignment from config
+    function alin(alignMap: Record<string, string>, colKey: string, fallback: string): 'left' | 'center' | 'right' {
+      return (alignMap[colKey] || fallback) as 'left' | 'center' | 'right'
+    }
 
     const wb = new ExcelJS.Workbook()
     const ws = wb.addWorksheet(`TROPA ${tropa.numero}`)
@@ -151,6 +162,27 @@ export async function POST(request: NextRequest) {
     colW.forEach((w, i) => { ws.getColumn(i + 1).width = w })
 
     let r = 1
+
+    // ============================================================
+    //  LOGO
+    // ============================================================
+    if (logoCfg.visible) {
+      try {
+        const fs = await import('fs')
+        const path = await import('path')
+        const logoPath = path.join(process.cwd(), 'public', 'logo.png')
+        if (fs.existsSync(logoPath)) {
+          const imgData = fs.readFileSync(logoPath)
+          const imgId = wb.addImage({ buffer: imgData, extension: 'png' })
+          const imgCol = logoCfg.posicion === 'arriba-izquierda' ? 1 : logoCfg.posicion === 'arriba-derecha' ? 10 : 5
+          ws.addImage(imgId, {
+            tl: { col: imgCol - 1, row: 0 },
+            ext: { width: logoCfg.ancho, height: logoCfg.alto }
+          })
+        }
+      } catch { /* logo not found, skip */ }
+      r = 3
+    }
 
     // ============================================================
     //  FILA 3: ESTABLECIMIENTO
@@ -214,6 +246,19 @@ export async function POST(request: NextRequest) {
     // ============================================================
     ws.getCell('G5').value = 'N\u00ba SENASA: 3986'
     applyCell(ws.getCell('G5'), { font: { name: fnt.familia, size: fnt.tamanoInfo } })
+
+    // ============================================================
+    //  SEPARADOR DESPUES DE ENCABEZADO
+    // ============================================================
+    if (separadores.despuesEncabezado === 'simple') {
+      for (let c = 3; c <= 13; c++) {
+        applyCell(ws.getCell(`${String.fromCharCode(64 + c)}6`), { border: { bottom: { style: 'thin', color: { argb: 'FF000000' } } } })
+      }
+    } else if (separadores.despuesEncabezado === 'doble') {
+      for (let c = 3; c <= 13; c++) {
+        applyCell(ws.getCell(`${String.fromCharCode(64 + c)}6`), { border: { bottom: { style: 'double', color: { argb: 'FF000000' } } } })
+      }
+    }
 
     // ============================================================
     //  FILA 8: USUARIO/MATARIFE Y PRODUCTOR
@@ -321,13 +366,26 @@ export async function POST(request: NextRequest) {
     })
 
     // ============================================================
+    //  SEPARADOR DESPUES DE INFO OPERADOR
+    // ============================================================
+    if (separadores.despuesInfoOperador === 'simple') {
+      for (let c = 3; c <= 13; c++) {
+        applyCell(ws.getCell(`${String.fromCharCode(64 + c)}12`), { border: { bottom: { style: 'thin', color: { argb: 'FF000000' } } } })
+      }
+    } else if (separadores.despuesInfoOperador === 'doble') {
+      for (let c = 3; c <= 13; c++) {
+        applyCell(ws.getCell(`${String.fromCharCode(64 + c)}12`), { border: { bottom: { style: 'double', color: { argb: 'FF000000' } } } })
+      }
+    }
+
+    // ============================================================
     //  FILA 14: FECHA FAENA + HEADER CUARTOS/KG
     // ============================================================
     r = 14
     ws.getCell('D14').value = 'Fecha Faena:'
     applyCell(ws.getCell('D14'), {
       font: { name: fnt.familia, size: fnt.tamanoInfo },
-      alignment: { horizontal: 'right', vertical: 'middle' }
+      alignment: { horizontal: alin(alRes, 'labels', 'right'), vertical: 'middle' }
     })
     const fechaCell = ws.getCell('E14')
     fechaCell.value = fechaFaena ? new Date(fechaFaena) : null
@@ -340,12 +398,12 @@ export async function POST(request: NextRequest) {
     ws.getCell('K14').value = 'Cuartos'
     applyCell(ws.getCell('K14'), {
       font: { name: fnt.familia, size: fnt.tamanoInfo },
-      alignment: { horizontal: 'center', vertical: 'middle' }
+      alignment: { horizontal: alin(alRes, 'cuartos', 'center'), vertical: 'middle' }
     })
     ws.getCell('L14').value = 'Kg'
     applyCell(ws.getCell('L14'), {
       font: { name: fnt.familia, size: fnt.tamanoInfo },
-      alignment: { horizontal: 'center', vertical: 'middle' }
+      alignment: { horizontal: alin(alRes, 'kgTipos', 'right'), vertical: 'middle' }
     })
 
     // ============================================================
@@ -372,7 +430,7 @@ export async function POST(request: NextRequest) {
       ws.getCell(`${String.fromCharCode(64 + rd.col)}${row}`).value = rd.label
       applyCell(ws.getCell(`${String.fromCharCode(64 + rd.col)}${row}`), {
         font: { name: fnt.familia, size: fnt.tamanoInfo },
-        alignment: { horizontal: 'right', vertical: 'middle' }
+        alignment: { horizontal: alin(alRes, 'labels', 'right'), vertical: 'middle' }
       })
 
       // Value
@@ -382,7 +440,7 @@ export async function POST(request: NextRequest) {
       const numFmt = (i === 4) ? fmt.porcentaje : (i === 5) ? fmt.kgDecimal : fmt.kgEntero
       applyCell(valCell, {
         font: { name: fnt.familia, size: fnt.tamanoInfo, bold: true },
-        alignment: { horizontal: 'left', vertical: 'middle' },
+        alignment: { horizontal: alin(alRes, 'values', 'left'), vertical: 'middle' },
         numFmt
       })
 
@@ -392,20 +450,20 @@ export async function POST(request: NextRequest) {
         ws.getCell(`J${row}`).value = tipo
         applyCell(ws.getCell(`J${row}`), {
           font: { name: fnt.familia, size: fnt.tamanoInfo },
-          alignment: { horizontal: 'left', vertical: 'middle' }
+          alignment: { horizontal: alin(alRes, 'tipos', 'left'), vertical: 'middle' }
         })
 
         const tr = tipoResumen[tipo]
         ws.getCell(`K${row}`).value = tr ? tr.cuartos : 0
         applyCell(ws.getCell(`K${row}`), {
           font: { name: fnt.familia, size: fnt.tamanoInfo },
-          alignment: { horizontal: 'left', vertical: 'middle' }
+          alignment: { horizontal: alin(alRes, 'cuartos', 'center'), vertical: 'middle' }
         })
 
         ws.getCell(`L${row}`).value = tr ? Math.round(tr.kg) : 0
         applyCell(ws.getCell(`L${row}`), {
           font: { name: fnt.familia, size: fnt.tamanoInfo },
-          alignment: { horizontal: 'left', vertical: 'middle' },
+          alignment: { horizontal: alin(alRes, 'kgTipos', 'right'), vertical: 'middle' },
           numFmt: fmt.kgEntero
         })
       }
@@ -479,7 +537,7 @@ export async function POST(request: NextRequest) {
       ws.getCell(`C${r}`).value = rom.garron
       applyCell(ws.getCell(`C${r}`), {
         font: { name: fnt.familia, size: fnt.tamanoDatos },
-        alignment: { horizontal: 'center', vertical: 'middle' },
+        alignment: { horizontal: alin(alAnim, 'C_garron', 'center'), vertical: 'middle' },
         border: { top: thinBorder.top, left: thinBorder.left, right: thinBorder.right }
       })
 
@@ -487,7 +545,7 @@ export async function POST(request: NextRequest) {
       ws.getCell(`D${r}`).value = rom.numeroAnimal || ''
       applyCell(ws.getCell(`D${r}`), {
         font: { name: fnt.familia, size: fnt.tamanoDatos },
-        alignment: { horizontal: 'center', vertical: 'middle' },
+        alignment: { horizontal: alin(alAnim, 'D_animal', 'center'), vertical: 'middle' },
         border: { top: thinBorder.top, left: thinBorder.left, right: thinBorder.right }
       })
 
@@ -495,7 +553,7 @@ export async function POST(request: NextRequest) {
       ws.getCell(`E${r}`).value = rom.raza || animal?.raza || ''
       applyCell(ws.getCell(`E${r}`), {
         font: { name: fnt.familia, size: fnt.tamanoDatos },
-        alignment: { horizontal: 'center', vertical: 'middle' },
+        alignment: { horizontal: alin(alAnim, 'E_raza', 'center'), vertical: 'middle' },
         border: { top: thinBorder.top, left: thinBorder.left, right: thinBorder.right }
       })
 
@@ -504,7 +562,7 @@ export async function POST(request: NextRequest) {
       ws.getCell(`F${r}`).value = clasif
       applyCell(ws.getCell(`F${r}`), {
         font: { name: fnt.familia, size: fnt.tamanoDatos },
-        alignment: { horizontal: 'center', vertical: 'middle' },
+        alignment: { horizontal: alin(alAnim, 'F_G_clasif', 'center'), vertical: 'middle' },
         border: { top: thinBorder.top, left: thinBorder.left, right: thinBorder.right }
       })
 
@@ -512,7 +570,7 @@ export async function POST(request: NextRequest) {
       ws.getCell(`H${r}`).value = caravana
       applyCell(ws.getCell(`H${r}`), {
         font: { name: fnt.familia, size: fnt.tamanoDatos },
-        alignment: { horizontal: 'center', vertical: 'middle' },
+        alignment: { horizontal: alin(alAnim, 'H_caravana', 'center'), vertical: 'middle' },
         border: { top: thinBorder.top, left: thinBorder.left, right: thinBorder.right }
       })
 
@@ -520,7 +578,7 @@ export async function POST(request: NextRequest) {
       ws.getCell(`I${r}`).value = rom.pesoVivo || null
       applyCell(ws.getCell(`I${r}`), {
         font: { name: fnt.familia, size: fnt.tamanoDatos },
-        alignment: { horizontal: 'center', vertical: 'middle' },
+        alignment: { horizontal: alin(alAnim, 'I_kgEntrada', 'center'), vertical: 'middle' },
         border: { top: thinBorder.top, left: thinBorder.left },
         numFmt: fmt.kgEntero
       })
@@ -529,7 +587,7 @@ export async function POST(request: NextRequest) {
       ws.getCell(`J${r}`).value = rom.pesoMediaIzq || null
       applyCell(ws.getCell(`J${r}`), {
         font: { name: fnt.familia, size: fnt.tamanoDatos },
-        alignment: { horizontal: 'center', vertical: 'middle' },
+        alignment: { horizontal: alin(alAnim, 'J_mediaA', 'center'), vertical: 'middle' },
         border: { top: thinBorder.top, left: thinBorder.left, right: thinBorder.right },
         numFmt: fmt.kgDecimal
       })
@@ -538,7 +596,7 @@ export async function POST(request: NextRequest) {
       ws.getCell(`K${r}`).value = rom.pesoMediaDer || null
       applyCell(ws.getCell(`K${r}`), {
         font: { name: fnt.familia, size: fnt.tamanoDatos },
-        alignment: { horizontal: 'center', vertical: 'middle' },
+        alignment: { horizontal: alin(alAnim, 'K_mediaB', 'center'), vertical: 'middle' },
         border: { top: thinBorder.top, left: thinBorder.left, right: thinBorder.right },
         numFmt: fmt.kgDecimal
       })
@@ -547,7 +605,7 @@ export async function POST(request: NextRequest) {
       ws.getCell(`L${r}`).value = pesoTotalVal
       applyCell(ws.getCell(`L${r}`), {
         font: { name: fnt.familia, size: fnt.tamanoDatos },
-        alignment: { horizontal: 'center', vertical: 'middle' },
+        alignment: { horizontal: alin(alAnim, 'L_totalKg', 'center'), vertical: 'middle' },
         border: { top: thinBorder.top, right: thinBorder.right },
         numFmt: fmt.kgDecimal
       })
@@ -556,7 +614,7 @@ export async function POST(request: NextRequest) {
       ws.getCell(`M${r}`).value = rindeVal
       applyCell(ws.getCell(`M${r}`), {
         font: { name: fnt.familia, size: fnt.tamanoDatos, bold: true },
-        alignment: { horizontal: 'right', vertical: 'middle' },
+        alignment: { horizontal: alin(alAnim, 'M_rinde', 'right'), vertical: 'middle' },
         border: { top: thinBorder.top, left: thinBorder.left, right: thinBorder.right },
         numFmt: fmt.porcentaje
       })
@@ -625,11 +683,31 @@ export async function POST(request: NextRequest) {
     })
 
     // ============================================================
+    //  SEPARADOR DESPUES DE RESUMEN
+    // ============================================================
+    if (separadores.despuesResumen === 'simple' || separadores.despuesResumen === 'doble') {
+      const sepRow = r + 1
+      const style = separadores.despuesResumen === 'doble' ? 'double' : 'thin'
+      for (let c = 3; c <= 13; c++) {
+        applyCell(ws.getCell(`${String.fromCharCode(64 + c)}${sepRow}`), { border: { bottom: { style, color: { argb: 'FF000000' } } } })
+      }
+    }
+
+    // ============================================================
     //  SECCIÓN MENUDENCIA
     // ============================================================
     r += cfg.separacion.filasAntesMenudencia
 
-    // Header MENUDENCIA: D-G=nombre, H=Cantidades, I=Kg, J=Unidad, K=Kg Dec.
+    // Separador antes de menudencia
+    if (separadores.antesMenudencia === 'simple' || separadores.antesMenudencia === 'doble') {
+      const sepRow = r - 1
+      const style = separadores.antesMenudencia === 'doble' ? 'double' : 'thin'
+      for (let c = 3; c <= 13; c++) {
+        applyCell(ws.getCell(`${String.fromCharCode(64 + c)}${sepRow}`), { border: { bottom: { style, color: { argb: 'FF000000' } } } })
+      }
+    }
+
+    // Header MENUDENCIA
     ws.mergeCells(r, 4, r, 7)
     ws.getCell(`D${r}`).value = 'MENUDENCIA'
     applyCell(ws.getCell(`D${r}`), {
@@ -641,28 +719,28 @@ export async function POST(request: NextRequest) {
     ws.getCell(`H${r}`).value = 'Cantidades'
     applyCell(ws.getCell(`H${r}`), {
       font: { name: fnt.familia, size: fnt.tamanoMenudencia },
-      alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
+      alignment: { horizontal: alin(alMen, 'cantidades', 'center'), vertical: 'center', wrapText: true },
       border: { top: thinBorder.top, bottom: thinBorder.bottom, left: thinBorder.left, right: thinBorder.right }
     })
 
     ws.getCell(`I${r}`).value = 'Kg'
     applyCell(ws.getCell(`I${r}`), {
       font: { name: fnt.familia, size: fnt.tamanoMenudencia },
-      alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
+      alignment: { horizontal: alin(alMen, 'kg', 'center'), vertical: 'center', wrapText: true },
       border: { top: thinBorder.top, bottom: thinBorder.bottom, left: thinBorder.left, right: thinBorder.right }
     })
 
     ws.getCell(`J${r}`).value = 'Unidad'
     applyCell(ws.getCell(`J${r}`), {
       font: { name: fnt.familia, size: fnt.tamanoMenudencia },
-      alignment: { horizontal: 'center', vertical: 'middle' },
+      alignment: { horizontal: alin(alMen, 'unidad', 'center'), vertical: 'middle' },
       border: { top: thinBorder.top, bottom: thinBorder.bottom, left: thinBorder.left, right: thinBorder.right }
     })
 
     ws.getCell(`K${r}`).value = 'Kg Dec.'
     applyCell(ws.getCell(`K${r}`), {
       font: { name: fnt.familia, size: fnt.tamanoMenudencia },
-      alignment: { horizontal: 'center', vertical: 'middle' },
+      alignment: { horizontal: alin(alMen, 'kgDec', 'center'), vertical: 'middle' },
       border: { top: thinBorder.top, bottom: thinBorder.bottom, left: thinBorder.left, right: thinBorder.right }
     })
 
@@ -674,38 +752,38 @@ export async function POST(request: NextRequest) {
       ws.getCell(`D${r}`).value = men.tipoMenudencia.nombre.toUpperCase()
       applyCell(ws.getCell(`D${r}`), {
         font: { name: fnt.familia, size: fnt.tamanoMenudencia },
-        alignment: { horizontal: 'left', vertical: 'middle' }
+        alignment: { horizontal: alin(alMen, 'tipo', 'left'), vertical: 'middle' }
       })
 
       // Cantidades (cantidadBolsas)
       ws.getCell(`H${r}`).value = men.cantidadBolsas || null
       applyCell(ws.getCell(`H${r}`), {
         font: { name: fnt.familia, size: fnt.tamanoMenudencia },
-        alignment: { horizontal: 'center', vertical: 'middle' }
+        alignment: { horizontal: alin(alMen, 'cantidades', 'center'), vertical: 'middle' }
       })
 
       // Kg (pesoIngreso)
       ws.getCell(`I${r}`).value = men.pesoIngreso || null
       applyCell(ws.getCell(`I${r}`), {
         font: { name: fnt.familia, size: fnt.tamanoMenudencia },
-        alignment: { horizontal: 'center', vertical: 'middle' },
+        alignment: { horizontal: alin(alMen, 'kg', 'center'), vertical: 'middle' },
         numFmt: fmt.kgDecimal
       })
 
-      // Unidad - placeholder (no hay campo específico en el modelo)
+      // Unidad
       ws.getCell(`J${r}`).value = ''
       applyCell(ws.getCell(`J${r}`), {
         font: { name: fnt.familia, size: fnt.tamanoMenudencia },
-        alignment: { horizontal: 'center', vertical: 'middle' }
+        alignment: { horizontal: alin(alMen, 'unidad', 'center'), vertical: 'middle' }
       })
 
-      // Kg Dec. (decomiso) - extraído de observaciones cuando está disponible
+      // Kg Dec. (decomiso)
       ws.getCell(`K${r}`).value = men.observaciones?.includes('Decomiso:')
         ? parseFloat(men.observaciones.split('Decomiso:')[1]?.split('kg')[0]?.trim() || '') || null
         : null
       applyCell(ws.getCell(`K${r}`), {
         font: { name: fnt.familia, size: fnt.tamanoMenudencia },
-        alignment: { horizontal: 'center', vertical: 'middle' },
+        alignment: { horizontal: alin(alMen, 'kgDec', 'center'), vertical: 'middle' },
         numFmt: fmt.kgDecimal
       })
 
@@ -720,21 +798,21 @@ export async function POST(request: NextRequest) {
     ws.getCell(`D${r}`).value = 'TOTALES'
     applyCell(ws.getCell(`D${r}`), {
       font: { name: fnt.familia, size: fnt.tamanoMenudencia, bold: true },
-      alignment: { horizontal: 'center', vertical: 'middle' },
+      alignment: { horizontal: alin(alMen, 'tipo', 'left'), vertical: 'middle' },
       border: { top: thinBorder.top, bottom: thinBorder.bottom, left: thinBorder.left, right: thinBorder.right }
     })
 
     ws.getCell(`H${r}`).value = totalCant || null
     applyCell(ws.getCell(`H${r}`), {
       font: { name: fnt.familia, size: fnt.tamanoMenudencia, bold: true },
-      alignment: { horizontal: 'center', vertical: 'middle' },
+      alignment: { horizontal: alin(alMen, 'cantidades', 'center'), vertical: 'middle' },
       border: { top: thinBorder.top, bottom: thinBorder.bottom, left: thinBorder.left, right: thinBorder.right }
     })
 
     ws.getCell(`I${r}`).value = totalKgMen || null
     applyCell(ws.getCell(`I${r}`), {
       font: { name: fnt.familia, size: fnt.tamanoMenudencia, bold: true },
-      alignment: { horizontal: 'center', vertical: 'middle' },
+      alignment: { horizontal: alin(alMen, 'kg', 'center'), vertical: 'middle' },
       border: { top: thinBorder.top, bottom: thinBorder.bottom, left: thinBorder.left, right: thinBorder.right },
       numFmt: fmt.kgDecimal
     })

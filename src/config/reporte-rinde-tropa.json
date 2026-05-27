@@ -41,6 +41,51 @@
     },
     "separacion": {
       "filasAntesMenudencia": 4
+    },
+    "alineacionAnimales": {
+      "C_garron": "center",
+      "D_animal": "center",
+      "E_raza": "center",
+      "F_G_clasif": "center",
+      "H_caravana": "center",
+      "I_kgEntrada": "center",
+      "J_mediaA": "center",
+      "K_mediaB": "center",
+      "L_totalKg": "center",
+      "M_rinde": "right"
+    },
+    "alineacionMenudencia": {
+      "tipo": "left",
+      "cantidades": "center",
+      "kg": "center",
+      "unidad": "center",
+      "kgDec": "center"
+    },
+    "alineacionResumen": {
+      "labels": "right",
+      "values": "left",
+      "tipos": "left",
+      "cuartos": "center",
+      "kgTipos": "right"
+    },
+    "logo": {
+      "visible": false,
+      "posicion": "arriba-izquierda",
+      "ancho": 100,
+      "alto": 50
+    },
+    "bordes": {
+      "encabezado": false,
+      "infoOperador": false,
+      "resumen": false,
+      "tablaAnimales": true,
+      "menudencia": true
+    },
+    "separadores": {
+      "despuesEncabezado": "ninguno",
+      "despuesInfoOperador": "ninguno",
+      "despuesResumen": "ninguno",
+      "antesMenudencia": "ninguno"
     }
   },
   "pdf": {
