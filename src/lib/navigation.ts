@@ -33,6 +33,7 @@ export type PageId =
   | 'rotulosMejoras' | 'dashboardEjecutivo' | 'reportesGerenciales'
   | 'controlVencimientos' | 'alertasStock' | 'historialPrecios'
   | 'reportesSIGICA' | 'exportacionSIGICA' | 'printerBridgeGuide'
+  | 'formatoReportes'
 
 // ============================================================
 // PAGE ID → ROUTE MAPPING
@@ -100,6 +101,7 @@ export const PAGE_TO_ROUTE: Record<PageId, string> = {
   configCondicionesEmbalaje: '/configuracion/condiciones-embalaje',
   configTiposProducto: '/configuracion/tipos-producto',
   printerBridgeGuide: '/configuracion/printer-bridge',
+  formatoReportes: '/configuracion/formato-reportes',
   calidadRegistroUsuarios: '/calidad/registro-usuarios',
   calidadPh: '/calidad/control-ph',
   auditoriaOperador: '/calidad/auditoria',
@@ -245,6 +247,7 @@ export const NAV_GROUPS: NavGroup[] = [
     icon: Settings,
     items: [
       { id: 'configuracion', label: 'Configuración General', icon: Settings, permiso: 'puedeConfiguracion', route: '/configuracion/general' },
+      { id: 'formatoReportes', label: 'Formato Reportes', icon: FileSpreadsheet, permiso: 'puedeConfiguracion', route: '/configuracion/formato-reportes' },
       { id: 'configRotulos', label: 'Rótulos', icon: Tag, permiso: 'puedeConfiguracion', route: '/configuracion/rotulos' },
       { id: 'configInsumos', label: 'Insumos', icon: Package, permiso: 'puedeConfiguracion', route: '/configuracion/insumos' },
       { id: 'configUsuarios', label: 'Usuarios', icon: Users, permiso: 'puedeConfiguracion', route: '/configuracion/usuarios' },
