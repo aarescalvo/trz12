@@ -3,12 +3,6 @@ import { db } from '@/lib/db'
 import ExcelJS from 'exceljs'
 import { checkPermission } from '@/lib/auth-helpers'
 
-// Mapeo de tipos de animal
-const TIPOS_ANIMAL: Record<string, string> = {
-  'TO': 'TORO', 'VA': 'VACA', 'VQ': 'VAQUILLONA', 'MEJ': 'MEJORADOR',
-  'NO': 'NOVILLO', 'NT': 'NOVILLITO', 'TQ': 'TERNERO', 'TN': 'TERNERA'
-}
-
 // ===== HELPERS DE ESTILO =====
 const thinBorder: Partial<ExcelJS.Borders> = {
   top: { style: 'thin', color: { argb: 'FF000000' } },
@@ -155,8 +149,7 @@ export async function POST(request: NextRequest) {
       alignment: { vertical: 'middle' }
     })
 
-    // RINDE box (K3:M3)
-    ws.mergeCells(3, 11, 3, 11)
+    // RINDE box (K3)
     const rindeLabelCell = ws.getCell('K3')
     rindeLabelCell.value = 'RINDE'
     applyCell(rindeLabelCell, {
@@ -165,7 +158,7 @@ export async function POST(request: NextRequest) {
       alignment: { horizontal: 'center', vertical: 'center' }
     })
 
-    ws.mergeCells(3, 12, 3, 12)
+    // RINDE valor (L3)
     const rindeValCell = ws.getCell('L3')
     rindeValCell.value = rindeGeneral
     rindeValCell.numFmt = '0.00%'
@@ -182,8 +175,7 @@ export async function POST(request: NextRequest) {
     ws.getCell('G4').value = 'Matricula: 300'
     applyCell(ws.getCell('G4'), { font: { name: 'Calibri', size: 12 } })
 
-    // PROM. box
-    ws.mergeCells(4, 11, 4, 11)
+    // PROM. box (K4)
     const promLabelCell = ws.getCell('K4')
     promLabelCell.value = 'PROM.'
     applyCell(promLabelCell, {
@@ -192,7 +184,7 @@ export async function POST(request: NextRequest) {
       alignment: { horizontal: 'center', vertical: 'center' }
     })
 
-    ws.mergeCells(4, 12, 4, 12)
+    // PROM. valor (L4)
     const promValCell = ws.getCell('L4')
     promValCell.value = promedio
     promValCell.numFmt = '#,##0.0'
@@ -458,7 +450,6 @@ export async function POST(request: NextRequest) {
     //  FILA 25+: DATOS DE ANIMALES
     // ============================================================
     r = 25
-    const dataStartRow = r
 
     for (let i = 0; i < romaneos.length; i++) {
       const rom = romaneos[i]
@@ -559,13 +550,10 @@ export async function POST(request: NextRequest) {
       r++
     }
 
-    const dataEndRow = r - 1
-
     // ============================================================
     //  FILA TOTALES
     // ============================================================
     r++
-    const totalRow = r
 
     // Cantidad
     ws.getCell(`D${r}`).value = romaneos.length
@@ -586,31 +574,31 @@ export async function POST(request: NextRequest) {
 
     // Suma KG 1/2 A
     const sumA = romaneos.reduce((s, rom) => s + (rom.pesoMediaIzq || 0), 0)
-    ws.getCell(`J${r}`).value = Math.round(sumA)
+    ws.getCell(`J${r}`).value = Math.round(sumA * 10) / 10
     applyCell(ws.getCell(`J${r}`), {
       font: { name: 'Calibri', size: 10 },
       alignment: { horizontal: 'center', vertical: 'middle' },
       border: { top: thinBorder.top, bottom: thinBorder.bottom, left: thinBorder.left, right: thinBorder.right },
-      numFmt: '#,##0'
+      numFmt: '#,##0.0'
     })
 
     // Suma KG 1/2 B
     const sumB = romaneos.reduce((s, rom) => s + (rom.pesoMediaDer || 0), 0)
-    ws.getCell(`K${r}`).value = Math.round(sumB)
+    ws.getCell(`K${r}`).value = Math.round(sumB * 10) / 10
     applyCell(ws.getCell(`K${r}`), {
       font: { name: 'Calibri', size: 10 },
-      alignment: { horizontal: 'center', vertical: 'center' },
+      alignment: { horizontal: 'center', vertical: 'middle' },
       border: { top: thinBorder.top, bottom: thinBorder.bottom, left: thinBorder.left, right: thinBorder.right },
-      numFmt: '#,##0'
+      numFmt: '#,##0.0'
     })
 
     // Suma TOTAL KG
-    ws.getCell(`L${r}`).value = Math.round(pesoMedioTotal)
+    ws.getCell(`L${r}`).value = Math.round(pesoMedioTotal * 10) / 10
     applyCell(ws.getCell(`L${r}`), {
       font: { name: 'Calibri', size: 10 },
       alignment: { horizontal: 'center', vertical: 'middle' },
       border: { top: thinBorder.top, bottom: thinBorder.bottom, left: thinBorder.left, right: thinBorder.right },
-      numFmt: '#,##0'
+      numFmt: '#,##0.0'
     })
 
     // RINDE TOTAL
@@ -626,18 +614,16 @@ export async function POST(request: NextRequest) {
     //  SECCIÓN MENUDENCIA
     // ============================================================
     r += 4 // dejar espacio
-    const menudStartRow = r
 
-    // Header MENUDENCIA
+    // Header MENUDENCIA: D-G=nombre, H=Cantidades, I=Kg, J=Unidad, K=Kg Dec.
     ws.mergeCells(r, 4, r, 7)
     ws.getCell(`D${r}`).value = 'MENUDENCIA'
     applyCell(ws.getCell(`D${r}`), {
       font: { name: 'Calibri', size: 12, bold: true },
       alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
-      border: { top: thinBorder.top, bottom: thinBorder.bottom, left: thinBorder.left }
+      border: { top: thinBorder.top, bottom: thinBorder.bottom, left: thinBorder.left, right: thinBorder.right }
     })
 
-    ws.mergeCells(r, 8, r, 9)
     ws.getCell(`H${r}`).value = 'Cantidades'
     applyCell(ws.getCell(`H${r}`), {
       font: { name: 'Calibri', size: 12 },
@@ -645,31 +631,30 @@ export async function POST(request: NextRequest) {
       border: { top: thinBorder.top, bottom: thinBorder.bottom, left: thinBorder.left, right: thinBorder.right }
     })
 
-    ws.mergeCells(r, 10, r, 11)
-    ws.getCell(`J${r}`).value = 'Kg'
-    applyCell(ws.getCell(`J${r}`), {
+    ws.getCell(`I${r}`).value = 'Kg'
+    applyCell(ws.getCell(`I${r}`), {
       font: { name: 'Calibri', size: 12 },
       alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
       border: { top: thinBorder.top, bottom: thinBorder.bottom, left: thinBorder.left, right: thinBorder.right }
     })
 
-    ws.getCell(`K${r}`).value = 'Unidad'
-    applyCell(ws.getCell(`K${r}`), {
+    ws.getCell(`J${r}`).value = 'Unidad'
+    applyCell(ws.getCell(`J${r}`), {
       font: { name: 'Calibri', size: 12 },
-      alignment: { horizontal: 'center', vertical: 'center' },
+      alignment: { horizontal: 'center', vertical: 'middle' },
       border: { top: thinBorder.top, bottom: thinBorder.bottom, left: thinBorder.left, right: thinBorder.right }
     })
 
-    ws.getCell(`L${r}`).value = 'Kg Dec.'
-    applyCell(ws.getCell(`L${r}`), {
+    ws.getCell(`K${r}`).value = 'Kg Dec.'
+    applyCell(ws.getCell(`K${r}`), {
       font: { name: 'Calibri', size: 12 },
-      alignment: { horizontal: 'center', vertical: 'center' },
+      alignment: { horizontal: 'center', vertical: 'middle' },
       border: { top: thinBorder.top, bottom: thinBorder.bottom, left: thinBorder.left, right: thinBorder.right }
     })
 
     r++
 
-    // Rows de menudencia
+    // Rows de menudencia: D-G=nombre, H=Cantidades, I=Kg, J=Unidad, K=Kg Dec.
     for (const men of menudencias) {
       ws.mergeCells(r, 4, r, 7)
       ws.getCell(`D${r}`).value = men.tipoMenudencia.nombre.toUpperCase()
@@ -679,33 +664,32 @@ export async function POST(request: NextRequest) {
       })
 
       // Cantidades (cantidadBolsas)
-      ws.getCell(`I${r}`).value = men.cantidadBolsas || null
-      applyCell(ws.getCell(`I${r}`), {
+      ws.getCell(`H${r}`).value = men.cantidadBolsas || null
+      applyCell(ws.getCell(`H${r}`), {
         font: { name: 'Calibri', size: 12 },
         alignment: { horizontal: 'center', vertical: 'middle' }
       })
 
       // Kg (pesoIngreso)
-      ws.mergeCells(r, 10, r, 11)
-      ws.getCell(`J${r}`).value = men.pesoIngreso || null
-      applyCell(ws.getCell(`J${r}`), {
+      ws.getCell(`I${r}`).value = men.pesoIngreso || null
+      applyCell(ws.getCell(`I${r}`), {
         font: { name: 'Calibri', size: 12 },
         alignment: { horizontal: 'center', vertical: 'middle' },
         numFmt: '#,##0.0'
       })
 
-      // Unidad - placeholder (no hay campo específico, se puede agregar)
-      ws.getCell(`K${r}`).value = ''
-      applyCell(ws.getCell(`K${r}`), {
+      // Unidad - placeholder (no hay campo específico en el modelo)
+      ws.getCell(`J${r}`).value = ''
+      applyCell(ws.getCell(`J${r}`), {
         font: { name: 'Calibri', size: 12 },
         alignment: { horizontal: 'center', vertical: 'middle' }
       })
 
-      // Kg Dec. (decomiso) - campo no disponible en el modelo actual
-      ws.getCell(`L${r}`).value = men.observaciones?.includes('Decomiso:')
+      // Kg Dec. (decomiso) - extraído de observaciones cuando está disponible
+      ws.getCell(`K${r}`).value = men.observaciones?.includes('Decomiso:')
         ? parseFloat(men.observaciones.split('Decomiso:')[1]?.split('kg')[0]?.trim() || '') || null
         : null
-      applyCell(ws.getCell(`L${r}`), {
+      applyCell(ws.getCell(`K${r}`), {
         font: { name: 'Calibri', size: 12 },
         alignment: { horizontal: 'center', vertical: 'middle' },
         numFmt: '#,##0.0'
@@ -715,28 +699,27 @@ export async function POST(request: NextRequest) {
     }
 
     // Totales menudencia
-    const totalI = menudencias.reduce((s, m) => s + (m.cantidadBolsas || 0), 0)
-    const totalJ = menudencias.reduce((s, m) => s + (m.pesoIngreso || 0), 0)
+    const totalCant = menudencias.reduce((s, m) => s + (m.cantidadBolsas || 0), 0)
+    const totalKgMen = menudencias.reduce((s, m) => s + (m.pesoIngreso || 0), 0)
 
     ws.mergeCells(r, 4, r, 7)
     ws.getCell(`D${r}`).value = 'TOTALES'
     applyCell(ws.getCell(`D${r}`), {
-      font: { name: 'Calibri', size: 12 },
+      font: { name: 'Calibri', size: 12, bold: true },
       alignment: { horizontal: 'center', vertical: 'middle' },
       border: { top: thinBorder.top, bottom: thinBorder.bottom, left: thinBorder.left, right: thinBorder.right }
     })
 
-    ws.getCell(`I${r}`).value = totalI || null
-    applyCell(ws.getCell(`I${r}`), {
-      font: { name: 'Calibri', size: 12 },
+    ws.getCell(`H${r}`).value = totalCant || null
+    applyCell(ws.getCell(`H${r}`), {
+      font: { name: 'Calibri', size: 12, bold: true },
       alignment: { horizontal: 'center', vertical: 'middle' },
-      border: { top: thinBorder.top, bottom: thinBorder.bottom }
+      border: { top: thinBorder.top, bottom: thinBorder.bottom, left: thinBorder.left, right: thinBorder.right }
     })
 
-    ws.mergeCells(r, 10, r, 11)
-    ws.getCell(`J${r}`).value = totalJ || null
-    applyCell(ws.getCell(`J${r}`), {
-      font: { name: 'Calibri', size: 12 },
+    ws.getCell(`I${r}`).value = totalKgMen || null
+    applyCell(ws.getCell(`I${r}`), {
+      font: { name: 'Calibri', size: 12, bold: true },
       alignment: { horizontal: 'center', vertical: 'middle' },
       border: { top: thinBorder.top, bottom: thinBorder.bottom, left: thinBorder.left, right: thinBorder.right },
       numFmt: '#,##0.0'
