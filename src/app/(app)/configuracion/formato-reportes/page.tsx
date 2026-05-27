@@ -145,7 +145,7 @@ export default function FormatoReportesPage() {
   }, [fetchConfig])
 
   // Permission guard
-  if (!operador || !operador.puedeConfiguracion) {
+  if (!operador || !operador.permisos.puedeConfiguracion) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <Card className="p-8 text-center max-w-md">
