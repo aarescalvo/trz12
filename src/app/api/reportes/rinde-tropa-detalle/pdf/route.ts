@@ -58,6 +58,16 @@ export async function GET(request: NextRequest) {
     const rindeGeneral = pesoVivoTotal > 0 ? pesoMedioTotal / pesoVivoTotal : 0
     const promedio = romaneos.length > 0 ? pesoMedioTotal / romaneos.length : 0
 
+    // Resumen por tipo
+    const tipoResumen: Record<string, { cantidad: number; kg: number; cuartos: number }> = {}
+    for (const r of romaneos) {
+      const tipo = r.tipoAnimal || 'SIN_TIPO'
+      if (!tipoResumen[tipo]) tipoResumen[tipo] = { cantidad: 0, kg: 0, cuartos: 0 }
+      tipoResumen[tipo].cantidad++
+      tipoResumen[tipo].kg += r.pesoTotal || 0
+      tipoResumen[tipo].cuartos += 2
+    }
+
     // ===== GENERAR PDF =====
     const doc = new jsPDF('landscape', 'mm', 'a4')
     const pageWidth = doc.internal.pageSize.getWidth()
@@ -153,6 +163,31 @@ export async function GET(request: NextRequest) {
     doc.line(mg, y, pageWidth - mg, y)
     y += 3
 
+    // ===== RESUMEN POR TIPO =====
+    const tiposOrden = ['VQ', 'NT', 'NO', 'TO', 'VA', 'MEJ']
+    const tiposActivos = tiposOrden.filter(t => tipoResumen[t] && tipoResumen[t].cantidad > 0)
+    if (tiposActivos.length > 0) {
+      doc.setFontSize(8)
+      doc.setFont('helvetica', 'bold')
+      let tipoX = mg + 180
+      doc.text('Tipo', tipoX, y)
+      doc.text('Cuartos', tipoX + 22, y)
+      doc.text('Kg', tipoX + 48, y)
+      y += 4
+      doc.setFont('helvetica', 'normal')
+      for (const tipo of tiposActivos) {
+        const tr = tipoResumen[tipo]
+        doc.text(tipo, tipoX, y)
+        doc.text(tr.cuartos.toString(), tipoX + 28, y, { align: 'right' })
+        doc.text(Math.round(tr.kg).toString(), tipoX + 55, y, { align: 'right' })
+        y += 3.5
+      }
+      y += 1
+      doc.setLineWidth(0.2)
+      doc.line(mg, y, pageWidth - mg, y)
+      y += 3
+    }
+
     // ===== TABLA DE ANIMALES =====
     const tableData = romaneos.map((rom, idx) => {
       const animal = rom.numeroAnimal ? animalMap.get(rom.numeroAnimal) : null
@@ -164,7 +199,7 @@ export async function GET(request: NextRequest) {
       const clasif = denticionStr && tipoStr ? `${denticionStr} - ${tipoStr}` : tipoStr || denticionStr || ''
 
       return [
-        (idx + 1).toString(),
+        rom.garron.toString(),
         rom.numeroAnimal?.toString() || '',
         rom.raza || animal?.raza || '',
         clasif,
@@ -232,13 +267,21 @@ export async function GET(request: NextRequest) {
     menY += 3
 
     if (menudencias.length > 0) {
-      const menData = menudencias.map(men => [
-        men.tipoMenudencia.nombre,
-        (men.cantidadBolsas || 0).toString(),
-        men.pesoIngreso ? men.pesoIngreso.toFixed(1) : '',
-        '',
-        ''
-      ])
+      const menData = menudencias.map(men => {
+        // Intentar extraer kg decomiso de observaciones
+        let kgDec = ''
+        if (men.observaciones?.includes('Decomiso:')) {
+          const parsed = parseFloat(men.observaciones.split('Decomiso:')[1]?.split('kg')[0]?.trim() || '')
+          if (parsed && !isNaN(parsed)) kgDec = parsed.toFixed(1)
+        }
+        return [
+          men.tipoMenudencia.nombre,
+          (men.cantidadBolsas || 0).toString(),
+          men.pesoIngreso ? men.pesoIngreso.toFixed(1) : '',
+          '',
+          kgDec
+        ]
+      })
       const totalCant = menudencias.reduce((s, men) => s + (men.cantidadBolsas || 0), 0)
       const totalKg = menudencias.reduce((s, men) => s + (men.pesoIngreso || 0), 0)
       menData.push(['TOTALES', totalCant.toString(), totalKg.toFixed(1), '', ''])

@@ -148,10 +148,9 @@ export async function POST(request: NextRequest) {
     //  FILA 3: ESTABLECIMIENTO
     // ============================================================
     r = 3
-    writeLabel(ws.getCell('G3'), 'Estab. Faenador: ')
-    writeValue(ws.getCell('G3'), '')
-    ws.getCell('H3').value = 'Estab. Faenador: Solemar Alimentaria S.A.'
-    applyCell(ws.getCell('H3'), {
+    ws.mergeCells(3, 7, 3, 10)
+    ws.getCell('G3').value = 'Estab. Faenador: Solemar Alimentaria S.A.'
+    applyCell(ws.getCell('G3'), {
       font: { name: 'Calibri', size: 12 },
       alignment: { vertical: 'middle' }
     })
@@ -433,24 +432,8 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // FILA 24: Sub-headers
-    r = 24
-    // F24: Denticion (parte de clasificacion)
-    ws.getCell('F24').value = 'Denticion'
-    applyCell(ws.getCell('F24'), {
-      font: { name: 'Calibri', size: 10 },
-      alignment: { horizontal: 'center', vertical: 'middle' }
-    })
-    // G24: Clasificacion
-    ws.getCell('G24').value = 'Clasificacion'
-    applyCell(ws.getCell('G24'), {
-      font: { name: 'Calibri', size: 10 },
-      alignment: { horizontal: 'center', vertical: 'middle' },
-      border: { top: thinBorder.top, bottom: thinBorder.top, left: thinBorder.left, right: thinBorder.right }
-    })
-
-    // Merge headers for multi-row headers
-    ws.mergeCells(23, 6, 23, 7)   // CLASIFICACION spans F-G
+    // Merge headers for multi-row headers (CLASIFICACION spans F-G, rows 23-24)
+    ws.mergeCells(23, 6, 24, 7)   // CLASIFICACION spans F-G rows 23-24
     ws.mergeCells(23, 3, 24, 3)    // N GARRON
     ws.mergeCells(23, 4, 24, 4)    // N ANIMAL
     ws.mergeCells(23, 5, 24, 5)    // RAZA
@@ -462,11 +445,11 @@ export async function POST(request: NextRequest) {
     ws.mergeCells(23, 13, 24, 13)  // RINDE FAENA
 
     // Fix borders on merged header cells
-    for (const mc of ['C23', 'D23', 'E23', 'H23', 'I23', 'J23', 'K23', 'L23', 'M23', 'F24', 'G24']) {
+    for (const mc of ['C23', 'D23', 'E23', 'F23', 'H23', 'I23', 'J23', 'K23', 'L23', 'M23']) {
       const cell = ws.getCell(mc)
       if (!cell.border || !cell.border.top) {
         applyCell(cell, {
-          border: { top: thinBorder.top, bottom: mc === 'G24' || mc === 'D23' ? thinBorder.bottom : undefined, left: thinBorder.left, right: thinBorder.right }
+          border: { top: thinBorder.top, bottom: thinBorder.bottom, left: thinBorder.left, right: thinBorder.right }
         })
       }
     }
@@ -487,8 +470,8 @@ export async function POST(request: NextRequest) {
       const tipoStr = rom.tipoAnimal || ''
       const clasif = denticionStr && tipoStr ? `${denticionStr} - ${tipoStr}` : tipoStr || denticionStr || ''
 
-      // N Garron
-      ws.getCell(`C${r}`).value = i + 1
+      // N Garron (usar numero real del garron)
+      ws.getCell(`C${r}`).value = rom.garron
       applyCell(ws.getCell(`C${r}`), {
         font: { name: 'Calibri', size: 10 },
         alignment: { horizontal: 'center', vertical: 'middle' },
@@ -511,23 +494,14 @@ export async function POST(request: NextRequest) {
         border: { top: thinBorder.top, left: thinBorder.left, right: thinBorder.right }
       })
 
-      // Denticion (parte F)
+      // Clasificacion (denticion + tipo animal, merge F-G)
+      ws.mergeCells(r, 6, r, 7)
       ws.getCell(`F${r}`).value = clasif
       applyCell(ws.getCell(`F${r}`), {
         font: { name: 'Calibri', size: 11 },
         alignment: { horizontal: 'center', vertical: 'middle' },
         border: { top: thinBorder.top, left: thinBorder.left, right: thinBorder.right }
       })
-
-      // Clasificacion (parte G) - fusionada visual con F
-      ws.getCell(`G${r}`).value = ''
-      applyCell(ws.getCell(`G${r}`), {
-        font: { name: 'Calibri', size: 10 },
-        alignment: { horizontal: 'center', vertical: 'middle' },
-        border: { top: thinBorder.top, right: thinBorder.right }
-      })
-      // Merge F-G para clasificacion completa
-      ws.mergeCells(r, 6, r, 7)
 
       // Caravana
       ws.getCell(`H${r}`).value = caravana
@@ -727,11 +701,14 @@ export async function POST(request: NextRequest) {
         alignment: { horizontal: 'center', vertical: 'middle' }
       })
 
-      // Kg Dec. (decomiso) - placeholder
-      ws.getCell(`L${r}`).value = ''
+      // Kg Dec. (decomiso) - campo no disponible en el modelo actual
+      ws.getCell(`L${r}`).value = men.observaciones?.includes('Decomiso:')
+        ? parseFloat(men.observaciones.split('Decomiso:')[1]?.split('kg')[0]?.trim() || '') || null
+        : null
       applyCell(ws.getCell(`L${r}`), {
         font: { name: 'Calibri', size: 12 },
-        alignment: { horizontal: 'center', vertical: 'middle' }
+        alignment: { horizontal: 'center', vertical: 'middle' },
+        numFmt: '#,##0.0'
       })
 
       r++
