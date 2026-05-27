@@ -1,0 +1,786 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { db } from '@/lib/db'
+import ExcelJS from 'exceljs'
+import { checkPermission } from '@/lib/auth-helpers'
+
+// Mapeo de tipos de animal
+const TIPOS_ANIMAL: Record<string, string> = {
+  'TO': 'TORO', 'VA': 'VACA', 'VQ': 'VAQUILLONA', 'MEJ': 'MEJORADOR',
+  'NO': 'NOVILLO', 'NT': 'NOVILLITO', 'TQ': 'TERNERO', 'TN': 'TERNERA'
+}
+
+// ===== HELPERS DE ESTILO =====
+const thinBorder: Partial<ExcelJS.Borders> = {
+  top: { style: 'thin', color: { argb: 'FF000000' } },
+  bottom: { style: 'thin', color: { argb: 'FF000000' } },
+  left: { style: 'thin', color: { argb: 'FF000000' } },
+  right: { style: 'thin', color: { argb: 'FF000000' } }
+}
+const doubleBorder: Partial<ExcelJS.Borders> = {
+  top: { style: 'double', color: { argb: 'FF000000' } },
+  bottom: { style: 'double', color: { argb: 'FF000000' } },
+  left: { style: 'double', color: { argb: 'FF000000' } },
+  right: { style: 'double', color: { argb: 'FF000000' } }
+}
+
+function applyCell(cell: ExcelJS.Cell, opts: {
+  font?: Partial<ExcelJS.Font>
+  fill?: Partial<ExcelJS.Fill>
+  border?: Partial<ExcelJS.Borders>
+  alignment?: Partial<ExcelJS.Alignment>
+  numFmt?: string
+}) {
+  if (opts.font) cell.font = Object.assign(cell.font || {}, opts.font)
+  if (opts.fill) cell.fill = Object.assign(cell.fill || {}, opts.fill)
+  if (opts.border) cell.border = Object.assign(cell.border || {}, opts.border)
+  if (opts.alignment) cell.alignment = Object.assign(cell.alignment || {}, opts.alignment)
+  if (opts.numFmt) cell.numFmt = opts.numFmt
+}
+
+function writeLabel(cell: ExcelJS.Cell, label: string, opts?: { bold?: boolean; size?: number; align?: string }) {
+  cell.value = label
+  applyCell(cell, {
+    font: { name: 'Calibri', size: opts?.size || 12, bold: opts?.bold !== false },
+    alignment: { horizontal: (opts?.align || 'right') as 'left' | 'right' | 'center', vertical: 'middle' }
+  })
+}
+
+function writeValue(cell: ExcelJS.Cell, value: string | number | null, opts?: { bold?: boolean; size?: number; align?: string; numFmt?: string }) {
+  cell.value = value ?? ''
+  applyCell(cell, {
+    font: { name: 'Calibri', size: opts?.size || 12, bold: !!opts?.bold },
+    alignment: { horizontal: (opts?.align || 'left') as 'left' | 'right' | 'center', vertical: 'middle' }
+  })
+  if (opts?.numFmt) cell.numFmt = opts.numFmt
+}
+
+// POST - Generar Excel Rinde por Tropa (formato modelo)
+export async function POST(request: NextRequest) {
+  const authError = await checkPermission(request, 'puedeReportes')
+  if (authError) return authError
+
+  try {
+    const body = await request.json()
+    const { tropaId } = body
+
+    if (!tropaId) {
+      return NextResponse.json({ success: false, error: 'ID de tropa requerido' }, { status: 400 })
+    }
+
+    // Obtener tropa con datos relacionados
+    const tropa = await db.tropa.findUnique({
+      where: { id: tropaId },
+      include: {
+        productor: true,
+        usuarioFaena: true,
+        animales: { orderBy: { numero: 'asc' } }
+      }
+    })
+
+    if (!tropa) {
+      return NextResponse.json({ success: false, error: 'Tropa no encontrada' }, { status: 404 })
+    }
+
+    // Romaneos confirmados de esta tropa
+    const romaneos = await db.romaneo.findMany({
+      where: { tropaCodigo: tropa.codigo, estado: 'CONFIRMADO' },
+      include: { tipificador: true },
+      orderBy: { garron: 'asc' }
+    })
+
+    // Lista de faena (para fecha faena)
+    const listaFaenaTropa = await db.listaFaenaTropa.findFirst({
+      where: { tropaId: tropa.id },
+      include: { listaFaena: true },
+      orderBy: { createdAt: 'desc' }
+    })
+
+    // Menudencias de esta tropa
+    const menudencias = await db.menudencia.findMany({
+      where: { tropaCodigo: tropa.codigo },
+      include: { tipoMenudencia: true },
+      orderBy: { tipoMenudencia: { nombre: 'asc' } }
+    })
+
+    // Mapear animales por numero para obtener caravana
+    const animalMap = new Map(tropa.animales.map(a => [a.numero, a]))
+
+    // Fecha faena: de lista de faena o del primer romaneo
+    const fechaFaena = listaFaenaTropa?.listaFaena?.fecha
+      || (romaneos.length > 0 ? romaneos[0].fecha : tropa.fechaFaena)
+
+    // ===== CÁLCULOS =====
+    const pesoVivoTotal = romaneos.reduce((s, r) => s + (r.pesoVivo || 0), 0)
+    const pesoMedioTotal = romaneos.reduce((s, r) => s + (r.pesoTotal || 0), 0)
+    const rindeGeneral = pesoVivoTotal > 0 ? pesoMedioTotal / pesoVivoTotal : 0
+    const promedio = romaneos.length > 0 ? pesoMedioTotal / romaneos.length : 0
+
+    // Resumen por tipo
+    const tipoResumen: Record<string, { cantidad: number; kg: number; cuartos: number }> = {}
+    for (const r of romaneos) {
+      const tipo = r.tipoAnimal || 'SIN_TIPO'
+      if (!tipoResumen[tipo]) tipoResumen[tipo] = { cantidad: 0, kg: 0, cuartos: 0 }
+      tipoResumen[tipo].cantidad++
+      tipoResumen[tipo].kg += r.pesoTotal || 0
+      tipoResumen[tipo].cuartos += 2 // cada animal = 2 medios = 2 cuartos
+    }
+
+    // ===== CREAR WORKBOOK =====
+    const wb = new ExcelJS.Workbook()
+    const ws = wb.addWorksheet(`TROPA ${tropa.numero}`)
+
+    ws.pageSetup = {
+      paperSize: 9,
+      orientation: 'landscape',
+      fitToPage: true,
+      fitToWidth: 1,
+      fitToHeight: 0,
+      margins: { left: 0.4, right: 0.4, top: 0.3, bottom: 0.3, header: 0, footer: 0 }
+    }
+
+    // Anchos de columna (A=3.7, B=3.7, C..M según modelo)
+    const colW = [4, 3.7, 10, 10, 7, 14, 14, 18, 13, 15, 13, 13, 13, 3.7]
+    colW.forEach((w, i) => { ws.getColumn(i + 1).width = w })
+
+    let r = 1
+
+    // ============================================================
+    //  FILA 3: ESTABLECIMIENTO
+    // ============================================================
+    r = 3
+    writeLabel(ws.getCell('G3'), 'Estab. Faenador: ')
+    writeValue(ws.getCell('G3'), '')
+    ws.getCell('H3').value = 'Estab. Faenador: Solemar Alimentaria S.A.'
+    applyCell(ws.getCell('H3'), {
+      font: { name: 'Calibri', size: 12 },
+      alignment: { vertical: 'middle' }
+    })
+
+    // RINDE box (K3:M3)
+    ws.mergeCells(3, 11, 3, 11)
+    const rindeLabelCell = ws.getCell('K3')
+    rindeLabelCell.value = 'RINDE'
+    applyCell(rindeLabelCell, {
+      font: { name: 'Calibri', size: 12, bold: true },
+      border: doubleBorder,
+      alignment: { horizontal: 'center', vertical: 'center' }
+    })
+
+    ws.mergeCells(3, 12, 3, 12)
+    const rindeValCell = ws.getCell('L3')
+    rindeValCell.value = rindeGeneral
+    rindeValCell.numFmt = '0.00%'
+    applyCell(rindeValCell, {
+      font: { name: 'Calibri', size: 12, bold: true },
+      border: doubleBorder,
+      alignment: { horizontal: 'center', vertical: 'center' },
+      numFmt: '0.00%'
+    })
+
+    // ============================================================
+    //  FILA 4: MATRICULA
+    // ============================================================
+    ws.getCell('G4').value = 'Matricula: 300'
+    applyCell(ws.getCell('G4'), { font: { name: 'Calibri', size: 12 } })
+
+    // PROM. box
+    ws.mergeCells(4, 11, 4, 11)
+    const promLabelCell = ws.getCell('K4')
+    promLabelCell.value = 'PROM.'
+    applyCell(promLabelCell, {
+      font: { name: 'Calibri', size: 12, bold: true },
+      border: doubleBorder,
+      alignment: { horizontal: 'center', vertical: 'center' }
+    })
+
+    ws.mergeCells(4, 12, 4, 12)
+    const promValCell = ws.getCell('L4')
+    promValCell.value = promedio
+    promValCell.numFmt = '#,##0.0'
+    applyCell(promValCell, {
+      font: { name: 'Calibri', size: 12, bold: true },
+      border: doubleBorder,
+      alignment: { horizontal: 'center', vertical: 'center' },
+      numFmt: '#,##0.0'
+    })
+
+    // ============================================================
+    //  FILA 5: SENASA
+    // ============================================================
+    ws.getCell('G5').value = 'N\u00ba SENASA: 3986'
+    applyCell(ws.getCell('G5'), { font: { name: 'Calibri', size: 12 } })
+
+    // ============================================================
+    //  FILA 8: USUARIO/MATARIFE Y PRODUCTOR
+    // ============================================================
+    r = 8
+
+    // Usuario/Matarife
+    ws.mergeCells(8, 3, 8, 4)
+    ws.getCell('C8').value = 'Usuario/Matarife: '
+    applyCell(ws.getCell('C8'), {
+      font: { name: 'Calibri', size: 12 },
+      alignment: { horizontal: 'right', vertical: 'middle' }
+    })
+
+    ws.mergeCells(8, 5, 8, 8)
+    ws.getCell('E8').value = tropa.usuarioFaena?.nombre || '-'
+    applyCell(ws.getCell('E8'), {
+      font: { name: 'Calibri', size: 12, bold: true },
+      alignment: { horizontal: 'left', vertical: 'middle' },
+      border: { right: { style: 'double', color: { argb: 'FF000000' } } }
+    })
+
+    // Productor
+    ws.getCell('I8').value = 'Productor:'
+    applyCell(ws.getCell('I8'), {
+      font: { name: 'Calibri', size: 12 },
+      alignment: { horizontal: 'right', vertical: 'middle' },
+      border: { left: { style: 'double', color: { argb: 'FF000000' } } }
+    })
+
+    ws.mergeCells(8, 10, 8, 13)
+    ws.getCell('J8').value = tropa.productor?.nombre || '-'
+    applyCell(ws.getCell('J8'), {
+      font: { name: 'Calibri', size: 12, bold: true },
+      alignment: { horizontal: 'center', vertical: 'middle' }
+    })
+
+    // ============================================================
+    //  FILA 9: MATRICULA MATARIFE + DTE + GUIA
+    // ============================================================
+    r = 9
+    ws.mergeCells(9, 3, 9, 4)
+    ws.getCell('C9').value = 'Matricula: '
+    applyCell(ws.getCell('C9'), {
+      font: { name: 'Calibri', size: 12 },
+      alignment: { horizontal: 'right', vertical: 'middle' }
+    })
+    ws.mergeCells(9, 5, 9, 8)
+    ws.getCell('E9').value = tropa.usuarioFaena?.matricula || tropa.usuarioFaena?.cuit || '-'
+    applyCell(ws.getCell('E9'), {
+      font: { name: 'Calibri', size: 12 },
+      alignment: { horizontal: 'left', vertical: 'middle' }
+    })
+
+    ws.getCell('I9').value = 'N\u00ba DTE:'
+    applyCell(ws.getCell('I9'), {
+      font: { name: 'Calibri', size: 12 },
+      alignment: { horizontal: 'right', vertical: 'middle' }
+    })
+    ws.getCell('J9').value = tropa.dte || '-'
+    applyCell(ws.getCell('J9'), {
+      font: { name: 'Calibri', size: 12 },
+      alignment: { horizontal: 'left', vertical: 'middle' }
+    })
+
+    ws.getCell('K9').value = 'N\u00ba Guia:'
+    applyCell(ws.getCell('K9'), {
+      font: { name: 'Calibri', size: 12 },
+      alignment: { horizontal: 'right', vertical: 'middle' }
+    })
+    ws.mergeCells(9, 12, 9, 13)
+    ws.getCell('L9').value = tropa.guia || '-'
+    applyCell(ws.getCell('L9'), {
+      font: { name: 'Calibri', size: 12 },
+      alignment: { horizontal: 'left', vertical: 'middle' }
+    })
+
+    // ============================================================
+    //  FILA 10: FECHA Y HORA
+    // ============================================================
+    r = 10
+    ws.getCell('I10').value = 'Fecha Ing.:'
+    applyCell(ws.getCell('I10'), {
+      font: { name: 'Calibri', size: 12 },
+      alignment: { horizontal: 'right', vertical: 'middle' }
+    })
+    ws.getCell('J10').value = tropa.fechaRecepcion ? new Date(tropa.fechaRecepcion) : null
+    applyCell(ws.getCell('J10'), {
+      font: { name: 'Calibri', size: 12 },
+      alignment: { horizontal: 'left', vertical: 'middle' },
+      numFmt: 'DD/MM/YYYY'
+    })
+
+    ws.getCell('K10').value = 'Hora:'
+    applyCell(ws.getCell('K10'), {
+      font: { name: 'Calibri', size: 12 },
+      alignment: { horizontal: 'right', vertical: 'middle' }
+    })
+    ws.mergeCells(10, 12, 10, 13)
+    ws.getCell('L10').value = tropa.fechaRecepcion ? new Date(tropa.fechaRecepcion) : null
+    applyCell(ws.getCell('L10'), {
+      font: { name: 'Calibri', size: 12 },
+      alignment: { horizontal: 'left', vertical: 'middle' },
+      numFmt: 'HH:MM'
+    })
+
+    // ============================================================
+    //  FILA 14: FECHA FAENA + HEADER CUARTOS/KG
+    // ============================================================
+    r = 14
+    ws.getCell('D14').value = 'Fecha Faena:'
+    applyCell(ws.getCell('D14'), {
+      font: { name: 'Calibri', size: 12 },
+      alignment: { horizontal: 'right', vertical: 'middle' }
+    })
+    const fechaCell = ws.getCell('E14')
+    fechaCell.value = fechaFaena ? new Date(fechaFaena) : null
+    applyCell(fechaCell, {
+      font: { name: 'Calibri', size: 12, bold: true, color: { argb: 'FFFF0000' } },
+      alignment: { horizontal: 'center', vertical: 'middle' },
+      numFmt: 'DD/MM/YYYY'
+    })
+
+    ws.getCell('K14').value = 'Cuartos'
+    applyCell(ws.getCell('K14'), {
+      font: { name: 'Calibri', size: 12 },
+      alignment: { horizontal: 'center', vertical: 'middle' }
+    })
+    ws.getCell('L14').value = 'Kg'
+    applyCell(ws.getCell('L14'), {
+      font: { name: 'Calibri', size: 12 },
+      alignment: { horizontal: 'center', vertical: 'middle' }
+    })
+
+    // ============================================================
+    //  FILAS 15-20: N TROPA + RESUMEN + RESUMEN POR TIPO
+    // ============================================================
+    const resumenData = [
+      { label: 'N\u00ba Tropa:', col: 3, valueCol: 5, value: tropa.numero },
+      { label: 'Cantidad Cabeza:', col: 3, valueCol: 5, value: tropa.cantidadCabezas },
+      { label: 'Kg Vivo entrada:', col: 3, valueCol: 5, value: Math.round(pesoVivoTotal) },
+      { label: 'Kg 1/2 Res', col: 3, valueCol: 5, value: Math.round(pesoMedioTotal) },
+      { label: 'Rinde:', col: 3, valueCol: 5, value: rindeGeneral },
+      { label: 'Promedio:', col: 3, valueCol: 5, value: promedio },
+    ]
+
+    // Tipos a mostrar en columnas J-L
+    const tiposOrden = ['VQ', 'NT', 'NO', 'TO', 'VA', 'MEJ']
+
+    for (let i = 0; i < 6; i++) {
+      const row = 15 + i
+      const rd = resumenData[i]
+
+      // Label
+      ws.mergeCells(row, rd.col, row, rd.col + 1)
+      ws.getCell(`${String.fromCharCode(64 + rd.col)}${row}`).value = rd.label
+      applyCell(ws.getCell(`${String.fromCharCode(64 + rd.col)}${row}`), {
+        font: { name: 'Calibri', size: 12 },
+        alignment: { horizontal: 'right', vertical: 'middle' }
+      })
+
+      // Value
+      ws.mergeCells(row, rd.valueCol, row, rd.valueCol + 3)
+      const valCell = ws.getCell(`${String.fromCharCode(64 + rd.valueCol)}${row}`)
+      valCell.value = rd.value
+      const numFmt = (i === 4) ? '0.00%' : (i === 5) ? '#,##0.0' : '#,##0'
+      applyCell(valCell, {
+        font: { name: 'Calibri', size: 12, bold: true },
+        alignment: { horizontal: 'left', vertical: 'middle' },
+        numFmt
+      })
+
+      // Tipo animal en columna J
+      if (i < tiposOrden.length) {
+        const tipo = tiposOrden[i]
+        ws.getCell(`J${row}`).value = tipo
+        applyCell(ws.getCell(`J${row}`), {
+          font: { name: 'Calibri', size: 12 },
+          alignment: { horizontal: 'left', vertical: 'middle' }
+        })
+
+        const tr = tipoResumen[tipo]
+        ws.getCell(`K${row}`).value = tr ? tr.cuartos : 0
+        applyCell(ws.getCell(`K${row}`), {
+          font: { name: 'Calibri', size: 12 },
+          alignment: { horizontal: 'left', vertical: 'middle' }
+        })
+
+        ws.getCell(`L${row}`).value = tr ? Math.round(tr.kg) : 0
+        applyCell(ws.getCell(`L${row}`), {
+          font: { name: 'Calibri', size: 12 },
+          alignment: { horizontal: 'left', vertical: 'middle' },
+          numFmt: '#,##0'
+        })
+      }
+    }
+
+    // ============================================================
+    //  FILA 23: ENCABEZADO TABLA ANIMALES
+    // ============================================================
+    r = 23
+    const headerLabels = [
+      { col: 3, text: 'N\u00ba\nGARRON', span: true },
+      { col: 4, text: 'N\u00ba\n ANIMAL', span: true },
+      { col: 5, text: 'RAZA', span: true },
+      { col: 6, text: 'CLASIFICACION', span: true },
+      { col: 8, text: 'N\u00ba CARAVANA', span: true },
+      { col: 9, text: 'KG ENTRADA', span: true },
+      { col: 10, text: 'KG 1/2 A', span: true },
+      { col: 11, text: 'KG 1/2 B', span: true },
+      { col: 12, text: 'TOTAL KG', span: true },
+      { col: 13, text: 'RINDE\nFAENA', span: true },
+    ]
+
+    for (const h of headerLabels) {
+      const cell = ws.getCell(`${String.fromCharCode(64 + h.col)}${r}`)
+      cell.value = h.text
+      applyCell(cell, {
+        font: { name: 'Calibri', size: 10, bold: h.col === 13 },
+        alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
+        border: { top: thinBorder.top, left: thinBorder.left, right: thinBorder.right }
+      })
+    }
+
+    // FILA 24: Sub-headers
+    r = 24
+    // F24: Denticion (parte de clasificacion)
+    ws.getCell('F24').value = 'Denticion'
+    applyCell(ws.getCell('F24'), {
+      font: { name: 'Calibri', size: 10 },
+      alignment: { horizontal: 'center', vertical: 'middle' }
+    })
+    // G24: Clasificacion
+    ws.getCell('G24').value = 'Clasificacion'
+    applyCell(ws.getCell('G24'), {
+      font: { name: 'Calibri', size: 10 },
+      alignment: { horizontal: 'center', vertical: 'middle' },
+      border: { top: thinBorder.top, bottom: thinBorder.top, left: thinBorder.left, right: thinBorder.right }
+    })
+
+    // Merge headers for multi-row headers
+    ws.mergeCells(23, 6, 23, 7)   // CLASIFICACION spans F-G
+    ws.mergeCells(23, 3, 24, 3)    // N GARRON
+    ws.mergeCells(23, 4, 24, 4)    // N ANIMAL
+    ws.mergeCells(23, 5, 24, 5)    // RAZA
+    ws.mergeCells(23, 8, 24, 8)    // CARAVANA
+    ws.mergeCells(23, 9, 24, 9)    // KG ENTRADA
+    ws.mergeCells(23, 10, 24, 10)  // KG 1/2 A
+    ws.mergeCells(23, 11, 24, 11)  // KG 1/2 B
+    ws.mergeCells(23, 12, 24, 12)  // TOTAL KG
+    ws.mergeCells(23, 13, 24, 13)  // RINDE FAENA
+
+    // Fix borders on merged header cells
+    for (const mc of ['C23', 'D23', 'E23', 'H23', 'I23', 'J23', 'K23', 'L23', 'M23', 'F24', 'G24']) {
+      const cell = ws.getCell(mc)
+      if (!cell.border || !cell.border.top) {
+        applyCell(cell, {
+          border: { top: thinBorder.top, bottom: mc === 'G24' || mc === 'D23' ? thinBorder.bottom : undefined, left: thinBorder.left, right: thinBorder.right }
+        })
+      }
+    }
+
+    // ============================================================
+    //  FILA 25+: DATOS DE ANIMALES
+    // ============================================================
+    r = 25
+    const dataStartRow = r
+
+    for (let i = 0; i < romaneos.length; i++) {
+      const rom = romaneos[i]
+      const animal = rom.numeroAnimal ? animalMap.get(rom.numeroAnimal) : null
+      const caravana = animal?.caravana || ''
+      const pesoTotalVal = (rom.pesoMediaIzq || 0) + (rom.pesoMediaDer || 0)
+      const rindeVal = rom.pesoVivo && rom.pesoVivo > 0 ? pesoTotalVal / rom.pesoVivo : null
+      const denticionStr = rom.denticion || ''
+      const tipoStr = rom.tipoAnimal || ''
+      const clasif = denticionStr && tipoStr ? `${denticionStr} - ${tipoStr}` : tipoStr || denticionStr || ''
+
+      // N Garron
+      ws.getCell(`C${r}`).value = i + 1
+      applyCell(ws.getCell(`C${r}`), {
+        font: { name: 'Calibri', size: 10 },
+        alignment: { horizontal: 'center', vertical: 'middle' },
+        border: { top: thinBorder.top, left: thinBorder.left, right: thinBorder.right }
+      })
+
+      // N Animal
+      ws.getCell(`D${r}`).value = rom.numeroAnimal || ''
+      applyCell(ws.getCell(`D${r}`), {
+        font: { name: 'Calibri', size: 10 },
+        alignment: { horizontal: 'center', vertical: 'middle' },
+        border: { top: thinBorder.top, left: thinBorder.left, right: thinBorder.right }
+      })
+
+      // Raza
+      ws.getCell(`E${r}`).value = rom.raza || animal?.raza || ''
+      applyCell(ws.getCell(`E${r}`), {
+        font: { name: 'Calibri', size: 10 },
+        alignment: { horizontal: 'center', vertical: 'middle' },
+        border: { top: thinBorder.top, left: thinBorder.left, right: thinBorder.right }
+      })
+
+      // Denticion (parte F)
+      ws.getCell(`F${r}`).value = clasif
+      applyCell(ws.getCell(`F${r}`), {
+        font: { name: 'Calibri', size: 11 },
+        alignment: { horizontal: 'center', vertical: 'middle' },
+        border: { top: thinBorder.top, left: thinBorder.left, right: thinBorder.right }
+      })
+
+      // Clasificacion (parte G) - fusionada visual con F
+      ws.getCell(`G${r}`).value = ''
+      applyCell(ws.getCell(`G${r}`), {
+        font: { name: 'Calibri', size: 10 },
+        alignment: { horizontal: 'center', vertical: 'middle' },
+        border: { top: thinBorder.top, right: thinBorder.right }
+      })
+      // Merge F-G para clasificacion completa
+      ws.mergeCells(r, 6, r, 7)
+
+      // Caravana
+      ws.getCell(`H${r}`).value = caravana
+      applyCell(ws.getCell(`H${r}`), {
+        font: { name: 'Calibri', size: 10 },
+        alignment: { horizontal: 'center', vertical: 'middle' },
+        border: { top: thinBorder.top, left: thinBorder.left, right: thinBorder.right }
+      })
+
+      // KG Entrada
+      ws.getCell(`I${r}`).value = rom.pesoVivo || null
+      applyCell(ws.getCell(`I${r}`), {
+        font: { name: 'Calibri', size: 10 },
+        alignment: { horizontal: 'center', vertical: 'middle' },
+        border: { top: thinBorder.top, left: thinBorder.left },
+        numFmt: '#,##0'
+      })
+
+      // KG 1/2 A
+      ws.getCell(`J${r}`).value = rom.pesoMediaIzq || null
+      applyCell(ws.getCell(`J${r}`), {
+        font: { name: 'Calibri', size: 11 },
+        alignment: { horizontal: 'center', vertical: 'middle' },
+        border: { top: thinBorder.top, left: thinBorder.left, right: thinBorder.right },
+        numFmt: '#,##0.0'
+      })
+
+      // KG 1/2 B
+      ws.getCell(`K${r}`).value = rom.pesoMediaDer || null
+      applyCell(ws.getCell(`K${r}`), {
+        font: { name: 'Calibri', size: 11 },
+        alignment: { horizontal: 'center', vertical: 'middle' },
+        border: { top: thinBorder.top, left: thinBorder.left, right: thinBorder.right },
+        numFmt: '#,##0.0'
+      })
+
+      // TOTAL KG
+      ws.getCell(`L${r}`).value = pesoTotalVal
+      applyCell(ws.getCell(`L${r}`), {
+        font: { name: 'Calibri', size: 10 },
+        alignment: { horizontal: 'center', vertical: 'middle' },
+        border: { top: thinBorder.top, right: thinBorder.right },
+        numFmt: '#,##0.0'
+      })
+
+      // RINDE FAENA
+      ws.getCell(`M${r}`).value = rindeVal
+      applyCell(ws.getCell(`M${r}`), {
+        font: { name: 'Calibri', size: 10, bold: true },
+        alignment: { horizontal: 'right', vertical: 'middle' },
+        border: { top: thinBorder.top, left: thinBorder.left, right: thinBorder.right },
+        numFmt: '0.00%'
+      })
+
+      r++
+    }
+
+    const dataEndRow = r - 1
+
+    // ============================================================
+    //  FILA TOTALES
+    // ============================================================
+    r++
+    const totalRow = r
+
+    // Cantidad
+    ws.getCell(`D${r}`).value = romaneos.length
+    applyCell(ws.getCell(`D${r}`), {
+      font: { name: 'Calibri', size: 10 },
+      alignment: { horizontal: 'center', vertical: 'middle' },
+      border: { top: thinBorder.top, bottom: thinBorder.bottom, left: thinBorder.left, right: thinBorder.right }
+    })
+
+    // Suma KG Entrada
+    ws.getCell(`I${r}`).value = Math.round(pesoVivoTotal)
+    applyCell(ws.getCell(`I${r}`), {
+      font: { name: 'Calibri', size: 10 },
+      alignment: { horizontal: 'center', vertical: 'middle' },
+      border: { top: thinBorder.top, left: thinBorder.left, right: thinBorder.right },
+      numFmt: '#,##0'
+    })
+
+    // Suma KG 1/2 A
+    const sumA = romaneos.reduce((s, rom) => s + (rom.pesoMediaIzq || 0), 0)
+    ws.getCell(`J${r}`).value = Math.round(sumA)
+    applyCell(ws.getCell(`J${r}`), {
+      font: { name: 'Calibri', size: 10 },
+      alignment: { horizontal: 'center', vertical: 'middle' },
+      border: { top: thinBorder.top, bottom: thinBorder.bottom, left: thinBorder.left, right: thinBorder.right },
+      numFmt: '#,##0'
+    })
+
+    // Suma KG 1/2 B
+    const sumB = romaneos.reduce((s, rom) => s + (rom.pesoMediaDer || 0), 0)
+    ws.getCell(`K${r}`).value = Math.round(sumB)
+    applyCell(ws.getCell(`K${r}`), {
+      font: { name: 'Calibri', size: 10 },
+      alignment: { horizontal: 'center', vertical: 'center' },
+      border: { top: thinBorder.top, bottom: thinBorder.bottom, left: thinBorder.left, right: thinBorder.right },
+      numFmt: '#,##0'
+    })
+
+    // Suma TOTAL KG
+    ws.getCell(`L${r}`).value = Math.round(pesoMedioTotal)
+    applyCell(ws.getCell(`L${r}`), {
+      font: { name: 'Calibri', size: 10 },
+      alignment: { horizontal: 'center', vertical: 'middle' },
+      border: { top: thinBorder.top, bottom: thinBorder.bottom, left: thinBorder.left, right: thinBorder.right },
+      numFmt: '#,##0'
+    })
+
+    // RINDE TOTAL
+    ws.getCell(`M${r}`).value = rindeGeneral
+    applyCell(ws.getCell(`M${r}`), {
+      font: { name: 'Calibri', size: 10, bold: true },
+      alignment: { horizontal: 'center', vertical: 'middle' },
+      border: { top: thinBorder.top, bottom: thinBorder.bottom, left: thinBorder.left, right: thinBorder.right },
+      numFmt: '0.00%'
+    })
+
+    // ============================================================
+    //  SECCIÓN MENUDENCIA
+    // ============================================================
+    r += 4 // dejar espacio
+    const menudStartRow = r
+
+    // Header MENUDENCIA
+    ws.mergeCells(r, 4, r, 7)
+    ws.getCell(`D${r}`).value = 'MENUDENCIA'
+    applyCell(ws.getCell(`D${r}`), {
+      font: { name: 'Calibri', size: 12, bold: true },
+      alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
+      border: { top: thinBorder.top, bottom: thinBorder.bottom, left: thinBorder.left }
+    })
+
+    ws.mergeCells(r, 8, r, 9)
+    ws.getCell(`H${r}`).value = 'Cantidades'
+    applyCell(ws.getCell(`H${r}`), {
+      font: { name: 'Calibri', size: 12 },
+      alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
+      border: { top: thinBorder.top, bottom: thinBorder.bottom, left: thinBorder.left, right: thinBorder.right }
+    })
+
+    ws.mergeCells(r, 10, r, 11)
+    ws.getCell(`J${r}`).value = 'Kg'
+    applyCell(ws.getCell(`J${r}`), {
+      font: { name: 'Calibri', size: 12 },
+      alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
+      border: { top: thinBorder.top, bottom: thinBorder.bottom, left: thinBorder.left, right: thinBorder.right }
+    })
+
+    ws.getCell(`K${r}`).value = 'Unidad'
+    applyCell(ws.getCell(`K${r}`), {
+      font: { name: 'Calibri', size: 12 },
+      alignment: { horizontal: 'center', vertical: 'center' },
+      border: { top: thinBorder.top, bottom: thinBorder.bottom, left: thinBorder.left, right: thinBorder.right }
+    })
+
+    ws.getCell(`L${r}`).value = 'Kg Dec.'
+    applyCell(ws.getCell(`L${r}`), {
+      font: { name: 'Calibri', size: 12 },
+      alignment: { horizontal: 'center', vertical: 'center' },
+      border: { top: thinBorder.top, bottom: thinBorder.bottom, left: thinBorder.left, right: thinBorder.right }
+    })
+
+    r++
+
+    // Rows de menudencia
+    for (const men of menudencias) {
+      ws.mergeCells(r, 4, r, 7)
+      ws.getCell(`D${r}`).value = men.tipoMenudencia.nombre.toUpperCase()
+      applyCell(ws.getCell(`D${r}`), {
+        font: { name: 'Calibri', size: 12 },
+        alignment: { horizontal: 'left', vertical: 'middle' }
+      })
+
+      // Cantidades (cantidadBolsas)
+      ws.getCell(`I${r}`).value = men.cantidadBolsas || null
+      applyCell(ws.getCell(`I${r}`), {
+        font: { name: 'Calibri', size: 12 },
+        alignment: { horizontal: 'center', vertical: 'middle' }
+      })
+
+      // Kg (pesoIngreso)
+      ws.mergeCells(r, 10, r, 11)
+      ws.getCell(`J${r}`).value = men.pesoIngreso || null
+      applyCell(ws.getCell(`J${r}`), {
+        font: { name: 'Calibri', size: 12 },
+        alignment: { horizontal: 'center', vertical: 'middle' },
+        numFmt: '#,##0.0'
+      })
+
+      // Unidad - placeholder (no hay campo específico, se puede agregar)
+      ws.getCell(`K${r}`).value = ''
+      applyCell(ws.getCell(`K${r}`), {
+        font: { name: 'Calibri', size: 12 },
+        alignment: { horizontal: 'center', vertical: 'middle' }
+      })
+
+      // Kg Dec. (decomiso) - placeholder
+      ws.getCell(`L${r}`).value = ''
+      applyCell(ws.getCell(`L${r}`), {
+        font: { name: 'Calibri', size: 12 },
+        alignment: { horizontal: 'center', vertical: 'middle' }
+      })
+
+      r++
+    }
+
+    // Totales menudencia
+    const totalI = menudencias.reduce((s, m) => s + (m.cantidadBolsas || 0), 0)
+    const totalJ = menudencias.reduce((s, m) => s + (m.pesoIngreso || 0), 0)
+
+    ws.mergeCells(r, 4, r, 7)
+    ws.getCell(`D${r}`).value = 'TOTALES'
+    applyCell(ws.getCell(`D${r}`), {
+      font: { name: 'Calibri', size: 12 },
+      alignment: { horizontal: 'center', vertical: 'middle' },
+      border: { top: thinBorder.top, bottom: thinBorder.bottom, left: thinBorder.left, right: thinBorder.right }
+    })
+
+    ws.getCell(`I${r}`).value = totalI || null
+    applyCell(ws.getCell(`I${r}`), {
+      font: { name: 'Calibri', size: 12 },
+      alignment: { horizontal: 'center', vertical: 'middle' },
+      border: { top: thinBorder.top, bottom: thinBorder.bottom }
+    })
+
+    ws.mergeCells(r, 10, r, 11)
+    ws.getCell(`J${r}`).value = totalJ || null
+    applyCell(ws.getCell(`J${r}`), {
+      font: { name: 'Calibri', size: 12 },
+      alignment: { horizontal: 'center', vertical: 'middle' },
+      border: { top: thinBorder.top, bottom: thinBorder.bottom, left: thinBorder.left, right: thinBorder.right },
+      numFmt: '#,##0.0'
+    })
+
+    // ===== GENERAR BUFFER =====
+    const buffer = await wb.xlsx.writeBuffer()
+
+    return new NextResponse(buffer, {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'Content-Disposition': `attachment; filename="Rinde_Tropa_${tropa.numero || tropa.codigo}.xlsx"`
+      }
+    })
+
+  } catch (error) {
+    console.error('Error generando rinde tropa:', error)
+    return NextResponse.json(
+      { success: false, error: 'Error al generar el reporte' },
+      { status: 500 }
+    )
+  }
+}
