@@ -17,7 +17,7 @@ import {
   Save, RotateCcw, ShieldAlert, Loader2, Columns3, FileSpreadsheet,
   Eye, Ruler, GripVertical, ChevronRight, MoveHorizontal, ZoomIn,
   AlignLeft, AlignCenter, AlignRight, ImageIcon, Minus, Square,
-  Upload, type LucideIcon
+  Upload, MousePointerClick, type LucideIcon
 } from 'lucide-react'
 
 // ============================================================
@@ -769,6 +769,15 @@ export default function FormatoReportesPage() {
           />
         </div>
 
+        <div className="mt-2">
+          <input ref={logoInputRef} type="file" accept=".png,.jpg,.jpeg,.svg" className="hidden" onChange={handleLogoUpload} />
+          <Button variant="outline" size="sm" className="w-full text-xs" disabled={uploadingLogo}
+            onClick={() => logoInputRef.current?.click()}>
+            {uploadingLogo ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" /> : <Upload className="h-3.5 w-3.5 mr-1.5" />}
+            Subir Logo
+          </Button>
+        </div>
+
         {logo.visible && (
           <>
             <div className="space-y-1.5">
@@ -797,31 +806,33 @@ export default function FormatoReportesPage() {
               </Select>
             </div>
 
-            {(activeTab === 'rinde-tropa') && (
-              <div className="space-y-1.5">
-                <Label className="text-[10px] text-muted-foreground">Posición</Label>
-                <Select
-                  value={logo.posicion}
-                  onValueChange={(v) => {
+            <div className="space-y-1.5">
+              <Label className="text-[10px] text-muted-foreground">Posición</Label>
+              <Select
+                value={logo.posicion}
+                onValueChange={(v) => {
+                  if (activeTab === 'rinde-tropa') {
                     updateCurrentConfig(prev => ({
                       ...prev,
                       excel: { ...prev.excel, logo: { ...(prev.excel.logo as Record<string, unknown> || {}), posicion: v } },
                     }))
-                  }}
-                >
-                  <SelectTrigger className="h-8 text-xs">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="arriba-izquierda">Arriba Izquierda</SelectItem>
-                    <SelectItem value="arriba-derecha">Arriba Derecha</SelectItem>
-                    <SelectItem value="centro">Centro</SelectItem>
-                    <SelectItem value="izquierda">Izquierda</SelectItem>
-                    <SelectItem value="derecha">Derecha</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
+                  } else {
+                    updateLogoField('posicion', v)
+                  }
+                }}
+              >
+                <SelectTrigger className="h-8 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="arriba-izquierda">Arriba Izquierda</SelectItem>
+                  <SelectItem value="arriba-derecha">Arriba Derecha</SelectItem>
+                  <SelectItem value="centro">Centro</SelectItem>
+                  <SelectItem value="izquierda">Izquierda</SelectItem>
+                  <SelectItem value="derecha">Derecha</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
             <div className="grid grid-cols-2 gap-2">
               <div className="space-y-1">
@@ -872,14 +883,6 @@ export default function FormatoReportesPage() {
               </div>
             </div>
 
-            <div>
-              <input ref={logoInputRef} type="file" accept=".png,.jpg,.jpeg,.svg" className="hidden" onChange={handleLogoUpload} />
-              <Button variant="outline" size="sm" className="w-full text-xs" disabled={uploadingLogo}
-                onClick={() => logoInputRef.current?.click()}>
-                {uploadingLogo ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" /> : <Upload className="h-3.5 w-3.5 mr-1.5" />}
-                Subir Logo
-              </Button>
-            </div>
           </>
         )}
       </div>
@@ -889,222 +892,288 @@ export default function FormatoReportesPage() {
   // ============================================================
   // PROPERTIES PANEL RENDER
   // ============================================================
-  const renderPropertiesPanel = () => {
-    // Zone-specific properties for Rinde por Tropa
-    if (activeTab === 'rinde-tropa' && currentSelectedZone) {
-      const zoneMeta = RINDE_ZONES.find(z => z.id === currentSelectedZone)
 
-      return (
-        <>
-          {/* Zone Header */}
-          <div className="flex items-center gap-2 mb-4">
-            {zoneMeta && <span className="text-lg">{zoneMeta.icon}</span>}
-            <h3 className="text-sm font-semibold">{zoneMeta?.label || currentSelectedZone}</h3>
+  // Helper: get zone list for current tab
+  const getCurrentZoneList = () => {
+    if (activeTab === 'rinde-tropa') return RINDE_ZONES.map(z => ({ id: z.id, label: z.label, icon: z.icon }))
+    if (activeTab === 'planilla-01') return PLANILLA_ZONES
+    return STOCK_ZONES
+  }
+
+  // Helper: render zone-specific properties for Planilla/Stock (font, borders, separators)
+  const renderSimpleZoneProps = () => {
+    if (activeTab === 'rinde-tropa' || !currentSelectedZone) return null
+
+    const zones = activeTab === 'planilla-01' ? PLANILLA_ZONES : STOCK_ZONES
+    const zoneMeta = zones.find(z => z.id === currentSelectedZone)
+    if (!zoneMeta) return null
+
+    // Determine font key for this zone
+    const fontKey = currentSelectedZone === 'header' ? 'tamanoTitulo' : 'tamanoDatos'
+    const fontLabel = currentSelectedZone === 'header' ? 'Tamaño título (px)' : 'Tamaño datos (px)'
+
+    return (
+      <>
+        <div className="flex items-center gap-2 mb-4">
+          <span className="text-lg">{zoneMeta.icon}</span>
+          <h3 className="text-sm font-semibold">{zoneMeta.label}</h3>
+          <button
+            className="ml-auto p-1 rounded hover:bg-gray-100 transition-colors text-muted-foreground hover:text-foreground"
+            title="Deseleccionar"
+            onClick={() => setCurrentSelectedZone(null)}
+          >
+            <Minus className="h-3.5 w-3.5" />
+          </button>
+        </div>
+
+        {/* Font family */}
+        <div className="space-y-1.5 mb-3">
+          <Label className="text-xs font-medium">Fuente</Label>
+          <Select
+            value={String(simpleFuentes.familia || 'Arial')}
+            onValueChange={(v) => updateExcelField('fuentes', { ...simpleFuentes, familia: v })}
+          >
+            <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {FONT_OPTIONS.map(f => <SelectItem key={f} value={f}>{f}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Font size for this zone */}
+        <div className="space-y-1 mb-3">
+          <Label className="text-[10px] text-muted-foreground">{fontLabel}</Label>
+          <Input type="number" min={6} max={24}
+            value={(simpleFuentes[fontKey] as number) || (currentSelectedZone === 'header' ? 14 : 10)}
+            onChange={(e) => {
+              const v = parseInt(e.target.value) || (currentSelectedZone === 'header' ? 14 : 10)
+              updateExcelField('fuentes', { ...simpleFuentes, [fontKey]: v })
+            }}
+            className="h-8 text-xs" />
+        </div>
+
+        <Separator className="my-3" />
+
+        {/* Borders */}
+        <div className="space-y-2 mb-4">
+          <Label className="text-xs font-medium">Bordes</Label>
+          <div className="flex items-center gap-2">
+            <Switch checked={!!simpleBordes[currentSelectedZone]}
+              onCheckedChange={(v) => updateExcelField('bordes', { ...simpleBordes, [currentSelectedZone]: v })} />
+            <span className="text-xs text-muted-foreground">Mostrar borde</span>
           </div>
+        </div>
 
-          {/* Font section */}
-          {zoneMeta && (
-            <div className="space-y-3 mb-4">
-              <div>
-                <Label className="text-xs font-medium mb-1.5 block">Fuente</Label>
-                <Select
-                  value={String((rinde.fuentes as Record<string, unknown>).familia || 'Calibri')}
-                  onValueChange={(v) => updateCurrentConfig(prev => ({
-                    ...prev,
-                    excel: { ...prev.excel, fuentes: { ...(prev.excel.fuentes as Record<string, unknown>), familia: v } },
-                  }))}
-                >
-                  <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {FONT_OPTIONS.map(f => <SelectItem key={f} value={f}>{f}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-1">
-                <Label className="text-[10px] text-muted-foreground">Tamaño de fuente (px)</Label>
-                <Input type="number" min={6} max={24}
-                  value={(rinde.fuentes as unknown as Record<string, number>)[zoneMeta.fontKey] || 10}
-                  onChange={(e) => {
-                    const v = parseInt(e.target.value) || 10
-                    updateCurrentConfig(prev => ({
-                      ...prev,
-                      excel: { ...prev.excel, fuentes: { ...(prev.excel.fuentes as Record<string, unknown>), [zoneMeta.fontKey]: v } },
-                    }))
-                  }}
-                  className="h-8 text-xs" />
-              </div>
+        {/* Separators for header */}
+        {currentSelectedZone === 'header' && (
+          <>
+            <Separator className="my-3" />
+            <div className="space-y-2">
+              <Label className="text-xs font-medium">Separadores</Label>
+              {Object.entries(simpleSeparadores).length > 0 && Object.entries(simpleSeparadores).map(([key, val]) => (
+                <div key={key} className="space-y-1">
+                  <Label className="text-[10px] text-muted-foreground capitalize">{key.replace(/([A-Z])/g, ' $1')}</Label>
+                  <Select value={val || 'ninguno'} onValueChange={(v) => updateExcelField('separadores', { ...simpleSeparadores, [key]: v })}>
+                    <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="ninguno">Ninguno</SelectItem>
+                      <SelectItem value="simple">Simple</SelectItem>
+                      <SelectItem value="doble">Doble</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              ))}
             </div>
-          )}
+          </>
+        )}
+      </>
+    )
+  }
 
-          <Separator className="my-3" />
+  const renderPropertiesPanel = () => {
+    return (
+      <>
+        {/* Logo section - ALWAYS at top */}
+        {renderLogoSection()}
 
-          {/* Borders */}
-          {zoneMeta && (
-            <div className="space-y-2 mb-4">
-              <Label className="text-xs font-medium">Bordes</Label>
-              <div className="flex items-center gap-2">
-                <Switch checked={!!rinde.bordes?.[zoneMeta.bordeKey]}
-                  onCheckedChange={(v) => updateRindeBorde(zoneMeta.bordeKey, v)} />
-                <span className="text-xs text-muted-foreground">Mostrar borde</span>
-              </div>
+        <Separator className="my-4" />
+
+        {/* Zone-specific properties OR no-selection help */}
+        {activeTab === 'rinde-tropa' && currentSelectedZone && (
+          <RenderRindeZoneProps />
+        )}
+
+        {(activeTab === 'planilla-01' || activeTab === 'stock-corrales') && currentSelectedZone && (
+          renderSimpleZoneProps()
+        )}
+
+        {!currentSelectedZone && (
+          <div className="flex flex-col items-center justify-center py-4 text-center">
+            <MousePointerClick className="h-8 w-8 text-muted-foreground/40 mb-2" />
+            <p className="text-sm text-muted-foreground mb-1">Sin selección</p>
+            <p className="text-xs text-muted-foreground">Hacé click en una sección para editar sus propiedades</p>
+
+            {/* Sections List */}
+            <div className="mt-4 w-full space-y-1">
+              <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide mb-2">Secciones editables</p>
+              {getCurrentZoneList().map(z => (
+                <button key={z.id} className="flex items-center gap-2 w-full px-3 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors text-left"
+                  onClick={() => setCurrentSelectedZone(z.id)}>
+                  <span>{z.icon}</span><span>{z.label}</span>
+                  <ChevronRight className="h-3 w-3 ml-auto text-muted-foreground" />
+                </button>
+              ))}
             </div>
-          )}
+          </div>
+        )}
+      </>
+    )
+  }
 
-          {/* Separators */}
-          {zoneMeta?.separadorKey && (
-            <div className="space-y-2 mb-4">
-              <Label className="text-xs font-medium">Separador</Label>
+  // Rinde zone properties (extracted from main panel)
+  const RenderRindeZoneProps = () => {
+    if (!currentSelectedZone || activeTab !== 'rinde-tropa') return null
+    const zoneMeta = RINDE_ZONES.find(z => z.id === currentSelectedZone)
+
+    return (
+      <>
+        {/* Zone Header */}
+        <div className="flex items-center gap-2 mb-4">
+          {zoneMeta && <span className="text-lg">{zoneMeta.icon}</span>}
+          <h3 className="text-sm font-semibold">{zoneMeta?.label || currentSelectedZone}</h3>
+          <button
+            className="ml-auto p-1 rounded hover:bg-gray-100 transition-colors text-muted-foreground hover:text-foreground"
+            title="Deseleccionar"
+            onClick={() => setCurrentSelectedZone(null)}
+          >
+            <Minus className="h-3.5 w-3.5" />
+          </button>
+        </div>
+
+        {/* Font section */}
+        {zoneMeta && (
+          <div className="space-y-3 mb-4">
+            <div>
+              <Label className="text-xs font-medium mb-1.5 block">Fuente</Label>
               <Select
-                value={rinde.separadores?.[zoneMeta.separadorKey] || 'ninguno'}
-                onValueChange={(v) => updateRindeSeparador(zoneMeta.separadorKey!, v)}
+                value={String((rinde.fuentes as Record<string, unknown>).familia || 'Calibri')}
+                onValueChange={(v) => updateCurrentConfig(prev => ({
+                  ...prev,
+                  excel: { ...prev.excel, fuentes: { ...(prev.excel.fuentes as Record<string, unknown>), familia: v } },
+                }))}
               >
                 <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="ninguno">Ninguno</SelectItem>
-                  <SelectItem value="simple">Simple</SelectItem>
-                  <SelectItem value="doble">Doble</SelectItem>
+                  {FONT_OPTIONS.map(f => <SelectItem key={f} value={f}>{f}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
-          )}
-
-          {/* Animal Table specific: column alignment */}
-          {currentSelectedZone === 'animalTable' && (
-            <>
-              <Separator className="my-3" />
-              <Label className="text-xs font-medium mb-2 block">Alineación de columnas</Label>
-              <div className="space-y-2">
-                {ANIMAL_COL_KEYS.map(k => (
-                  <AlignmentPicker key={k} label={RINDE_COLUMN_MAP[k].label} value={animalAlign(k)}
-                    onChange={(v) => updateRindeAlignment('alineacionAnimales', k, v)} />
-                ))}
-              </div>
-            </>
-          )}
-
-          {/* Menudencia specific */}
-          {currentSelectedZone === 'menudencia' && (
-            <>
-              <Separator className="my-3" />
-              <Label className="text-xs font-medium mb-2 block">Alineación de columnas</Label>
-              <div className="space-y-2">
-                {MENUDENCIA_COL_KEYS.map(k => (
-                  <AlignmentPicker key={k} label={MENUDENCIA_COL_MAP[k].label} value={menAlign(k)}
-                    onChange={(v) => updateRindeAlignment('alineacionMenudencia', k, v)} />
-                ))}
-              </div>
-            </>
-          )}
-
-          {/* Summary specific */}
-          {currentSelectedZone === 'summary' && (
-            <>
-              <Separator className="my-3" />
-              <Label className="text-xs font-medium mb-2 block">Alineación de resumen</Label>
-              <div className="space-y-2">
-                {Object.keys(RESUMEN_COL_MAP).map(k => (
-                  <AlignmentPicker key={k} label={RESUMEN_COL_MAP[k].label} value={resAlign(k)}
-                    onChange={(v) => updateRindeAlignment('alineacionResumen', k, v)} />
-                ))}
-              </div>
-            </>
-          )}
-
-          {/* Spacing for menudencia */}
-          {currentSelectedZone === 'menudencia' && (
-            <>
-              <Separator className="my-3" />
-              <div className="space-y-2">
-                <Label className="text-xs font-medium">Espacio antes de Menudencia</Label>
-                <Input type="number" min={0} max={20} value={rinde.separacion?.filasAntesMenudencia ?? 4}
-                  onChange={(e) => updateCurrentConfig(prev => ({
+            <div className="space-y-1">
+              <Label className="text-[10px] text-muted-foreground">Tamaño de fuente (px)</Label>
+              <Input type="number" min={6} max={24}
+                value={(rinde.fuentes as unknown as Record<string, number>)[zoneMeta.fontKey] || 10}
+                onChange={(e) => {
+                  const v = parseInt(e.target.value) || 10
+                  updateCurrentConfig(prev => ({
                     ...prev,
-                    excel: { ...prev.excel, separacion: { filasAntesMenudencia: parseInt(e.target.value) || 4 } },
-                  }))}
-                  className="h-8 text-xs" />
-              </div>
-            </>
-          )}
-        </>
-      )
-    }
-
-    // Zone-specific properties for Planilla 01 / Stock Corrales
-    if ((activeTab === 'planilla-01' || activeTab === 'stock-corrales') && currentSelectedZone) {
-      const zones = activeTab === 'planilla-01' ? PLANILLA_ZONES : STOCK_ZONES
-      const zoneMeta = zones.find(z => z.id === currentSelectedZone)
-
-      return (
-        <>
-          <div className="flex items-center gap-2 mb-4">
-            {zoneMeta && <span className="text-lg">{zoneMeta.icon}</span>}
-            <h3 className="text-sm font-semibold">{zoneMeta?.label || currentSelectedZone}</h3>
+                    excel: { ...prev.excel, fuentes: { ...(prev.excel.fuentes as Record<string, unknown>), [zoneMeta.fontKey]: v } },
+                  }))
+                }}
+                className="h-8 text-xs" />
+            </div>
           </div>
+        )}
 
-          {/* Borders */}
+        <Separator className="my-3" />
+
+        {/* Borders */}
+        {zoneMeta && (
           <div className="space-y-2 mb-4">
             <Label className="text-xs font-medium">Bordes</Label>
             <div className="flex items-center gap-2">
-              <Switch checked={!!simpleBordes[currentSelectedZone]}
-                onCheckedChange={(v) => updateExcelField('bordes', { ...simpleBordes, [currentSelectedZone]: v })} />
+              <Switch checked={!!rinde.bordes?.[zoneMeta.bordeKey]}
+                onCheckedChange={(v) => updateRindeBorde(zoneMeta.bordeKey, v)} />
               <span className="text-xs text-muted-foreground">Mostrar borde</span>
             </div>
           </div>
+        )}
 
-          {/* Separators for header */}
-          {currentSelectedZone === 'header' && (
-            <>
-              <Separator className="my-3" />
-              <div className="space-y-2">
-                {Object.entries(simpleSeparadores).length > 0 && Object.entries(simpleSeparadores).map(([key, val]) => (
-                  <div key={key} className="space-y-1">
-                    <Label className="text-xs font-medium capitalize">{key.replace(/([A-Z])/g, ' $1')}</Label>
-                    <Select value={val || 'ninguno'} onValueChange={(v) => updateExcelField('separadores', { ...simpleSeparadores, [key]: v })}>
-                      <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="ninguno">Ninguno</SelectItem>
-                        <SelectItem value="simple">Simple</SelectItem>
-                        <SelectItem value="doble">Doble</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                ))}
-              </div>
-            </>
-          )}
-        </>
-      )
-    }
+        {/* Separators */}
+        {zoneMeta?.separadorKey && (
+          <div className="space-y-2 mb-4">
+            <Label className="text-xs font-medium">Separador</Label>
+            <Select
+              value={rinde.separadores?.[zoneMeta.separadorKey] || 'ninguno'}
+              onValueChange={(v) => updateRindeSeparador(zoneMeta.separadorKey!, v)}
+            >
+              <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ninguno">Ninguno</SelectItem>
+                <SelectItem value="simple">Simple</SelectItem>
+                <SelectItem value="doble">Doble</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
 
-    // No zone selected - show sections list + logo
-    const zones = activeTab === 'rinde-tropa' ? RINDE_ZONES.map(z => ({ id: z.id, label: z.label, icon: z.icon }))
-      : activeTab === 'planilla-01' ? PLANILLA_ZONES
-      : STOCK_ZONES
+        {/* Animal Table specific: column alignment */}
+        {currentSelectedZone === 'animalTable' && (
+          <>
+            <Separator className="my-3" />
+            <Label className="text-xs font-medium mb-2 block">Alineación de columnas</Label>
+            <div className="space-y-2">
+              {ANIMAL_COL_KEYS.map(k => (
+                <AlignmentPicker key={k} label={RINDE_COLUMN_MAP[k].label} value={animalAlign(k)}
+                  onChange={(v) => updateRindeAlignment('alineacionAnimales', k, v)} />
+              ))}
+            </div>
+          </>
+        )}
 
-    return (
-      <div className="flex flex-col items-center justify-center py-8 text-center">
-        <Eye className="h-10 w-10 text-muted-foreground/40 mb-3" />
-        <p className="text-sm text-muted-foreground mb-1">Sin selección</p>
-        <p className="text-xs text-muted-foreground">Hacé click en una sección para editarla.</p>
+        {/* Menudencia specific */}
+        {currentSelectedZone === 'menudencia' && (
+          <>
+            <Separator className="my-3" />
+            <Label className="text-xs font-medium mb-2 block">Alineación de columnas</Label>
+            <div className="space-y-2">
+              {MENUDENCIA_COL_KEYS.map(k => (
+                <AlignmentPicker key={k} label={MENUDENCIA_COL_MAP[k].label} value={menAlign(k)}
+                  onChange={(v) => updateRindeAlignment('alineacionMenudencia', k, v)} />
+              ))}
+            </div>
+          </>
+        )}
 
-        {/* Logo Section */}
-        <div className="mt-6 w-full">
-          <Separator className="mb-4" />
-          {renderLogoSection()}
-        </div>
+        {/* Summary specific */}
+        {currentSelectedZone === 'summary' && (
+          <>
+            <Separator className="my-3" />
+            <Label className="text-xs font-medium mb-2 block">Alineación de resumen</Label>
+            <div className="space-y-2">
+              {Object.keys(RESUMEN_COL_MAP).map(k => (
+                <AlignmentPicker key={k} label={RESUMEN_COL_MAP[k].label} value={resAlign(k)}
+                  onChange={(v) => updateRindeAlignment('alineacionResumen', k, v)} />
+              ))}
+            </div>
+          </>
+        )}
 
-        {/* Sections List */}
-        <div className="mt-4 w-full space-y-1">
-          <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide mb-2">Secciones</p>
-          {zones.map(z => (
-            <button key={z.id} className="flex items-center gap-2 w-full px-3 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors text-left"
-              onClick={() => setCurrentSelectedZone(z.id)}>
-              <span>{z.icon}</span><span>{z.label}</span>
-              <ChevronRight className="h-3 w-3 ml-auto text-muted-foreground" />
-            </button>
-          ))}
-        </div>
-      </div>
+        {/* Spacing for menudencia */}
+        {currentSelectedZone === 'menudencia' && (
+          <>
+            <Separator className="my-3" />
+            <div className="space-y-2">
+              <Label className="text-xs font-medium">Espacio antes de Menudencia</Label>
+              <Input type="number" min={0} max={20} value={rinde.separacion?.filasAntesMenudencia ?? 4}
+                onChange={(e) => updateCurrentConfig(prev => ({
+                  ...prev,
+                  excel: { ...prev.excel, separacion: { filasAntesMenudencia: parseInt(e.target.value) || 4 } },
+                }))}
+                className="h-8 text-xs" />
+            </div>
+          </>
+        )}
+      </>
     )
   }
 
@@ -1112,12 +1181,34 @@ export default function FormatoReportesPage() {
   // CANVAS RENDERERS
   // ============================================================
 
-  // Helper to render logo placeholder on canvas
-  const renderCanvasLogo = (logo: { visible: boolean; posicion: string; ancho: number; alto: number }) => {
+  // Helper to render logo on canvas (tries actual image, falls back to placeholder)
+  const CanvasLogoImage = ({ archivo, ancho, alto }: { archivo: string; ancho: number; alto: number }) => {
+    const [imgError, setImgError] = useState(false)
+
+    if (imgError) {
+      return (
+        <div className="flex flex-col items-center gap-1 text-[10px] text-gray-400">
+          <ImageIcon className="h-6 w-6" />
+          <span>Logo</span>
+        </div>
+      )
+    }
+
+    return (
+      <img
+        src={`/${archivo}`}
+        alt="Logo"
+        style={{ maxWidth: ancho, maxHeight: alto, objectFit: 'contain' }}
+        onError={() => setImgError(true)}
+      />
+    )
+  }
+
+  const renderCanvasLogo = (logo: { visible: boolean; posicion: string; ancho: number; alto: number; archivo?: string }) => {
     if (!logo.visible) return null
     return (
       <div
-        className="mb-2 flex items-center justify-center rounded border-2 border-dashed border-gray-300 bg-gray-50 text-gray-400"
+        className="mb-2 flex items-center justify-center rounded border-2 border-dashed border-gray-300 bg-gray-50 overflow-hidden"
         style={{
           width: `${logo.ancho}px`,
           height: `${logo.alto}px`,
@@ -1126,10 +1217,7 @@ export default function FormatoReportesPage() {
           alignSelf: logo.posicion === 'centro' ? 'center' : undefined,
         }}
       >
-        <div className="flex flex-col items-center gap-1 text-[10px]">
-          <ImageIcon className="h-6 w-6" />
-          <span>Logo</span>
-        </div>
+        <CanvasLogoImage archivo={logo.archivo || 'logo.png'} ancho={logo.ancho} alto={logo.alto} />
       </div>
     )
   }
@@ -1646,7 +1734,16 @@ export default function FormatoReportesPage() {
         {/* Tab Content */}
         <TabsContent value={activeTab} className="flex flex-1 min-h-0 flex-col lg:flex-row mt-0">
           {/* LEFT: Canvas */}
-          <div className="flex-1 min-w-0 overflow-auto bg-gray-50 p-4 lg:p-6" onClick={() => setCurrentSelectedZone(null)}>
+          <div className="flex-1 min-w-0 overflow-auto bg-gray-50 p-4 lg:p-6 relative" onClick={() => setCurrentSelectedZone(null)}>
+            {/* Help overlay when no zone is selected */}
+            {!currentSelectedZone && (
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+                <div className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/80 backdrop-blur-sm shadow-sm border border-gray-200 text-sm text-muted-foreground">
+                  <MousePointerClick className="h-4 w-4" />
+                  <span>Hacé click en una sección del reporte para editar sus propiedades</span>
+                </div>
+              </div>
+            )}
             {activeTab === 'rinde-tropa' && renderRindeCanvas()}
             {activeTab === 'planilla-01' && renderPlanillaCanvas()}
             {activeTab === 'stock-corrales' && renderStockCanvas()}
@@ -1665,21 +1762,7 @@ export default function FormatoReportesPage() {
             </div>
             <ScrollArea className="flex-1">
               <div className="p-4">
-                {/* Zone-specific properties */}
-                {currentSelectedZone ? (
-                  <>
-                    {renderPropertiesPanel()}
-                    {/* Logo section also shown when header is selected */}
-                    {currentSelectedZone === 'header' && (
-                      <>
-                        <Separator className="my-4" />
-                        {renderLogoSection()}
-                      </>
-                    )}
-                  </>
-                ) : (
-                  renderPropertiesPanel()
-                )}
+                {renderPropertiesPanel()}
               </div>
             </ScrollArea>
 
