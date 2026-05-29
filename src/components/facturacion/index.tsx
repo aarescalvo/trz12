@@ -20,7 +20,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
-import { HistoricoPrecios } from '@/modules/facturacion/components/HistoricoPrecios'
+import { PreciosPage } from '@/modules/facturacion/components/PreciosPage'
 import { DetalleTropaTab } from '@/components/facturacion/DetalleTropaTab'
 import { FactServFaenaTab } from '@/components/facturacion/FactServFaenaTab'
 import { CargaServFaenaTab } from '@/components/facturacion/CargaServFaenaTab'
@@ -2116,9 +2116,9 @@ ${factura.iva > 0 ? `<p>IVA (${factura.porcentajeIva}%): $${factura.iva?.toLocal
             )}
           </TabsContent>
 
-          {/* TAB HISTORIAL PRECIOS */}
+          {/* TAB PRECIOS */}
           <TabsContent value="historialPrecios">
-            <HistoricoPrecios operador={operador} />
+            <PreciosPage operador={operador} />
           </TabsContent>
         </Tabs>
 

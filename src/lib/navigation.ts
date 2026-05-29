@@ -20,7 +20,7 @@ export type PageId =
   | 'cortesDespostada' | 'produccionUnificada' | 'menudencias' | 'cueros'
   | 'grasa' | 'desperdicios' | 'fondoDigestor'
   | 'stockUnificada' | 'stocksCorrales' | 'planilla01' | 'rindesTropa'
-  | 'busquedaFiltro' | 'reportesSenasa' | 'facturacion' | 'precios'
+  | 'busquedaFiltro' | 'reportesSenasa' | 'facturacion'
   | 'insumos' | 'stocksInsumos' | 'configRotulos' | 'editorRotulos'
   | 'configInsumos' | 'configUsuarios' | 'configCodigobarras'
   | 'configBalanzas' | 'configOperadores' | 'configProductos'
@@ -31,7 +31,7 @@ export type PageId =
   | 'c2Degradacion' | 'c2Reportes' | 'calidadRegistroUsuarios'
   | 'calidadPh' | 'reportes' | 'configuracion' | 'auditoriaOperador'
   | 'rotulosMejoras' | 'dashboardEjecutivo' | 'reportesGerenciales'
-  | 'controlVencimientos' | 'alertasStock' | 'historialPrecios'
+  | 'controlVencimientos' | 'alertasStock'
   | 'reportesSIGICA' | 'exportacionSIGICA' | 'printerBridgeGuide'
   | 'formatoReportes'
 
@@ -82,8 +82,6 @@ export const PAGE_TO_ROUTE: Record<PageId, string> = {
   controlVencimientos: '/reportes/control-vencimientos',
   dashboardEjecutivo: '/reportes/dashboard-ejecutivo',
   facturacion: '/administracion/facturacion',
-  precios: '/administracion/precios',
-  historialPrecios: '/administracion/historial-precios',
   insumos: '/administracion/insumos',
   stocksInsumos: '/administracion/stocks-insumos',
   alertasStock: '/administracion/alertas-stock',
@@ -234,8 +232,6 @@ export const NAV_GROUPS: NavGroup[] = [
     icon: FileText,
     items: [
       { id: 'facturacion', label: 'Facturación', icon: FileText, permiso: 'puedeFacturacion', route: '/administracion/facturacion' },
-      { id: 'precios', label: 'Precios', icon: DollarSign, permiso: 'puedeFacturacion', route: '/administracion/precios' },
-      { id: 'historialPrecios', label: 'Historial de Precios', icon: TrendingUp, permiso: 'puedeFacturacion', route: '/administracion/historial-precios' },
       { id: 'insumos', label: 'Insumos', icon: Package, permiso: 'puedeConfiguracion', route: '/administracion/insumos' },
       { id: 'stocksInsumos', label: 'Stocks de Insumos', icon: Package, permiso: 'puedeStock', route: '/administracion/stocks-insumos' },
       { id: 'alertasStock', label: 'Alertas de Stock', icon: AlertTriangle, permiso: 'puedeStock', route: '/administracion/alertas-stock' },
