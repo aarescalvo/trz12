@@ -291,6 +291,78 @@ async function main() {
     }
   }
 
+  // 5. Crear datos en el sistema de Tarifas (TipoTarifa + HistoricoTarifa)
+  // Esto es lo que muestra la pestaña "Precios" en Facturación
+  console.log(`\n=== TARIFAS (TipoTarifa + HistoricoTarifa) ===`)
+
+  // Crear TipoTarifa para faena si no existe
+  const tipoTarifaFaena = await prisma.tipoTarifa.findUnique({ where: { codigo: 'FAENA_BOVINO' } })
+  if (!tipoTarifaFaena) {
+    await prisma.tipoTarifa.create({
+      data: {
+        codigo: 'FAENA_BOVINO',
+        descripcion: 'Servicio de faena bovino por kg',
+        unidad: 'POR_KG',
+        orden: 1,
+      }
+    })
+    console.log(`  TipoTarifa FAENA_BOVINO creado`)
+  }
+  const tt = tipoTarifaFaena || await prisma.tipoTarifa.findUnique({ where: { codigo: 'FAENA_BOVINO' } })
+  if (!tt) {
+    console.log('  ✗ No se pudo obtener TipoTarifa FAENA_BOVINO, saltando tarifas')
+  } else {
+
+  // Crear HistoricoTarifa para cada cliente con cada precio que tuvo
+  let tarifasCreadas = 0
+  for (const usuarioNombre of allUsuarios) {
+    const clienteId = clienteCache[usuarioNombre]
+    if (!clienteId) continue
+
+    const preciosUsuario = [...new Set(
+      rawData.filter(d => (d.usuario || '').trim() === usuarioNombre).map(d => d.precioServicio)
+    )].filter(p => p > 0).sort()
+
+    for (const precio of preciosUsuario) {
+      const tierInfo = precios.find(p => p.monto === precio)
+      const fechaDesde = tierInfo ? new Date(tierInfo.desde) : new Date('2025-01-01')
+
+      // Verificar si ya existe
+      const existente = await prisma.historicoTarifa.findFirst({
+        where: {
+          tipoTarifaId: tt.id,
+          clienteId: clienteId,
+          valor: precio,
+          vigenciaDesde: fechaDesde,
+        }
+      })
+      if (existente) continue
+
+      // Cerrar tarifa anterior vigente para este cliente+tipo
+      await prisma.historicoTarifa.updateMany({
+        where: {
+          tipoTarifaId: tt.id,
+          clienteId: clienteId,
+          vigenciaHasta: null,
+        },
+        data: { vigenciaHasta: fechaDesde }
+      })
+
+      await prisma.historicoTarifa.create({
+        data: {
+          tipoTarifaId: tt.id,
+          clienteId: clienteId,
+          valor: precio,
+          vigenciaDesde: fechaDesde,
+          motivo: `Precio faena $${precio}/kg - Importado de planilla DETALLE`,
+        }
+      })
+      tarifasCreadas++
+    }
+  }
+  console.log(`  Tarifas creadas: ${tarifasCreadas}`)
+  } // end else tt
+
   console.log(`\n=== SEED COMPLETADO ===`)
 }
 
