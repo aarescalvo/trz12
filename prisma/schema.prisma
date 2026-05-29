@@ -359,6 +359,7 @@ model Cliente {
   preciosRendering         PrecioRendering[]
   preciosServicio          PrecioServicio[]
   ingresosTercero          IngresoTercero[]          @relation("IngresoTerceroProveedor")
+  planillasServicioFaena   PlanillaServicioFaena[]
 }
 
 // ==================== TRANSPORTISTAS ====================
@@ -523,9 +524,10 @@ model Tropa {
   registrosCuero     RegistroCuero[]
 
   // ==================== REVERSE RELATIONS (auto-added) ====================
-  balancesFaena      BalanceFaena[]
-  liquidacionesFaena LiquidacionFaena[]
-  detalleTropaFaena  DetalleTropaFaena?
+  balancesFaena          BalanceFaena[]
+  liquidacionesFaena     LiquidacionFaena[]
+  detalleTropaFaena      DetalleTropaFaena?
+  planillasServicioFaena PlanillaServicioFaena[]
 
   @@index([especie])
   @@index([estado])
@@ -5120,6 +5122,68 @@ model DetalleTropaFaena {
   @@index([tropaId])
   @@index([usuario])
   @@index([precioServicio])
+  @@index([createdAt])
+}
+
+// ============================================================
+// PLANILLA SERVICIO FAENA — Facturación de servicio de faena (módulo FACT. SERV. FAENA)
+// ============================================================
+model PlanillaServicioFaena {
+  id String @id @default(cuid())
+
+  // Vinculación con Tropa existente
+  tropaId     String?
+  tropa       Tropa?  @relation(fields: [tropaId], references: [id])
+  numeroTropa Int // Nº Tropa (1 a 203)
+
+  // Vinculación con Cliente (usuario de faena)
+  usuarioFaenaId String?
+  usuarioFaena   Cliente? @relation(fields: [usuarioFaenaId], references: [id])
+  usuario        String // Nombre del usuario (texto plano)
+
+  // Datos de faena
+  cantidadAnimales Int
+  kgPie            Float
+  fechaFaena       DateTime
+  kgGancho         Float
+  rindePorcentaje  Float // 58.20 = 58.2%
+
+  // Precios
+  precioServicioKg            Float // $/kg S/RECUPERO (columna H)
+  precioServicioKgConRecupero Float? // $/kg C/RECUPERO (columna I, vacío)
+
+  // Totales e impuestos
+  totalServicioIva  Float // Total $ Serv + 21% IVA (columna J)
+  tasaInspeccionVet Float // Tasa insp. vet. por cabeza (columna K)
+  arancelIpcva      Float // Arancel IPCVA por cabeza (columna L)
+  totalFacturaImp   Float // Total $ Factura con impuestos (columna M)
+
+  // Datos de facturación
+  numeroFactura String? // Nº Factura (columna N)
+  fechaFactura  DateTime? // Fecha factura (columna O)
+
+  // Datos de pago
+  fechaPago       DateTime? // Fecha pago (columna P)
+  diasPago        Int? // Días hasta el pago (columna Q)
+  montoDepositado Float? // Monto depositado (columna R)
+  estadoPago      Float // Saldo pendiente (columna S, puede ser negativo)
+
+  // Observaciones
+  observaciones String? // (columna T): "E-CHEQ", "E-CHEQ SALDO", etc.
+
+  // Auditoría
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tropaId])
+  @@index([usuarioFaenaId])
+  @@index([usuario])
+  @@index([numeroTropa])
+  @@index([fechaFaena])
+  @@index([fechaFactura])
+  @@index([fechaPago])
+  @@index([estadoPago])
+  @@index([precioServicioKg])
   @@index([createdAt])
 }
 

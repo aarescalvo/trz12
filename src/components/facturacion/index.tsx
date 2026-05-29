@@ -5,7 +5,7 @@ import {
   FileText, DollarSign, CheckCircle, XCircle, Eye, 
   Plus, Search, Loader2, Printer, RefreshCw, CreditCard,
   Building2, Receipt, Package, Beef,
-  FileSpreadsheet, History, Pencil,
+  FileSpreadsheet, History, Pencil, ClipboardList, Upload,
   ArrowLeftRight, Trash2, FileDown, Ban,
   TrendingUp, Clock, AlertCircle, AlertTriangle, BarChart3
 } from 'lucide-react'
@@ -22,6 +22,8 @@ import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
 import { HistoricoPrecios } from '@/modules/facturacion/components/HistoricoPrecios'
 import { DetalleTropaTab } from '@/components/facturacion/DetalleTropaTab'
+import { FactServFaenaTab } from '@/components/facturacion/FactServFaenaTab'
+import { CargaServFaenaTab } from '@/components/facturacion/CargaServFaenaTab'
 import { LiquidacionForm } from '@/modules/facturacion/components/LiquidacionForm'
 import { ComprobantesTable } from '@/modules/facturacion/components/ComprobantesTable'
 import { CtaCteCliente } from '@/modules/facturacion/components/CtaCteCliente'
@@ -1081,9 +1083,15 @@ ${factura.iva > 0 ? `<p>IVA (${factura.porcentajeIva}%): $${factura.iva?.toLocal
 
         {/* Tabs */}
         <Tabs value={tabActivo} onValueChange={setTabActivo} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-7 max-w-4xl">
+          <TabsList className="grid w-full grid-cols-9 max-w-5xl">
             <TabsTrigger value="servicioFaena" className="gap-1">
               <Beef className="w-4 h-4" />Serv. Faena
+            </TabsTrigger>
+            <TabsTrigger value="factServFaena" className="gap-1">
+              <ClipboardList className="w-4 h-4" />Fact. Serv. Faena
+            </TabsTrigger>
+            <TabsTrigger value="cargaServFaena" className="gap-1">
+              <Upload className="w-4 h-4" />Carga
             </TabsTrigger>
             <TabsTrigger value="facturas">Facturas</TabsTrigger>
             <TabsTrigger value="cuentas">Cta. Cte.</TabsTrigger>
@@ -1843,6 +1851,16 @@ ${factura.iva > 0 ? `<p>IVA (${factura.porcentajeIva}%): $${factura.iva?.toLocal
                 )}
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* TAB FACT. SERV. FAENA */}
+          <TabsContent value="factServFaena" className="space-y-4">
+            <FactServFaenaTab operador={operador} />
+          </TabsContent>
+
+          {/* TAB CARGA SERV. FAENA */}
+          <TabsContent value="cargaServFaena" className="space-y-4">
+            <CargaServFaenaTab operador={operador} />
           </TabsContent>
 
           {/* TAB DETALLE */}
