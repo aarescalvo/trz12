@@ -7,7 +7,7 @@ import {
   Building2, Receipt, Package, Beef,
   FileSpreadsheet, History, Pencil,
   ArrowLeftRight, Trash2, FileDown, Ban,
-  TrendingUp, Clock, AlertCircle, AlertTriangle
+  TrendingUp, Clock, AlertCircle, AlertTriangle, BarChart3
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -21,6 +21,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
 import { HistoricoPrecios } from '@/modules/facturacion/components/HistoricoPrecios'
+import { DetalleTropaTab } from '@/components/facturacion/DetalleTropaTab'
 import { LiquidacionForm } from '@/modules/facturacion/components/LiquidacionForm'
 import { ComprobantesTable } from '@/modules/facturacion/components/ComprobantesTable'
 import { CtaCteCliente } from '@/modules/facturacion/components/CtaCteCliente'
@@ -1080,17 +1081,20 @@ ${factura.iva > 0 ? `<p>IVA (${factura.porcentajeIva}%): $${factura.iva?.toLocal
 
         {/* Tabs */}
         <Tabs value={tabActivo} onValueChange={setTabActivo} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6 max-w-3xl">
+          <TabsList className="grid w-full grid-cols-7 max-w-4xl">
             <TabsTrigger value="servicioFaena" className="gap-1">
-              <Beef className="w-4 h-4" />Servicio Faena
+              <Beef className="w-4 h-4" />Serv. Faena
             </TabsTrigger>
             <TabsTrigger value="facturas">Facturas</TabsTrigger>
             <TabsTrigger value="cuentas">Cta. Cte.</TabsTrigger>
             <TabsTrigger value="notas" className="gap-1">
-              <ArrowLeftRight className="w-4 h-4" />Notas C/D
+              <ArrowLeftRight className="w-4 h-4" />Notas
+            </TabsTrigger>
+            <TabsTrigger value="detalle" className="gap-1">
+              <FileSpreadsheet className="w-4 h-4" />DETALLE
             </TabsTrigger>
             <TabsTrigger value="informes" className="gap-1">
-              <FileSpreadsheet className="w-4 h-4" />Informes
+              <BarChart3 className="w-4 h-4" />Informes
             </TabsTrigger>
             <TabsTrigger value="historialPrecios" className="gap-1">
               <History className="w-4 h-4" />Precios
@@ -1839,6 +1843,11 @@ ${factura.iva > 0 ? `<p>IVA (${factura.porcentajeIva}%): $${factura.iva?.toLocal
                 )}
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* TAB DETALLE */}
+          <TabsContent value="detalle" className="space-y-4">
+            <DetalleTropaTab operador={operador} />
           </TabsContent>
 
           {/* TAB INFORMES FISCALES */}
