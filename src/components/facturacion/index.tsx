@@ -61,6 +61,7 @@ interface DetalleFactura {
   precioUnitario: number
   subtotal: number
   tipoServicio?: TipoServicio
+  tropaCodigo?: string
 }
 
 interface PagoFactura {
@@ -863,6 +864,19 @@ ${factura.iva > 0 ? `<p>IVA (${factura.porcentajeIva}%): $${factura.iva?.toLocal
       f.cliente?.nombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       f.clienteNombre?.toLowerCase().includes(searchTerm.toLowerCase())
     return matchEstado && matchSearch
+  }).sort((a, b) => {
+    // Ordenar por número de tropa (extraído del primer detalle)
+    const tropaA = a.detalles?.[0]?.tropaCodigo
+    const tropaB = b.detalles?.[0]?.tropaCodigo
+    if (tropaA && tropaB) {
+      const numA = parseInt(tropaA.replace(/\D/g, ''), 10)
+      const numB = parseInt(tropaB.replace(/\D/g, ''), 10)
+      if (!isNaN(numA) && !isNaN(numB)) return numA - numB
+      return tropaA.localeCompare(tropaB)
+    }
+    if (tropaA) return -1
+    if (tropaB) return 1
+    return 0
   })
 
   const totalFacturas = facturas.length
