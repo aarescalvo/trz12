@@ -6,11 +6,9 @@
  * 
  * Uso: npx tsx prisma/seed-planilla.ts
  */
-import { PrismaClient } from '@prisma/client'
+import { db } from '../src/lib/db'
 import * as fs from 'fs'
 import * as path from 'path'
-
-const prisma = new PrismaClient()
 
 interface PlanillaRecord {
   numeroTropa: number
@@ -52,11 +50,11 @@ async function main() {
 
   // 2. Precargar todas las tropas y clientes
   console.log('Precargando tropas y clientes...')
-  const allTropas = await prisma.tropa.findMany({
+  const allTropas = await db.tropa.findMany({
     select: { id: true, numero: true },
     orderBy: { numero: 'asc' },
   })
-  const allClientes = await prisma.cliente.findMany({
+  const allClientes = await db.cliente.findMany({
     select: { id: true, nombre: true },
   })
 
@@ -87,11 +85,11 @@ async function main() {
   }
 
   // 4. Limpiar datos existentes (opcional)
-  const existingCount = await prisma.planillaServicioFaena.count()
+  const existingCount = await db.planillaServicioFaena.count()
   if (existingCount > 0) {
     console.log(`\nYa existen ${existingCount} registros en PlanillaServicioFaena`)
     console.log('Eliminando registros existentes...')
-    await prisma.planillaServicioFaena.deleteMany()
+    await db.planillaServicioFaena.deleteMany()
     console.log('Registros existentes eliminados.')
   }
 
@@ -109,7 +107,7 @@ async function main() {
       const usuarioFaenaId = clienteMap.get(usuario.toUpperCase()) || null
 
       try {
-        await prisma.planillaServicioFaena.create({
+        await db.planillaServicioFaena.create({
           data: {
             tropaId,
             numeroTropa: rec.numeroTropa,
@@ -126,6 +124,8 @@ async function main() {
             tasaInspeccionVet: rec.tasaInspeccionVet,
             arancelIpcva: rec.arancelIpcva,
             totalFacturaImp: rec.totalFacturaImp,
+            estado: rec.numeroFactura ? 'FACTURADO' : 'BORRADOR',
+            plazoPagoDias: rec.diasPago ?? null,
             numeroFactura: rec.numeroFactura,
             fechaFactura: rec.fechaFactura ? new Date(rec.fechaFactura + 'T00:00:00') : null,
             fechaPago: rec.fechaPago ? new Date(rec.fechaPago + 'T00:00:00') : null,
@@ -145,10 +145,10 @@ async function main() {
   }
 
   // 6. Resumen final
-  const finalCount = await prisma.planillaServicioFaena.count()
-  const conTropa = await prisma.planillaServicioFaena.count({ where: { tropaId: { not: null } } })
-  const conCliente = await prisma.planillaServicioFaena.count({ where: { usuarioFaenaId: { not: null } } })
-  const conFactura = await prisma.planillaServicioFaena.count({ where: { numeroFactura: { not: null } } })
+  const finalCount = await db.planillaServicioFaena.count()
+  const conTropa = await db.planillaServicioFaena.count({ where: { tropaId: { not: null } } })
+  const conCliente = await db.planillaServicioFaena.count({ where: { usuarioFaenaId: { not: null } } })
+  const conFactura = await db.planillaServicioFaena.count({ where: { numeroFactura: { not: null } } })
 
   console.log(`\n=== RESUMEN FINAL ===`)
   console.log(`Registros creados: ${creados}/${records.length}`)
@@ -157,7 +157,7 @@ async function main() {
   console.log(`Vinculados con Cliente: ${conCliente} (${(conCliente / finalCount * 100).toFixed(1)}%)`)
   console.log(`Con factura: ${conFactura}`)
 
-  const totalFacturado = await prisma.planillaServicioFaena.aggregate({
+  const totalFacturado = await db.planillaServicioFaena.aggregate({
     _sum: { totalFacturaImp: true, montoDepositado: true, estadoPago: true },
   })
   console.log(`Total facturado: $${totalFacturado._sum.totalFacturaImp?.toLocaleString('es-AR', { maximumFractionDigits: 2 })}`)
@@ -173,5 +173,5 @@ main()
     process.exit(1)
   })
   .finally(async () => {
-    await prisma.$disconnect()
+    // no disconnect needed with singleton
   })

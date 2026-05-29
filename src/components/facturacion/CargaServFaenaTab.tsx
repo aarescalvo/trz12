@@ -1,26 +1,54 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import {
-  FileCheck, Clock, Calendar, Upload, FileJson, Trash2,
-  Loader2, FileSpreadsheet, Eraser, Save, ChevronDown,
-  RefreshCw, AlertCircle, Info, X
+  FileCheck, Clock, Package, Search, Loader2, ChevronDown, ChevronRight,
+  RefreshCw, AlertCircle, CheckCircle, FileText, DollarSign,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import {
+  Dialog, DialogContent, DialogDescription, DialogFooter,
+  DialogHeader, DialogTitle,
+} from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
-import { Separator } from '@/components/ui/separator'
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { toast } from 'sonner'
 
 // ==================== TYPES ====================
-interface PlanillaServicioFaena {
+interface ItemExtra {
   id: string
+  planillaServicioFaenaId: string
+  tipoItem: string
+  descripcion?: string | null
+  cantidadKg: number
+  precioUnitario: number
+  subtotal: number
+}
+
+interface TropaRel {
+  id: string
+  numero: number
+  codigo?: string | null
+  estado?: string | null
+}
+
+interface UsuarioFaenaRel {
+  id: string
+  nombre: string
+  razonSocial?: string | null
+  cuit?: string | null
+}
+
+interface PlanillaCarga {
+  id: string
+  tropaId?: string | null
+  tropa?: TropaRel | null
   numeroTropa: number
+  usuarioFaenaId?: string | null
+  usuarioFaena?: UsuarioFaenaRel | null
   usuario: string
   cantidadAnimales: number
   kgPie: number
@@ -28,376 +56,341 @@ interface PlanillaServicioFaena {
   kgGancho: number
   rindePorcentaje: number
   precioServicioKg: number
-  precioServicioKgConRecupero: number | null
-  totalServicioIva: number
   tasaInspeccionVet: number
   arancelIpcva: number
+  totalServicioIva: number
   totalFacturaImp: number
-  numeroFactura: string | null
-  fechaFactura: string | null
-  fechaPago: string | null
-  diasPago: number | null
-  montoDepositado: number | null
-  estadoPago: number
-  observaciones: string | null
-  createdAt?: string
-  updatedAt?: string
+  estado: string
+  plazoPagoDias?: number | null
+  numeroFactura?: string | null
+  fechaFactura?: string | null
+  facturaId?: string | null
+  observaciones?: string | null
+  itemsExtras: ItemExtra[]
+  // Enriched
+  precioSugerido?: number | null
+  tasaSugerida?: number | null
 }
 
-interface ImportResult {
-  creados: number
-  actualizados: number
-  cantidadErrores: number
-  errores?: string[]
-  mensaje?: string
+interface KPIs {
+  totalAprobados: number
+  facturadasHoy: number
+  montoPendienteEstimado: number
 }
 
-interface Props { operador?: { id: string; nombre: string; rol: string } }
+// Local editing state per row
+interface RowEdit {
+  precioKg: string
+  tasaVet: string
+  arancelIpcva: string
+  plazoPago: string
+  itemExtrasEdit: Record<string, string> // itemId -> precioUnitario string
+}
+
+interface Props {
+  operador: any
+}
 
 // ==================== HELPERS ====================
 const currencyFmt = (amount: number) =>
-  new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(amount)
+  new Intl.NumberFormat('es-AR', {
+    style: 'currency',
+    currency: 'ARS',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount)
 
 const numberFmt = (amount: number, decimals: number = 0) =>
-  new Intl.NumberFormat('es-AR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals }).format(amount)
+  new Intl.NumberFormat('es-AR', {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  }).format(amount)
 
-const dateFmt = (dateStr: string | null) => {
+const dateFmt = (dateStr: string | null | undefined) => {
   if (!dateStr) return '-'
   return new Date(dateStr).toLocaleDateString('es-AR')
 }
 
-const INITIAL_FORM = {
-  numeroTropa: '',
-  usuario: '',
-  cantidadAnimales: '',
-  kgPie: '',
-  fechaFaena: '',
-  kgGancho: '',
-  precioServicioKg: '',
-  precioServicioKgConRecupero: '',
-  tasaInspeccionVet: '',
-  arancelIpcva: '',
-  numeroFactura: '',
-  fechaFactura: '',
-  fechaPago: '',
-  montoDepositado: '',
-  estadoPago: '0',
-  observaciones: '',
-}
+const todayStr = () => new Date().toISOString().split('T')[0]
 
 // ==================== COMPONENT ====================
 export function CargaServFaenaTab({ operador }: Props) {
-  // Recent records
-  const [records, setRecords] = useState<PlanillaServicioFaena[]>([])
+  // Data
+  const [planillas, setPlanillas] = useState<PlanillaCarga[]>([])
+  const [kpis, setKpis] = useState<KPIs>({ totalAprobados: 0, facturadasHoy: 0, montoPendienteEstimado: 0 })
   const [loading, setLoading] = useState(true)
-
-  // Form state
-  const [form, setForm] = useState(INITIAL_FORM)
   const [saving, setSaving] = useState(false)
 
-  // Import state
-  const [importFile, setImportFile] = useState<File | null>(null)
-  const [importResult, setImportResult] = useState<ImportResult | null>(null)
-  const [importing, setImporting] = useState(false)
-  const [jsonHintOpen, setJsonHintOpen] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  // Filter
+  const [searchTerm, setSearchTerm] = useState('')
 
-  // Drag & drop
-  const [dragOver, setDragOver] = useState(false)
+  // Pagination
+  const [pagina, setPagina] = useState(1)
+  const [totalPaginas, setTotalPaginas] = useState(1)
+  const limite = 50
 
-  // ==================== CALCULATED VALUES ====================
-  const kgPie = parseFloat(form.kgPie) || 0
-  const kgGancho = parseFloat(form.kgGancho) || 0
-  const precioServicioKg = parseFloat(form.precioServicioKg) || 0
-  const tasaInspeccionVet = parseFloat(form.tasaInspeccionVet) || 0
-  const arancelIpcva = parseFloat(form.arancelIpcva) || 0
-  const cantidadAnimales = parseInt(form.cantidadAnimales) || 0
+  // Expanded rows
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
 
-  const rindePorcentaje = kgPie > 0 ? (kgGancho / kgPie) * 100 : 0
-  const totalServicioIva = kgGancho * precioServicioKg * 1.21
-  const totalFacturaImp = totalServicioIva + (tasaInspeccionVet * cantidadAnimales) + (arancelIpcva * cantidadAnimales)
+  // Per-row editing
+  const [rowEdits, setRowEdits] = useState<Record<string, RowEdit>>({})
 
-  // Auto-calc days
-  const diasPago = (() => {
-    if (form.fechaFactura && form.fechaPago) {
-      const fechaFact = new Date(form.fechaFactura)
-      const fechaPag = new Date(form.fechaPago)
-      const diff = Math.floor((fechaPag.getTime() - fechaFact.getTime()) / (1000 * 60 * 60 * 24))
-      return diff >= 0 ? diff : null
-    }
-    return null
-  })()
-
-  // ==================== KPIs ====================
-  const totalCargados = records.length
-  const pendientesFacturar = records.filter(r => !r.numeroFactura).length
-  const ultimaCarga = records.length > 0
-    ? records.reduce((latest, r) => {
-        const d = new Date(r.fechaFaena)
-        return d > latest ? d : latest
-      }, new Date(0))
-    : null
+  // Facturar dialog
+  const [facturarOpen, setFacturarOpen] = useState(false)
+  const [facturarTarget, setFacturarTarget] = useState<PlanillaCarga | null>(null)
+  const [facturaNumero, setFacturaNumero] = useState('')
+  const [facturaFecha, setFacturaFecha] = useState(todayStr())
+  const [facturaObs, setFacturaObs] = useState('')
 
   // ==================== DATA FETCHING ====================
-  const fetchRecords = useCallback(async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true)
     try {
       const params = new URLSearchParams()
-      params.append('limite', '20')
-      const res = await fetch(`/api/facturacion/planilla-servicio-faena?${params.toString()}`)
+      if (searchTerm) params.set('search', searchTerm)
+      params.set('pagina', String(pagina))
+      params.set('limite', String(limite))
+
+      const res = await fetch(`/api/facturacion/planilla-servicio-faena/carga?${params.toString()}`)
       const data = await res.json()
       if (data.success) {
-        const sorted = (data.data || []).sort((a: PlanillaServicioFaena, b: PlanillaServicioFaena) =>
-          new Date(b.createdAt || b.fechaFaena).getTime() - new Date(a.createdAt || a.fechaFaena).getTime()
-        )
-        setRecords(sorted.slice(0, 20))
+        setPlanillas(data.data || [])
+        setTotalPaginas(data.paginacion?.totalPaginas || 1)
+        setKpis(data.kpis || { totalAprobados: 0, facturadasHoy: 0, montoPendienteEstimado: 0 })
+
+        // Initialize row edits for new planillas
+        const newEdits: Record<string, RowEdit> = {}
+        for (const p of data.data || []) {
+          if (!rowEdits[p.id]) {
+            newEdits[p.id] = {
+              precioKg: p.precioSugerido != null ? String(p.precioSugerido) : '',
+              tasaVet: p.tasaSugerida != null ? String(p.tasaSugerida) : '',
+              arancelIpcva: '',
+              plazoPago: '30',
+              itemExtrasEdit: {},
+            }
+          }
+        }
+        if (Object.keys(newEdits).length > 0) {
+          setRowEdits((prev) => ({ ...prev, ...newEdits }))
+        }
+      } else {
+        toast.error(data.error || 'Error al cargar datos')
       }
     } catch (error) {
       console.error('Error:', error)
+      toast.error('Error de conexión al cargar datos')
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [searchTerm, pagina])
 
   useEffect(() => {
-    fetchRecords()
-  }, [fetchRecords])
+    fetchData()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchTerm, pagina])
 
-  // ==================== FORM HANDLERS ====================
-  const handleFormChange = (field: string, value: string) => {
-    setForm(prev => ({ ...prev, [field]: value }))
+  // Reset page on search
+  useEffect(() => {
+    setPagina(1)
+  }, [searchTerm])
+
+  // ==================== ROW EDIT HELPERS ====================
+  const getRowEdit = (id: string): RowEdit => {
+    return (
+      rowEdits[id] || {
+        precioKg: '',
+        tasaVet: '',
+        arancelIpcva: '',
+        plazoPago: '30',
+        itemExtrasEdit: {},
+      }
+    )
   }
 
-  const clearForm = () => {
-    setForm(INITIAL_FORM)
-    toast.info('Formulario limpiado')
+  const updateRowEdit = (id: string, field: keyof RowEdit, value: string | Record<string, string>) => {
+    setRowEdits((prev) => ({
+      ...prev,
+      [id]: { ...getRowEdit(id), [field]: value },
+    }))
   }
 
-  const handleSave = async () => {
-    // Validate required fields
-    if (!form.numeroTropa || !form.usuario || !form.fechaFaena || !form.precioServicioKg) {
-      toast.error('Complete los campos obligatorios: N° Tropa, Usuario, Fecha Faena y Precio $/kg')
+  const updateItemExtraPrecio = (planillaId: string, itemId: string, value: string) => {
+    const edit = getRowEdit(planillaId)
+    updateRowEdit(planillaId, 'itemExtrasEdit', { ...edit.itemExtrasEdit, [itemId]: value })
+  }
+
+  // ==================== CALCULATED VALUES PER ROW ====================
+  const calcRow = (p: PlanillaCarga, edit: RowEdit) => {
+    const precioKg = parseFloat(edit.precioKg) || 0
+    const tasaVet = parseFloat(edit.tasaVet) || 0
+    const arancel = parseFloat(edit.arancelIpcva) || 0
+    const subtotal = p.kgGancho * precioKg
+    const subtotalIva = subtotal * 1.21
+    const totalTasas = tasaVet * p.cantidadAnimales + arancel * p.cantidadAnimales
+    const total = subtotalIva + totalTasas
+
+    // Items extras total
+    let itemsTotal = 0
+    if (p.itemsExtras && Object.keys(edit.itemExtrasEdit).length > 0) {
+      for (const item of p.itemsExtras) {
+        const itemPrecio = parseFloat(edit.itemExtrasEdit[item.id]) || 0
+        itemsTotal += item.cantidadKg * itemPrecio
+      }
+    }
+
+    return {
+      precioKg,
+      tasaVet,
+      arancel,
+      subtotal,
+      subtotalIva,
+      totalTasas,
+      total: total + itemsTotal,
+      itemsTotal,
+      isValid: precioKg > 0,
+    }
+  }
+
+  // ==================== EXPAND ====================
+  const toggleExpand = (id: string) => {
+    setExpandedIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  // ==================== FACTURAR DIALOG ====================
+  const openFacturar = (planilla: PlanillaCarga) => {
+    const edit = getRowEdit(planilla.id)
+    const calc = calcRow(planilla, edit)
+    if (!calc.isValid) {
+      toast.error('Ingrese un precio por kg antes de facturar')
       return
     }
+    setFacturarTarget(planilla)
+    setFacturaNumero('')
+    setFacturaFecha(todayStr())
+    setFacturaObs(planilla.observaciones || '')
+    setFacturarOpen(true)
+  }
+
+  const handleConfirmarFacturacion = async () => {
+    if (!facturarTarget || !facturaNumero.trim()) {
+      toast.error('Ingrese el número de factura')
+      return
+    }
+
+    const edit = getRowEdit(facturarTarget.id)
+    const calc = calcRow(facturarTarget, edit)
 
     setSaving(true)
     try {
-      const payload = {
-        numeroTropa: parseInt(form.numeroTropa),
-        usuario: form.usuario.trim(),
-        cantidadAnimales: parseInt(form.cantidadAnimales) || 0,
-        kgPie: parseFloat(form.kgPie) || 0,
-        fechaFaena: form.fechaFaena,
-        kgGancho: parseFloat(form.kgGancho) || 0,
-        precioServicioKg: parseFloat(form.precioServicioKg) || 0,
-        precioServicioKgConRecupero: form.precioServicioKgConRecupero ? parseFloat(form.precioServicioKgConRecupero) : null,
-        totalServicioIva: totalServicioIva,
-        tasaInspeccionVet: tasaInspeccionVet,
-        arancelIpcva: arancelIpcva,
-        totalFacturaImp: totalFacturaImp,
-        numeroFactura: form.numeroFactura || null,
-        fechaFactura: form.fechaFactura || null,
-        fechaPago: form.fechaPago || null,
-        diasPago,
-        montoDepositado: form.montoDepositado ? parseFloat(form.montoDepositado) : null,
-        estadoPago: parseFloat(form.estadoPago) || 0,
-        observaciones: form.observaciones || null,
+      const body: any = {
+        id: facturarTarget.id,
+        precioServicioKg: calc.precioKg,
+        tasaInspeccionVet: calc.tasaVet,
+        arancelIpcva: calc.arancel,
+        plazoPagoDias: parseInt(edit.plazoPago) || 30,
+        numeroFactura: facturaNumero.trim(),
+        fechaFactura: facturaFecha || undefined,
+        observaciones: facturaObs || undefined,
         operadorId: operador?.id,
       }
 
-      const res = await fetch('/api/facturacion/planilla-servicio-faena', {
-        method: 'POST',
+      // Add items extras with prices
+      if (facturarTarget.itemsExtras.length > 0 && Object.keys(edit.itemExtrasEdit).length > 0) {
+        body.itemsExtras = facturarTarget.itemsExtras
+          .filter((ie) => edit.itemExtrasEdit[ie.id] && parseFloat(edit.itemExtrasEdit[ie.id]) > 0)
+          .map((ie) => ({
+            id: ie.id,
+            precioUnitario: parseFloat(edit.itemExtrasEdit[ie.id]) || 0,
+          }))
+      }
+
+      const res = await fetch('/api/facturacion/planilla-servicio-faena/carga', {
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(body),
       })
       const data = await res.json()
+
       if (data.success) {
-        toast.success(`Registro de Tropa N° ${form.numeroTropa} creado exitosamente`)
-        clearForm()
-        fetchRecords()
+        toast.success(`Factura ${facturaNumero.trim()} generada para Tropa N° ${facturarTarget.numeroTropa}`)
+        setFacturarOpen(false)
+        setFacturarTarget(null)
+        // Reset row edit for this planilla
+        setRowEdits((prev) => {
+          const next = { ...prev }
+          delete next[facturarTarget.id]
+          return next
+        })
+        fetchData()
       } else {
-        toast.error(data.error || 'Error al crear registro')
+        toast.error(data.error || 'Error al facturar')
       }
     } catch (error) {
       console.error('Error:', error)
-      toast.error('Error de conexión al guardar')
+      toast.error('Error de conexión al facturar')
     } finally {
       setSaving(false)
-    }
-  }
-
-  // ==================== IMPORT HANDLERS ====================
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault()
-    setDragOver(true)
-  }
-
-  const handleDragLeave = () => {
-    setDragOver(false)
-  }
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault()
-    setDragOver(false)
-    const file = e.dataTransfer.files[0]
-    if (file && file.type === 'application/json') {
-      setImportFile(file)
-      setImportResult(null)
-    } else {
-      toast.error('Solo se permiten archivos JSON')
-    }
-  }
-
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      setImportFile(file)
-      setImportResult(null)
-    }
-  }
-
-  const handleImport = async () => {
-    if (!importFile) {
-      toast.error('Seleccione un archivo JSON para importar')
-      return
-    }
-    setImporting(true)
-    setImportResult(null)
-    try {
-      const text = await importFile.text()
-      let jsonData: any[]
-      try {
-        jsonData = JSON.parse(text)
-      } catch {
-        toast.error('El archivo no contiene JSON válido')
-        setImporting(false)
-        return
-      }
-      if (!Array.isArray(jsonData)) {
-        toast.error('El JSON debe ser un array de registros')
-        setImporting(false)
-        return
-      }
-
-      const res = await fetch('/api/facturacion/planilla-servicio-faena/import', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ registros: jsonData, operadorId: operador?.id }),
-      })
-      const data = await res.json()
-      if (data.success) {
-        const result: ImportResult = {
-          creados: data.creados || 0,
-          actualizados: data.actualizados || 0,
-          cantidadErrores: data.cantidadErrores || (Array.isArray(data.errores) ? data.errores.length : 0),
-          errores: Array.isArray(data.errores) ? data.errores : [],
-          mensaje: data.mensaje,
-        }
-        setImportResult(result)
-        toast.success(`Importación finalizada: ${result.creados} creados, ${result.actualizados} actualizados`)
-        fetchRecords()
-      } else {
-        toast.error(data.error || 'Error al importar registros')
-      }
-    } catch (error) {
-      console.error('Error:', error)
-      toast.error('Error de conexión al importar')
-    } finally {
-      setImporting(false)
-    }
-  }
-
-  const handleLoadSample = async () => {
-    setImporting(true)
-    try {
-      const res = await fetch('/download/planilla_servicio_faena.json')
-      if (!res.ok) {
-        toast.error('No se pudo obtener el archivo de ejemplo')
-        return
-      }
-      const jsonData = await res.json()
-      if (!Array.isArray(jsonData)) {
-        toast.error('El archivo de ejemplo no tiene el formato esperado')
-        return
-      }
-
-      const importRes = await fetch('/api/facturacion/planilla-servicio-faena/import', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ registros: jsonData, operadorId: operador?.id }),
-      })
-      const data = await importRes.json()
-      if (data.success) {
-        const result: ImportResult = {
-          creados: data.creados || 0,
-          actualizados: data.actualizados || 0,
-          cantidadErrores: data.cantidadErrores || (Array.isArray(data.errores) ? data.errores.length : 0),
-          errores: Array.isArray(data.errores) ? data.errores : [],
-          mensaje: data.mensaje,
-        }
-        setImportResult(result)
-        toast.success(`Ejemplo cargado: ${result.creados} creados, ${result.actualizados} actualizados`)
-        fetchRecords()
-      } else {
-        toast.error(data.error || 'Error al cargar datos de ejemplo')
-      }
-    } catch (error) {
-      console.error('Error:', error)
-      toast.error('Error de conexión al cargar datos de ejemplo')
-    } finally {
-      setImporting(false)
     }
   }
 
   // ==================== RENDER ====================
   return (
     <div className="space-y-4">
-      {/* KPIs Row */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-        {/* Total Cargados */}
-        <Card className="border-0 shadow-sm bg-emerald-50">
-          <CardContent className="p-3">
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 bg-emerald-200/60 rounded-lg">
-                <FileCheck className="w-4 h-4 text-emerald-700" />
+      {/* ==================== KPI CARDS ==================== */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        {/* Total Aprobados */}
+        <Card className="border-0 shadow-sm bg-slate-800">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-amber-500/20 rounded-lg">
+                <Clock className="w-5 h-5 text-amber-400" />
               </div>
               <div>
-                <p className="text-[10px] uppercase tracking-wider text-emerald-600 font-semibold">Total Cargados</p>
-                <p className="text-lg font-bold text-emerald-800">{totalCargados}</p>
+                <p className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">
+                  Aprobados Pendientes
+                </p>
+                <p className="text-xl font-bold text-amber-400">{kpis.totalAprobados}</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Pendientes de Facturar */}
-        <Card className="border-0 shadow-sm bg-amber-50">
-          <CardContent className="p-3">
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 bg-amber-200/60 rounded-lg">
-                <Clock className="w-4 h-4 text-amber-700" />
+        {/* Facturadas Hoy */}
+        <Card className="border-0 shadow-sm bg-slate-800">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-emerald-500/20 rounded-lg">
+                <FileCheck className="w-5 h-5 text-emerald-400" />
               </div>
               <div>
-                <p className="text-[10px] uppercase tracking-wider text-amber-600 font-semibold">Pendientes Facturar</p>
-                <p className="text-lg font-bold text-amber-800">{pendientesFacturar}</p>
+                <p className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">
+                  Facturadas Hoy
+                </p>
+                <p className="text-xl font-bold text-emerald-400">{kpis.facturadasHoy}</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Ultima Carga */}
-        <Card className="border-0 shadow-sm bg-blue-50">
-          <CardContent className="p-3">
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 bg-blue-200/60 rounded-lg">
-                <Calendar className="w-4 h-4 text-blue-700" />
+        {/* Monto Pendiente */}
+        <Card className="border-0 shadow-sm bg-slate-800">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-blue-500/20 rounded-lg">
+                <DollarSign className="w-5 h-5 text-blue-400" />
               </div>
               <div>
-                <p className="text-[10px] uppercase tracking-wider text-blue-600 font-semibold">Ultima Carga</p>
-                <p className="text-lg font-bold text-blue-800">
-                  {ultimaCarga && ultimaCarga.getTime() > 0
-                    ? dateFmt(ultimaCarga.toISOString())
-                    : '-'
-                  }
+                <p className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">
+                  Monto Pendiente
+                </p>
+                <p className="text-xl font-bold text-blue-400">
+                  {currencyFmt(kpis.montoPendienteEstimado)}
                 </p>
               </div>
             </div>
@@ -405,605 +398,551 @@ export function CargaServFaenaTab({ operador }: Props) {
         </Card>
       </div>
 
-      {/* Two main sections */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* ==================== SECTION 1: CARGA MANUAL ==================== */}
-        <Card className="border-0 shadow-md">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <FileSpreadsheet className="w-5 h-5 text-emerald-500" />
-              CARGA MANUAL
-            </CardTitle>
-            <CardDescription>
-              Ingrese los datos de la tropa para registrar el servicio de faena
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* Datos de Tropa */}
-            <div>
-              <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">
-                Datos de Tropa
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <div className="space-y-1">
-                  <Label className="text-xs font-semibold">
-                    Nº Tropa <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    type="number"
-                    placeholder="Ej: 123"
-                    value={form.numeroTropa}
-                    onChange={e => handleFormChange('numeroTropa', e.target.value)}
-                    className="h-9"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-xs font-semibold">
-                    Usuario <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    placeholder="Nombre del usuario"
-                    value={form.usuario}
-                    onChange={e => handleFormChange('usuario', e.target.value)}
-                    className="h-9"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-xs font-semibold">Cantidad Animales</Label>
-                  <Input
-                    type="number"
-                    placeholder="0"
-                    value={form.cantidadAnimales}
-                    onChange={e => handleFormChange('cantidadAnimales', e.target.value)}
-                    className="h-9"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-xs font-semibold">Kg Pie</Label>
-                  <Input
-                    type="number"
-                    step="0.1"
-                    placeholder="0.0"
-                    value={form.kgPie}
-                    onChange={e => handleFormChange('kgPie', e.target.value)}
-                    className="h-9"
-                  />
-                </div>
-                <div className="space-y-1 sm:col-span-2">
-                  <Label className="text-xs font-semibold">
-                    Fecha Faena <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    type="date"
-                    value={form.fechaFaena}
-                    onChange={e => handleFormChange('fechaFaena', e.target.value)}
-                    className="h-9 w-full"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <Separator />
-
-            {/* Datos de Faena */}
-            <div>
-              <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">
-                Datos de Faena
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <div className="space-y-1">
-                  <Label className="text-xs font-semibold">Kg Gancho</Label>
-                  <Input
-                    type="number"
-                    step="0.1"
-                    placeholder="0.0"
-                    value={form.kgGancho}
-                    onChange={e => handleFormChange('kgGancho', e.target.value)}
-                    className="h-9"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-xs font-semibold">Rinde %</Label>
-                  <Input
-                    type="text"
-                    value={rindePorcentaje > 0 ? rindePorcentaje.toFixed(1) + '%' : ''}
-                    readOnly
-                    className="h-9 bg-stone-50 text-stone-500"
-                    placeholder="Auto-calculado"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <Separator />
-
-            {/* Precios */}
-            <div>
-              <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">
-                Precios
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <div className="space-y-1">
-                  <Label className="text-xs font-semibold">
-                    Precio $/kg S/Recupero <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    placeholder="0.00"
-                    value={form.precioServicioKg}
-                    onChange={e => handleFormChange('precioServicioKg', e.target.value)}
-                    className="h-9"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-xs font-semibold">Precio $/kg C/Recupero</Label>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    placeholder="Opcional"
-                    value={form.precioServicioKgConRecupero}
-                    onChange={e => handleFormChange('precioServicioKgConRecupero', e.target.value)}
-                    className="h-9"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <Separator />
-
-            {/* Impuestos */}
-            <div>
-              <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">
-                Impuestos x Cabeza
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <div className="space-y-1">
-                  <Label className="text-xs font-semibold">Tasa Inspección Vet. x Cabeza</Label>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    placeholder="0.00"
-                    value={form.tasaInspeccionVet}
-                    onChange={e => handleFormChange('tasaInspeccionVet', e.target.value)}
-                    className="h-9"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-xs font-semibold">Arancel IPCVA x Cabeza</Label>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    placeholder="0.00"
-                    value={form.arancelIpcva}
-                    onChange={e => handleFormChange('arancelIpcva', e.target.value)}
-                    className="h-9"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <Separator />
-
-            {/* Totales auto-calculated */}
-            <div>
-              <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">
-                Totales (Vista Previa)
-              </p>
-              <div className="grid grid-cols-1 gap-2">
-                <div className="flex items-center justify-between rounded-lg bg-emerald-50 px-3 py-2">
-                  <span className="text-xs font-semibold text-stone-600">Total Serv. + 21% IVA</span>
-                  <span className="text-sm font-bold text-emerald-700 font-mono">
-                    {currencyFmt(totalServicioIva)}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between rounded-lg bg-emerald-50 px-3 py-2 border border-emerald-200">
-                  <span className="text-xs font-semibold text-stone-700">Total Factura c/Imp.</span>
-                  <span className="text-base font-bold text-emerald-800 font-mono">
-                    {currencyFmt(totalFacturaImp)}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <Separator />
-
-            {/* Facturación */}
-            <div>
-              <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">
-                Facturación
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <div className="space-y-1">
-                  <Label className="text-xs font-semibold">Nº Factura</Label>
-                  <Input
-                    placeholder="00004-00000388"
-                    value={form.numeroFactura}
-                    onChange={e => handleFormChange('numeroFactura', e.target.value)}
-                    className="h-9"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-xs font-semibold">Fecha Factura</Label>
-                  <Input
-                    type="date"
-                    value={form.fechaFactura}
-                    onChange={e => handleFormChange('fechaFactura', e.target.value)}
-                    className="h-9"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <Separator />
-
-            {/* Pago */}
-            <div>
-              <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">
-                Pago
-              </p>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                <div className="space-y-1">
-                  <Label className="text-xs font-semibold">Fecha Pago</Label>
-                  <Input
-                    type="date"
-                    value={form.fechaPago}
-                    onChange={e => handleFormChange('fechaPago', e.target.value)}
-                    className="h-9"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-xs font-semibold">Días Pago</Label>
-                  <Input
-                    type="text"
-                    value={diasPago !== null ? String(diasPago) : ''}
-                    readOnly
-                    className="h-9 bg-stone-50 text-stone-500"
-                    placeholder="Auto"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-xs font-semibold">Monto Depositado</Label>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    placeholder="0.00"
-                    value={form.montoDepositado}
-                    onChange={e => handleFormChange('montoDepositado', e.target.value)}
-                    className="h-9"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-xs font-semibold">Estado Pago / Saldo</Label>
-                  <Input
-                    type="number"
-                    step="0.001"
-                    placeholder="0"
-                    value={form.estadoPago}
-                    onChange={e => handleFormChange('estadoPago', e.target.value)}
-                    className="h-9"
-                  />
-                  <p className="text-[10px] text-stone-400">0 = pagado</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Observaciones */}
-            <div className="space-y-1">
-              <Label className="text-xs font-semibold">Observaciones</Label>
-              <Textarea
-                placeholder="Notas adicionales..."
-                value={form.observaciones}
-                onChange={e => handleFormChange('observaciones', e.target.value)}
-                className="min-h-[60px] text-xs"
-                rows={2}
-              />
-            </div>
-
-            {/* Buttons */}
-            <div className="flex gap-2 pt-1">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={clearForm}
-                disabled={saving}
-                className="h-9"
-              >
-                <Eraser className="w-3.5 h-3.5 mr-1" />
-                Limpiar Formulario
-              </Button>
-              <Button
-                size="sm"
-                onClick={handleSave}
-                disabled={saving}
-                className="h-9 bg-emerald-600 hover:bg-emerald-700 text-white"
-              >
-                {saving ? (
-                  <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" />
-                ) : (
-                  <Save className="w-3.5 h-3.5 mr-1" />
-                )}
-                Guardar Registro
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* ==================== SECTION 2: IMPORTAR MASIVO ==================== */}
-        <Card className="border-0 shadow-md">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Upload className="w-5 h-5 text-blue-500" />
-              IMPORTAR MASIVO
-            </CardTitle>
-            <CardDescription>
-              Importe múltiples registros desde un archivo JSON
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* Drop Zone */}
-            <div
-              className={`relative border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer ${
-                dragOver
-                  ? 'border-blue-400 bg-blue-50'
-                  : importFile
-                    ? 'border-emerald-300 bg-emerald-50/50'
-                    : 'border-stone-300 bg-stone-50/50 hover:border-stone-400 hover:bg-stone-50'
-              }`}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".json,application/json"
-                onChange={handleFileSelect}
-                className="hidden"
-              />
-              {importFile ? (
-                <div className="space-y-2">
-                  <FileJson className="w-10 h-10 mx-auto text-emerald-500" />
-                  <p className="text-sm font-medium text-stone-700">{importFile.name}</p>
-                  <p className="text-xs text-stone-500">
-                    {(importFile.size / 1024).toFixed(1)} KB
-                  </p>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-7 text-xs text-stone-400 hover:text-red-500"
-                    onClick={e => {
-                      e.stopPropagation()
-                      setImportFile(null)
-                      setImportResult(null)
-                      if (fileInputRef.current) fileInputRef.current.value = ''
-                    }}
-                  >
-                    <X className="w-3 h-3 mr-1" /> Quitar archivo
-                  </Button>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  <Upload className="w-10 h-10 mx-auto text-stone-400" />
-                  <p className="text-sm text-stone-600">
-                    Arrastre un archivo JSON aquí o <span className="text-blue-600 font-semibold">haga clic para seleccionar</span>
-                  </p>
-                  <p className="text-xs text-stone-400">Solo archivos .json</p>
-                </div>
-              )}
-            </div>
-
-            {/* Import button */}
-            <Button
-              size="sm"
-              onClick={handleImport}
-              disabled={!importFile || importing}
-              className="h-9 w-full bg-blue-600 hover:bg-blue-700 text-white"
-            >
-              {importing ? (
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              ) : (
-                <Upload className="w-4 h-4 mr-2" />
-              )}
-              Importar desde JSON
-            </Button>
-
-            {/* Import Result */}
-            {importResult && (
-              <div className="rounded-lg bg-stone-50 border p-3 space-y-1.5">
-                <div className="flex items-center gap-2 text-xs font-semibold text-stone-700">
-                  <Info className="w-3.5 h-3.5" />
-                  Resultado de la importación:
-                </div>
-                <div className="grid grid-cols-3 gap-2 text-xs">
-                  <div className="text-center p-2 bg-emerald-50 rounded">
-                    <p className="font-bold text-emerald-700 text-lg">{importResult.creados}</p>
-                    <p className="text-emerald-600">Creados</p>
-                  </div>
-                  <div className="text-center p-2 bg-blue-50 rounded">
-                    <p className="font-bold text-blue-700 text-lg">{importResult.actualizados}</p>
-                    <p className="text-blue-600">Actualizados</p>
-                  </div>
-                  <div className="text-center p-2 bg-red-50 rounded">
-                    <p className="font-bold text-red-700 text-lg">{importResult.cantidadErrores}</p>
-                    <p className="text-red-600">Errores</p>
-                  </div>
-                </div>
-                {importResult.mensaje && (
-                  <p className="text-xs text-stone-500 mt-1">{importResult.mensaje}</p>
-                )}
-              </div>
-            )}
-
-            {/* Sample data button */}
-            <Separator />
-            <div className="space-y-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleLoadSample}
-                disabled={importing}
-                className="h-9 w-full"
-              >
-                {importing ? (
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                ) : (
-                  <FileJson className="w-4 h-4 mr-2" />
-                )}
-                Cargar Datos de Ejemplo
-              </Button>
-            </div>
-
-            {/* JSON Format Hint */}
-            <Collapsible open={jsonHintOpen} onOpenChange={setJsonHintOpen}>
-              <CollapsibleTrigger className="flex items-center gap-1 text-xs text-stone-500 hover:text-stone-700 w-full">
-                <ChevronDown className={`w-3.5 h-3.5 transition-transform ${jsonHintOpen ? 'rotate-180' : ''}`} />
-                Formato JSON esperado
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <pre className="mt-2 rounded-lg bg-stone-900 text-stone-100 p-3 text-[10px] overflow-x-auto max-h-48 overflow-y-auto">
-{`[
-  {
-    "numeroTropa": 123,
-    "usuario": "Juan Pérez",
-    "cantidadAnimales": 30,
-    "kgPie": 14500,
-    "fechaFaena": "2026-01-15",
-    "kgGancho": 7800,
-    "precioServicioKg": 150,
-    "tasaInspeccionVet": 120,
-    "arancelIpcva": 45,
-    "observaciones": "Tropa especial"
-  }
-]`}
-                </pre>
-              </CollapsibleContent>
-            </Collapsible>
-          </CardContent>
-        </Card>
+      {/* ==================== FILTER BAR ==================== */}
+      <div className="flex items-center gap-3">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Input
+            placeholder="Buscar por cliente o N° tropa..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-9 h-9 bg-slate-800 border-slate-600 text-white text-sm placeholder:text-slate-500"
+          />
+        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={fetchData}
+          disabled={loading}
+          className="text-slate-300 hover:text-white hover:bg-slate-700"
+        >
+          <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+        </Button>
       </div>
 
-      {/* ==================== RECENTLY LOADED TABLE ==================== */}
-      <Card className="border-0 shadow-md">
-        <CardHeader className="pb-2">
-          <div className="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <FileSpreadsheet className="w-5 h-5 text-stone-500" />
-                Últimos Registros Cargados
-              </CardTitle>
-              <CardDescription>
-                {loading
-                  ? 'Cargando...'
-                  : `${records.length} registros más recientes`
-                }
-              </CardDescription>
-            </div>
-            <Button variant="outline" size="sm" onClick={fetchRecords} disabled={loading}>
-              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <Table className="text-xs">
-              <TableHeader>
-                <TableRow className="bg-stone-50 hover:bg-stone-50">
-                  <TableHead className="min-w-[60px] text-xs font-semibold text-center">Nº Tropa</TableHead>
-                  <TableHead className="min-w-[160px] text-xs font-semibold">Usuario</TableHead>
-                  <TableHead className="min-w-[80px] text-xs font-semibold">Fecha Faena</TableHead>
-                  <TableHead className="min-w-[45px] text-xs font-semibold text-center">Cant.</TableHead>
-                  <TableHead className="min-w-[70px] text-xs font-semibold text-right">Kg Gancho</TableHead>
-                  <TableHead className="min-w-[60px] text-xs font-semibold text-right">Precio/kg</TableHead>
-                  <TableHead className="min-w-[100px] text-xs font-semibold text-right">Total Fact.</TableHead>
-                  <TableHead className="min-w-[110px] text-xs font-semibold">Nº Factura</TableHead>
-                  <TableHead className="min-w-[70px] text-xs font-semibold text-center">Estado</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? (
-                  <TableRow>
-                    <TableCell colSpan={9} className="text-center py-12">
-                      <Loader2 className="w-8 h-8 mx-auto animate-spin text-amber-500" />
-                      <p className="mt-2 text-stone-400 text-sm">Cargando datos...</p>
-                    </TableCell>
-                  </TableRow>
-                ) : records.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={9} className="text-center py-12 text-stone-400">
-                      <AlertCircle className="w-10 h-10 mx-auto mb-2 text-stone-300" />
-                      <p className="text-sm">No hay registros cargados</p>
-                      <p className="text-xs text-stone-400 mt-1">Use el formulario manual o importe un archivo JSON</p>
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  records.map(r => {
-                    const isPagado = r.estadoPago === 0
-                    const tieneFactura = !!r.numeroFactura
-                    return (
-                      <TableRow key={r.id} className="hover:bg-stone-50">
-                        <TableCell className="font-mono font-bold text-center">
-                          {r.numeroTropa}
-                        </TableCell>
-                        <TableCell className="font-medium">{r.usuario}</TableCell>
-                        <TableCell className="whitespace-nowrap">
-                          {dateFmt(r.fechaFaena)}
-                        </TableCell>
-                        <TableCell className="text-center">{r.cantidadAnimales || '-'}</TableCell>
-                        <TableCell className="text-right font-mono">
-                          {numberFmt(r.kgGancho, 1)}
-                        </TableCell>
-                        <TableCell className="text-right font-mono">
-                          ${numberFmt(r.precioServicioKg)}
-                        </TableCell>
-                        <TableCell className="text-right font-mono font-semibold text-emerald-700">
-                          {currencyFmt(r.totalFacturaImp)}
-                        </TableCell>
-                        <TableCell className="font-mono text-[11px] whitespace-nowrap">
-                          {r.numeroFactura || '-'}
-                        </TableCell>
-                        <TableCell className="text-center">
-                          {tieneFactura && isPagado ? (
-                            <Badge className="bg-emerald-100 text-emerald-700 text-[10px] py-0 px-1.5">
-                              Pagado
-                            </Badge>
-                          ) : tieneFactura ? (
-                            <Badge className="bg-blue-100 text-blue-700 text-[10px] py-0 px-1.5">
-                              Facturado
+      {/* ==================== DATA TABLE ==================== */}
+      <Card className="border-0 shadow-md bg-slate-800 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-slate-700 bg-slate-900/50">
+                <th className="w-9 px-2 py-2.5"></th>
+                <th className="px-3 py-2.5 text-left text-[10px] font-semibold text-slate-400 uppercase tracking-wider min-w-[70px]">
+                  N° Tropa
+                </th>
+                <th className="px-3 py-2.5 text-left text-[10px] font-semibold text-slate-400 uppercase tracking-wider min-w-[130px]">
+                  Cliente
+                </th>
+                <th className="px-3 py-2.5 text-center text-[10px] font-semibold text-slate-400 uppercase tracking-wider min-w-[60px]">
+                  Cabezas
+                </th>
+                <th className="px-3 py-2.5 text-right text-[10px] font-semibold text-slate-400 uppercase tracking-wider min-w-[80px]">
+                  KG Gancho
+                </th>
+                <th className="px-3 py-2.5 text-right text-[10px] font-semibold text-slate-400 uppercase tracking-wider min-w-[65px]">
+                  Rinde %
+                </th>
+                <th className="px-3 py-2.5 text-center text-[10px] font-semibold text-slate-400 uppercase tracking-wider min-w-[100px]">
+                  Precio/kg
+                </th>
+                <th className="px-3 py-2.5 text-center text-[10px] font-semibold text-slate-400 uppercase tracking-wider min-w-[90px]">
+                  Tasa Vet.
+                </th>
+                <th className="px-3 py-2.5 text-center text-[10px] font-semibold text-slate-400 uppercase tracking-wider min-w-[90px]">
+                  IPCVA
+                </th>
+                <th className="px-3 py-2.5 text-center text-[10px] font-semibold text-slate-400 uppercase tracking-wider min-w-[65px]">
+                  Plazo
+                </th>
+                <th className="px-3 py-2.5 text-center text-[10px] font-semibold text-slate-400 uppercase tracking-wider min-w-[60px]">
+                  Items
+                </th>
+                <th className="px-3 py-2.5 text-right text-[10px] font-semibold text-slate-400 uppercase tracking-wider min-w-[100px]">
+                  Subtotal
+                </th>
+                <th className="px-3 py-2.5 text-right text-[10px] font-semibold text-slate-400 uppercase tracking-wider min-w-[110px]">
+                  Total
+                </th>
+                <th className="px-3 py-2.5 text-center text-[10px] font-semibold text-slate-400 uppercase tracking-wider min-w-[90px]">
+                  Acciones
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-700/50">
+              {loading ? (
+                <tr>
+                  <td colSpan={14} className="text-center py-12">
+                    <Loader2 className="w-8 h-8 mx-auto animate-spin text-amber-500" />
+                    <p className="mt-2 text-slate-400 text-sm">Cargando planillas aprobadas...</p>
+                  </td>
+                </tr>
+              ) : planillas.length === 0 ? (
+                <tr>
+                  <td colSpan={14} className="text-center py-16 text-slate-500">
+                    <Package className="w-12 h-12 mx-auto mb-3 text-slate-600" />
+                    <p className="text-sm font-medium">No hay planillas aprobadas pendientes de facturar</p>
+                    <p className="text-xs text-slate-600 mt-1">
+                      Las planillas aprobadas en el paso de Visto Bueno aparecerán aquí para su facturación.
+                    </p>
+                  </td>
+                </tr>
+              ) : (
+                planillas.map((planilla) => {
+                  const edit = getRowEdit(planilla.id)
+                  const calc = calcRow(planilla, edit)
+                  const isExpanded = expandedIds.has(planilla.id)
+                  const hasItems = planilla.itemsExtras.length > 0
+                  const clienteNombre =
+                    planilla.usuarioFaena?.razonSocial ||
+                    planilla.usuarioFaena?.nombre ||
+                    planilla.usuario
+
+                  return (
+                    <>
+                      {/* Main Row */}
+                      <tr key={planilla.id} className="hover:bg-slate-700/30 transition-colors">
+                        {/* Expand toggle */}
+                        <td className="px-2 py-2.5 text-center">
+                          {hasItems ? (
+                            <button
+                              onClick={() => toggleExpand(planilla.id)}
+                              className="p-0.5 rounded hover:bg-slate-600 text-slate-400 hover:text-slate-200 transition-colors"
+                              title={isExpanded ? 'Colapsar' : 'Ver items extra'}
+                            >
+                              {isExpanded ? (
+                                <ChevronDown className="w-4 h-4" />
+                              ) : (
+                                <ChevronRight className="w-4 h-4" />
+                              )}
+                            </button>
+                          ) : null}
+                        </td>
+
+                        {/* N° Tropa */}
+                        <td className="px-3 py-2.5">
+                          <span className="font-mono font-bold text-white text-sm">
+                            {planilla.numeroTropa}
+                          </span>
+                        </td>
+
+                        {/* Cliente */}
+                        <td className="px-3 py-2.5 min-w-0">
+                          <p className="text-sm text-slate-200 truncate">{clienteNombre}</p>
+                          {planilla.usuarioFaena?.cuit && (
+                            <p className="text-[10px] text-slate-500">
+                              CUIT: {planilla.usuarioFaena.cuit}
+                            </p>
+                          )}
+                        </td>
+
+                        {/* Cabezas */}
+                        <td className="px-3 py-2.5 text-center text-sm text-slate-300">
+                          {planilla.cantidadAnimales || '-'}
+                        </td>
+
+                        {/* KG Gancho */}
+                        <td className="px-3 py-2.5 text-right text-sm text-slate-300 font-mono">
+                          {numberFmt(planilla.kgGancho, 1)}
+                        </td>
+
+                        {/* Rinde % */}
+                        <td className="px-3 py-2.5 text-right text-sm text-slate-300 font-mono">
+                          {planilla.rindePorcentaje?.toFixed(1)}%
+                        </td>
+
+                        {/* Precio/kg — editable */}
+                        <td className="px-3 py-2.5 text-center">
+                          <div className="relative">
+                            <input
+                              type="number"
+                              step="0.01"
+                              placeholder="0"
+                              value={edit.precioKg}
+                              onChange={(e) => updateRowEdit(planilla.id, 'precioKg', e.target.value)}
+                              className="w-[90px] h-7 text-xs text-center bg-slate-700 border-slate-600 text-white rounded px-1.5 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 placeholder:text-slate-500"
+                            />
+                            {planilla.precioSugerido != null && !edit.precioKg && (
+                              <p className="text-[9px] text-blue-400 italic mt-0.5 truncate">
+                                Sugerido: ${numberFmt(planilla.precioSugerido)}
+                              </p>
+                            )}
+                          </div>
+                        </td>
+
+                        {/* Tasa Inspección Vet — editable */}
+                        <td className="px-3 py-2.5 text-center">
+                          <div className="relative">
+                            <input
+                              type="number"
+                              step="0.01"
+                              placeholder="x cab"
+                              value={edit.tasaVet}
+                              onChange={(e) => updateRowEdit(planilla.id, 'tasaVet', e.target.value)}
+                              className="w-[80px] h-7 text-xs text-center bg-slate-700 border-slate-600 text-white rounded px-1.5 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 placeholder:text-slate-500"
+                            />
+                            {planilla.tasaSugerida != null && !edit.tasaVet && (
+                              <p className="text-[9px] text-blue-400 italic mt-0.5 truncate">
+                                Sugerido: ${numberFmt(planilla.tasaSugerida)}
+                              </p>
+                            )}
+                          </div>
+                        </td>
+
+                        {/* Arancel IPCVA — editable */}
+                        <td className="px-3 py-2.5 text-center">
+                          <input
+                            type="number"
+                            step="0.01"
+                            placeholder="x cab"
+                            value={edit.arancelIpcva}
+                            onChange={(e) => updateRowEdit(planilla.id, 'arancelIpcva', e.target.value)}
+                            className="w-[80px] h-7 text-xs text-center bg-slate-700 border-slate-600 text-white rounded px-1.5 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 placeholder:text-slate-500"
+                          />
+                        </td>
+
+                        {/* Plazo — editable */}
+                        <td className="px-3 py-2.5 text-center">
+                          <div className="flex items-center justify-center gap-0.5">
+                            <input
+                              type="number"
+                              placeholder="30"
+                              value={edit.plazoPago}
+                              onChange={(e) => updateRowEdit(planilla.id, 'plazoPago', e.target.value)}
+                              className="w-[50px] h-7 text-xs text-center bg-slate-700 border-slate-600 text-white rounded px-1 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 placeholder:text-slate-500"
+                            />
+                            <span className="text-[10px] text-slate-500">d</span>
+                          </div>
+                        </td>
+
+                        {/* Items Extra badge */}
+                        <td className="px-3 py-2.5 text-center">
+                          {hasItems ? (
+                            <Badge className="bg-purple-500/20 text-purple-300 border-0 text-[10px] py-0 px-1.5 cursor-pointer hover:bg-purple-500/30"
+                              onClick={() => toggleExpand(planilla.id)}>
+                              <Package className="w-3 h-3 mr-0.5" />
+                              {planilla.itemsExtras.length}
                             </Badge>
                           ) : (
-                            <Badge className="bg-amber-100 text-amber-700 text-[10px] py-0 px-1.5">
-                              Pendiente
-                            </Badge>
+                            <span className="text-slate-600 text-xs">-</span>
                           )}
-                        </TableCell>
-                      </TableRow>
-                    )
-                  })
-                )}
-              </TableBody>
-            </Table>
-          </div>
+                        </td>
 
-          {/* Footer totals */}
-          {!loading && records.length > 0 && (
-            <div className="border-t px-3 py-2 bg-stone-50 text-xs">
-              <div className="flex flex-wrap gap-4 items-center">
-                <span className="font-semibold text-stone-600">
-                  {records.length} registros
-                </span>
-                <span className="text-stone-500">
-                  Kg Gancho: <strong>{numberFmt(records.reduce((s, r) => s + r.kgGancho, 0), 1)}</strong>
-                </span>
-                <span className="text-emerald-700 font-bold">
-                  Total Fact.: {currencyFmt(records.reduce((s, r) => s + r.totalFacturaImp, 0))}
-                </span>
-              </div>
+                        {/* Subtotal — auto-calculated */}
+                        <td className="px-3 py-2.5 text-right">
+                          <span className={`text-sm font-mono ${calc.precioKg > 0 ? 'text-slate-200' : 'text-slate-500'}`}>
+                            {calc.precioKg > 0 ? currencyFmt(calc.subtotal) : '-'}
+                          </span>
+                        </td>
+
+                        {/* Total — auto-calculated */}
+                        <td className="px-3 py-2.5 text-right">
+                          <span className={`text-sm font-mono font-semibold ${calc.precioKg > 0 ? 'text-emerald-400' : 'text-slate-500'}`}>
+                            {calc.precioKg > 0 ? currencyFmt(calc.total) : '-'}
+                          </span>
+                        </td>
+
+                        {/* Acciones */}
+                        <td className="px-3 py-2.5 text-center">
+                          <Button
+                            size="sm"
+                            onClick={() => openFacturar(planilla)}
+                            disabled={!calc.isValid || saving}
+                            className="h-7 px-3 text-xs bg-emerald-600 hover:bg-emerald-700 text-white disabled:opacity-40 disabled:cursor-not-allowed"
+                          >
+                            <FileText className="w-3 h-3 mr-1" />
+                            Facturar
+                          </Button>
+                        </td>
+                      </tr>
+
+                      {/* ==================== EXPANDED ROW — Items Extras ==================== */}
+                      {isExpanded && hasItems && (
+                        <tr key={`${planilla.id}-expanded`}>
+                          <td colSpan={14} className="bg-slate-900/40 px-0 py-0">
+                            <div className="px-6 py-3 border-l-4 border-purple-500/40">
+                              <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                                Items Extras — Tropa N° {planilla.numeroTropa}
+                              </h4>
+                              <table className="w-full text-xs max-w-2xl">
+                                <thead>
+                                  <tr className="border-b border-slate-700/50">
+                                    <th className="px-2 py-1.5 text-left text-slate-500 font-medium">Tipo</th>
+                                    <th className="px-2 py-1.5 text-left text-slate-500 font-medium">Descripción</th>
+                                    <th className="px-2 py-1.5 text-right text-slate-500 font-medium">KG</th>
+                                    <th className="px-2 py-1.5 text-right text-slate-500 font-medium">Precio/u</th>
+                                    <th className="px-2 py-1.5 text-right text-slate-500 font-medium">Subtotal</th>
+                                  </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-700/30">
+                                  {planilla.itemsExtras.map((item) => {
+                                    const itemPrecio = parseFloat(edit.itemExtrasEdit[item.id]) || 0
+                                    const itemSubtotal = item.cantidadKg * itemPrecio
+                                    return (
+                                      <tr key={item.id} className="hover:bg-slate-800/50">
+                                        <td className="px-2 py-2">
+                                          <Badge className={`text-[9px] py-0 px-1.5 border-0 ${
+                                            item.tipoItem === 'CHINCHULIN'
+                                              ? 'bg-red-500/15 text-red-300'
+                                              : item.tipoItem === 'CUARTEO'
+                                                ? 'bg-orange-500/15 text-orange-300'
+                                                : item.tipoItem === 'DESPOSTADA'
+                                                  ? 'bg-teal-500/15 text-teal-300'
+                                                  : 'bg-slate-500/15 text-slate-300'
+                                          }`}>
+                                            {item.tipoItem}
+                                          </Badge>
+                                        </td>
+                                        <td className="px-2 py-2 text-slate-300 truncate max-w-[150px]">
+                                          {item.descripcion || '-'}
+                                        </td>
+                                        <td className="px-2 py-2 text-right text-slate-300 font-mono">
+                                          {numberFmt(item.cantidadKg, 1)}
+                                        </td>
+                                        <td className="px-2 py-2 text-right">
+                                          <input
+                                            type="number"
+                                            step="0.01"
+                                            placeholder="$"
+                                            value={edit.itemExtrasEdit[item.id] || ''}
+                                            onChange={(e) => updateItemExtraPrecio(planilla.id, item.id, e.target.value)}
+                                            className="w-[80px] h-6 text-[11px] text-right bg-slate-700 border-slate-600 text-white rounded px-1.5 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 placeholder:text-slate-500"
+                                          />
+                                        </td>
+                                        <td className="px-2 py-2 text-right text-slate-300 font-mono">
+                                          {itemPrecio > 0 ? currencyFmt(itemSubtotal) : '-'}
+                                        </td>
+                                      </tr>
+                                    )
+                                  })}
+                                </tbody>
+                              </table>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </>
+                  )
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Pagination */}
+        {!loading && planillas.length > 0 && totalPaginas > 1 && (
+          <div className="flex items-center justify-between px-4 py-2 border-t border-slate-700">
+            <span className="text-xs text-slate-400">
+              Página {pagina} de {totalPaginas}
+            </span>
+            <div className="flex gap-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setPagina((p) => Math.max(1, p - 1))}
+                disabled={pagina <= 1}
+                className="h-7 px-2 text-xs text-slate-300 hover:bg-slate-700"
+              >
+                Anterior
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setPagina((p) => Math.min(totalPaginas, p + 1))}
+                disabled={pagina >= totalPaginas}
+                className="h-7 px-2 text-xs text-slate-300 hover:bg-slate-700"
+              >
+                Siguiente
+              </Button>
             </div>
-          )}
-        </CardContent>
+          </div>
+        )}
+
+        {/* Footer totals */}
+        {!loading && planillas.length > 0 && (
+          <div className="border-t border-slate-700 px-4 py-2 bg-slate-900/30 text-xs">
+            <div className="flex flex-wrap gap-4 items-center">
+              <span className="text-slate-400">
+                {planillas.length} planilla(s)
+              </span>
+              <span className="text-slate-400">
+                KG Gancho:{' '}
+                <strong className="text-slate-200">
+                  {numberFmt(planillas.reduce((s, p) => s + p.kgGancho, 0), 1)}
+                </strong>
+              </span>
+              <span className="text-slate-400">
+                Cabezas:{' '}
+                <strong className="text-slate-200">
+                  {planillas.reduce((s, p) => s + p.cantidadAnimales, 0)}
+                </strong>
+              </span>
+            </div>
+          </div>
+        )}
       </Card>
+
+      {/* ==================== FACTURAR DIALOG ==================== */}
+      <Dialog open={facturarOpen} onOpenChange={setFacturarOpen}>
+        <DialogContent className="bg-slate-800 border-slate-700 text-white max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-lg">
+              <FileText className="w-5 h-5 text-emerald-400" />
+              Confirmar Facturación
+            </DialogTitle>
+            <DialogDescription className="text-slate-400">
+              Revise los datos antes de generar la factura
+            </DialogDescription>
+          </DialogHeader>
+
+          {facturarTarget && (() => {
+            const edit = getRowEdit(facturarTarget.id)
+            const calc = calcRow(facturarTarget, edit)
+            const clienteNombre =
+              facturarTarget.usuarioFaena?.razonSocial ||
+              facturarTarget.usuarioFaena?.nombre ||
+              facturarTarget.usuario
+
+            return (
+              <div className="space-y-4">
+                {/* Summary */}
+                <div className="rounded-lg bg-slate-900/50 border border-slate-700 p-4 space-y-2">
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm">
+                    <div className="flex justify-between col-span-2">
+                      <span className="text-slate-400">Cliente:</span>
+                      <span className="text-slate-100 font-medium">{clienteNombre}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-400">Tropa:</span>
+                      <span className="text-white font-mono font-bold">N° {facturarTarget.numeroTropa}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-400">Fecha Faena:</span>
+                      <span className="text-slate-200">{dateFmt(facturarTarget.fechaFaena)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-400">Cabezas:</span>
+                      <span className="text-slate-200">{facturarTarget.cantidadAnimales}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-400">KG Gancho:</span>
+                      <span className="text-slate-200 font-mono">{numberFmt(facturarTarget.kgGancho, 1)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-400">Precio/kg:</span>
+                      <span className="text-blue-300 font-mono">{currencyFmt(calc.precioKg)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-400">Tasa Vet. x cab:</span>
+                      <span className="text-slate-200 font-mono">{currencyFmt(calc.tasaVet)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-400">IPCVA x cab:</span>
+                      <span className="text-slate-200 font-mono">{currencyFmt(calc.arancel)}</span>
+                    </div>
+                    {calc.itemsTotal > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-slate-400">Items Extra:</span>
+                        <span className="text-purple-300 font-mono">{currencyFmt(calc.itemsTotal)}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between col-span-2 border-t border-slate-600 pt-2 mt-1">
+                      <span className="text-emerald-400 font-semibold text-base">Total:</span>
+                      <span className="text-emerald-300 font-bold text-lg font-mono">
+                        {currencyFmt(calc.total)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Items extras summary */}
+                {facturarTarget.itemsExtras.length > 0 && (
+                  <div className="rounded-lg bg-slate-900/30 border border-slate-700 p-3">
+                    <h4 className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                      Items Extras
+                    </h4>
+                    {facturarTarget.itemsExtras.map((item) => {
+                      const precio = parseFloat(edit.itemExtrasEdit[item.id]) || 0
+                      return (
+                        <div key={item.id} className="flex justify-between text-xs py-0.5">
+                          <span className="text-slate-400">
+                            {item.descripcion || item.tipoItem} ({numberFmt(item.cantidadKg, 1)} kg)
+                          </span>
+                          <span className="text-slate-200 font-mono">
+                            {precio > 0 ? currencyFmt(item.cantidadKg * precio) : 'Sin precio'}
+                          </span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+
+                {/* N° Factura */}
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-semibold text-slate-300">
+                    N° Factura <span className="text-red-400">*</span>
+                  </Label>
+                  <Input
+                    placeholder="Ej: 0004-00001234"
+                    value={facturaNumero}
+                    onChange={(e) => setFacturaNumero(e.target.value)}
+                    className="h-9 bg-slate-700 border-slate-600 text-white text-sm focus:ring-blue-500"
+                  />
+                </div>
+
+                {/* Fecha Factura */}
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-semibold text-slate-300">
+                    Fecha Factura
+                  </Label>
+                  <Input
+                    type="date"
+                    value={facturaFecha}
+                    onChange={(e) => setFacturaFecha(e.target.value)}
+                    className="h-9 bg-slate-700 border-slate-600 text-white text-sm focus:ring-blue-500"
+                  />
+                </div>
+
+                {/* Observaciones */}
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-semibold text-slate-300">
+                    Observaciones
+                  </Label>
+                  <Textarea
+                    placeholder="Notas adicionales..."
+                    value={facturaObs}
+                    onChange={(e) => setFacturaObs(e.target.value)}
+                    className="min-h-[60px] bg-slate-700 border-slate-600 text-white text-sm focus:ring-blue-500"
+                    rows={2}
+                  />
+                </div>
+              </div>
+            )
+          })()}
+
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              variant="ghost"
+              onClick={() => setFacturarOpen(false)}
+              disabled={saving}
+              className="text-slate-300 hover:text-white hover:bg-slate-700"
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleConfirmarFacturacion}
+              disabled={saving || !facturaNumero.trim()}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+            >
+              {saving ? (
+                <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />
+              ) : (
+                <CheckCircle className="w-4 h-4 mr-1.5" />
+              )}
+              Confirmar Facturación
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

@@ -1232,6 +1232,9 @@ model Factura {
   // Observaciones
   observaciones String?
 
+  // Plazo de pago
+  plazoPagoDias Int? // Días de plazo para alertas de vencimiento
+
   // Datos adicionales
   condicionVenta String? // Contado, Cuenta Corriente, etc.
   remito         String? // N° de remito asociado
@@ -1263,6 +1266,7 @@ model Factura {
   notasCreditoDebitoRef NotaCreditoDebito[]
   notasDebitoRef        NotaDebito[]
   pagosFactura          PagoFactura[]
+  planillasFactura      PlanillaServicioFaena[] @relation("PlanillaFactura")
 
   @@index([numero])
   @@index([clienteId])
@@ -2820,6 +2824,12 @@ enum EstadoNota {
   EMITIDA
   APLICADA
   ANULADA
+}
+
+enum EstadoPlanillaServicio {
+  BORRADOR
+  APROBADO
+  FACTURADO
 }
 
 enum EstadoOrdenCompra {
@@ -5158,9 +5168,15 @@ model PlanillaServicioFaena {
   arancelIpcva      Float // Arancel IPCVA por cabeza (columna L)
   totalFacturaImp   Float // Total $ Factura con impuestos (columna M)
 
+  // Estado del flujo de facturación
+  estado        EstadoPlanillaServicio @default(BORRADOR) // BORRADOR → APROBADO → FACTURADO
+  plazoPagoDias Int? // Días de plazo para pago (se establece en Carga Datos Faena)
+
   // Datos de facturación
   numeroFactura String? // Nº Factura (columna N)
   fechaFactura  DateTime? // Fecha factura (columna O)
+  facturaId      String? @unique // Factura generada al facturar
+  factura        Factura? @relation("PlanillaFactura", fields: [facturaId], references: [id])
 
   // Datos de pago
   fechaPago       DateTime? // Fecha pago (columna P)
@@ -5184,7 +5200,25 @@ model PlanillaServicioFaena {
   @@index([fechaPago])
   @@index([estadoPago])
   @@index([precioServicioKg])
+  @@index([estado])
   @@index([createdAt])
+
+  itemsExtras ItemExtraPlanilla[]
+}
+
+model ItemExtraPlanilla {
+  id                     String  @id @default(cuid())
+  planillaServicioFaenaId String
+  planillaServicioFaena   PlanillaServicioFaena @relation(fields: [planillaServicioFaenaId], references: [id], onDelete: Cascade)
+  tipoItem                String  // CHINCHULIN | CUARTEO | DESPOSTADA | OTRO
+  descripcion             String?
+  cantidadKg              Float
+  precioUnitario          Float   @default(0) // Se carga en paso 2 (Carga Datos Faena)
+  subtotal                Float   @default(0)
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+
+  @@index([planillaServicioFaenaId])
 }
 
 model PreferenciasUI {
