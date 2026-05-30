@@ -66,6 +66,7 @@ interface FacturaRow {
   clienteId: string
   cliente: Cliente
   pagosFactura: PagoFactura[]
+  planillasFactura?: { numeroTropa: number }[]
   totalPagado: number
   saldoPendiente: number
   diasTranscurridos: number
@@ -488,6 +489,9 @@ export function PagosSaldosTab({ operador }: Props) {
             <thead className="sticky top-0 z-10">
               <tr className="bg-stone-100 border-b border-stone-200">
                 <th className="text-left px-3 py-2.5 text-stone-500 text-xs uppercase tracking-wider font-semibold whitespace-nowrap">
+                  Tropa
+                </th>
+                <th className="text-left px-3 py-2.5 text-stone-500 text-xs uppercase tracking-wider font-semibold whitespace-nowrap">
                   N° Factura
                 </th>
                 <th className="text-left px-3 py-2.5 text-stone-500 text-xs uppercase tracking-wider font-semibold whitespace-nowrap">
@@ -522,7 +526,7 @@ export function PagosSaldosTab({ operador }: Props) {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={10} className="text-center py-16">
+                  <td colSpan={11} className="text-center py-16">
                     <Loader2 className="w-8 h-8 mx-auto animate-spin text-amber-500" />
                     <p className="mt-3 text-stone-400 text-sm">
                       Cargando datos de pagos y saldos...
@@ -531,7 +535,7 @@ export function PagosSaldosTab({ operador }: Props) {
                 </tr>
               ) : filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={10} className="text-center py-16">
+                  <td colSpan={11} className="text-center py-16">
                     <Receipt className="w-12 h-12 mx-auto mb-3 text-stone-300" />
                     <p className="text-stone-500 text-sm">
                       {soloVencidas
@@ -552,6 +556,13 @@ export function PagosSaldosTab({ operador }: Props) {
                         isVencido ? 'bg-red-50/50' : ''
                       }`}
                     >
+                      {/* Tropa */}
+                      <td className="px-3 py-2.5">
+                        <span className="font-mono font-semibold text-stone-600">
+                          {f.planillasFactura?.[0]?.numeroTropa ?? '-'}
+                        </span>
+                      </td>
+
                       {/* N° Factura */}
                       <td className="px-3 py-2.5">
                         <span className="font-mono font-semibold text-stone-800">

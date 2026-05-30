@@ -17,6 +17,7 @@ interface FacturaConCalculos {
   clienteId: string
   cliente: { id: string; nombre: string; cuit: string | null }
   pagosFactura: { id: string; fecha: Date; monto: number; metodoPago: string; referencia: string | null }[]
+  planillasFactura?: { numeroTropa: number }[]
   totalPagado: number
   saldoPendiente: number
   diasTranscurridos: number
@@ -67,6 +68,7 @@ function enrichFactura(factura: any): FacturaConCalculos {
     clienteId: factura.clienteId,
     cliente: factura.cliente,
     pagosFactura: factura.pagosFactura,
+    planillasFactura: factura.planillasFactura,
     totalPagado,
     saldoPendiente,
     diasTranscurridos,
@@ -99,8 +101,8 @@ export async function GET(request: NextRequest) {
       where.clienteId = clienteId
     }
 
-    // Fetch ALL matching facturas with relations
-    const facturas = await db.factura.findMany({
+    // ==================== FETCH: Tabla Factura (facturas generales) ====================
+    const facturasGenerales = await db.factura.findMany({
       where,
       include: {
         cliente: {
@@ -126,8 +128,48 @@ export async function GET(request: NextRequest) {
       orderBy: { fecha: 'desc' },
     })
 
+    // ==================== FETCH: PlanillaServicioFaena (planillas facturadas) ====================
+    const planillaWhere: Record<string, unknown> = { estado: 'FACTURADO' }
+    if (clienteId) {
+      planillaWhere.usuarioFaenaId = clienteId
+    }
+
+    const planillasFacturadas = await db.planillaServicioFaena.findMany({
+      where: planillaWhere,
+      include: {
+        usuarioFaena: {
+          select: { id: true, nombre: true, cuit: true },
+        },
+      },
+      orderBy: { numeroTropa: 'asc' },
+    })
+
+    // Convertir planillas al formato compatible con enrichFactura
+    const planillasComoFacturas = planillasFacturadas.map(p => ({
+      id: p.id,
+      numero: p.numeroFactura || '-',
+      fecha: p.fechaFactura || p.fechaFaena,
+      total: p.totalFacturaImp,
+      estado: (p.montoDepositado != null && p.montoDepositado >= p.totalFacturaImp) ? 'PAGADA' : 'EMITIDA',
+      plazoPagoDias: p.plazoPagoDias ?? 30,
+      observaciones: p.observaciones,
+      clienteId: p.usuarioFaenaId || '',
+      cliente: p.usuarioFaena ? { id: p.usuarioFaena.id, nombre: p.usuarioFaena.nombre, cuit: p.usuarioFaena.cuit } : null,
+      pagosFactura: (p.montoDepositado && p.montoDepositado > 0 && p.fechaPago) ? [{
+        id: p.id + '-pago',
+        fecha: p.fechaPago,
+        monto: p.montoDepositado,
+        metodoPago: p.observaciones || 'DEPOSITO',
+        referencia: null,
+      }] : [],
+      planillasFactura: [{ id: p.id, numeroTropa: p.numeroTropa, usuario: p.usuario }],
+    }))
+
+    // Combinar ambas fuentes
+    const todasLasFacturas = [...planillasComoFacturas, ...facturasGenerales]
+
     // Enrich with calculations
-    const facturasConCalculos = facturas.map(enrichFactura)
+    const facturasConCalculos = todasLasFacturas.map(enrichFactura)
 
     // ==================== KPIs (computed on the full set) ====================
     const hoy = new Date()
@@ -186,11 +228,17 @@ export async function GET(request: NextRequest) {
       resultado = resultado.filter((f) => f.estadoPago === 'VENCIDO')
     }
 
-    // Sort: VENCIDO first, then by diasTranscurridos desc
+    // Sort: VENCIDO first, then by numeroTropa asc, then by diasTranscurridos desc
     resultado.sort((a, b) => {
       const prioridadA = a.estadoPago === 'VENCIDO' ? 0 : 1
       const prioridadB = b.estadoPago === 'VENCIDO' ? 0 : 1
       if (prioridadA !== prioridadB) return prioridadA - prioridadB
+      // Ordenar por tropa
+      const tropaA = a.planillasFactura?.[0]?.numeroTropa
+      const tropaB = b.planillasFactura?.[0]?.numeroTropa
+      if (tropaA != null && tropaB != null) return tropaA - tropaB
+      if (tropaA != null) return -1
+      if (tropaB != null) return 1
       return b.diasTranscurridos - a.diasTranscurridos
     })
 
