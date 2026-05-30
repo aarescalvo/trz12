@@ -323,19 +323,27 @@ export function FacturacionModule({ operador }: Props) {
   const fetchAll = async () => {
     setLoading(true)
     try {
-      const [facturasRes, clientesRes, tiposRes] = await Promise.all([
+      const [facturasRes, planillasRes, clientesRes, tiposRes] = await Promise.all([
         fetch('/api/facturacion'),
+        fetch('/api/facturacion?source=planillas'),
         fetch('/api/clientes'),
         fetch('/api/tipos-servicio?activo=true&seFactura=true')
       ])
 
-      const [facturasData, clientesData, tiposData] = await Promise.all([
+      const [facturasData, planillasData, clientesData, tiposData] = await Promise.all([
         facturasRes.json(),
+        planillasRes.json(),
         clientesRes.json(),
         tiposRes.json()
       ])
 
-      if (facturasData.success) setFacturas(facturasData.data)
+      // Combinar facturas generales + planillas facturadas
+      const facturasGeneral: Factura[] = facturasData.success ? facturasData.data : []
+      const facturasDesdePlanillas: Factura[] = planillasData.success ? planillasData.data : []
+      
+      // Marcar planillas para diferenciación
+      const todas = [...facturasDesdePlanillas, ...facturasGeneral]
+      setFacturas(todas)
       if (clientesData.success) setClientes(clientesData.data)
       if (tiposData.success) setTiposServicio(tiposData.data)
     } catch (error) {
