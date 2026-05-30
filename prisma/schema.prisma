@@ -5301,6 +5301,8 @@ model ProductoVendible {
   textoEspanol          String?
   textoIngles           String?
   textoTercerIdioma     String?
+  textoRubroPieza        String? // Texto libre para rubro/pieza
+  textoTipoTrabajoLabel String? // Texto libre para tipo de trabajo
   temperaturaTransporte String?
   tipoConsumo           String?
   empresa               String?

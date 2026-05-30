@@ -137,6 +137,8 @@ export async function POST(request: NextRequest) {
       textoEspanol,
       textoIngles,
       textoTercerIdioma,
+      textoRubroPieza,
+      textoTipoTrabajoLabel,
       // Logística
       temperaturaTransporte,
       tipoConsumo,
@@ -206,6 +208,8 @@ export async function POST(request: NextRequest) {
         textoEspanol: textoEspanol || null,
         textoIngles: textoIngles || null,
         textoTercerIdioma: textoTercerIdioma || null,
+        textoRubroPieza: textoRubroPieza || null,
+        textoTipoTrabajoLabel: textoTipoTrabajoLabel || null,
         // Logística
         temperaturaTransporte: temperaturaTransporte || null,
         tipoConsumo: tipoConsumo || null,

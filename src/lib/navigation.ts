@@ -26,7 +26,7 @@ export type PageId =
   | 'configBalanzas' | 'configOperadores' | 'configProductos'
   | 'configSubproductos' | 'configListadoInsumos'
   | 'configCondicionesEmbalaje' | 'configTiposProducto'
-  | 'configC2Rubros' | 'configC2TiposCuarto' | 'configC2ProductosDesposte'
+  | 'configC2Rubros' | 'configC2TiposCuarto'
   | 'configC2BOM' | 'c2Subproductos' | 'c2Pallets' | 'c2Rendimiento'
   | 'c2Degradacion' | 'c2Reportes' | 'calidadRegistroUsuarios'
   | 'calidadPh' | 'reportes' | 'configuracion' | 'auditoriaOperador'
@@ -63,7 +63,6 @@ export const PAGE_TO_ROUTE: Record<PageId, string> = {
   cortesDespostada: '/ciclo-2/cortes',
   configC2Rubros: '/ciclo-2/rubros',
   configC2TiposCuarto: '/ciclo-2/tipos-cuarto',
-  configC2ProductosDesposte: '/ciclo-2/productos-desposte',
   configC2BOM: '/ciclo-2/bom',
   menudencias: '/subproductos/menudencias',
   cueros: '/subproductos/cueros',
@@ -181,7 +180,6 @@ export const NAV_GROUPS: NavGroup[] = [
       { id: 'cortesDespostada', label: 'Cortes en Despostada', icon: Scissors, permiso: 'puedeDesposte', route: '/ciclo-2/cortes' },
       { id: 'configC2Rubros', label: 'Rubros', icon: Tag, permiso: 'puedeConfiguracion', route: '/ciclo-2/rubros' },
       { id: 'configC2TiposCuarto', label: 'Tipos de Cuarto', icon: Scissors, permiso: 'puedeConfiguracion', route: '/ciclo-2/tipos-cuarto' },
-      { id: 'configC2ProductosDesposte', label: 'Productos Desposte', icon: Package, permiso: 'puedeConfiguracion', route: '/ciclo-2/productos-desposte' },
       { id: 'configC2BOM', label: 'BOM (Insumos x Producto)', icon: ClipboardList, permiso: 'puedeConfiguracion', route: '/ciclo-2/bom' },
     ]
   },
